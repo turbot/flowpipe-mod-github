@@ -186,18 +186,32 @@ pipeline "create_issue" {
     type = string
   }
 
-  // param "issue_title" {
-  //   type  = string
-  // }
+  param "github_owner" {
+    type = string
+    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    default = "vkumbha"
+  }
 
-  // param "issue_body" {
-  //   type  = string
-  // }
+  param "github_repo" {
+    type = string
+    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    default = "deleteme"
+  }
+
+  param "issue_title" {
+    type = string
+  }
+
+  param "issue_body" {
+    type = string
+  }
 
   step "pipeline" "call_other_pipeline" {
     pipeline = pipeline.get_repository_id
     args = {
       github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
     }
   }
 
@@ -216,8 +230,8 @@ pipeline "create_issue" {
                 createIssue(input: 
                   { 
                     repositoryId: "${step.pipeline.call_other_pipeline.repository_id}",
-                    title: "Issue Title",
-                    body: "Issue Body"
+                    title: "${param.issue_title}",
+                    body: "${param.issue_body}"
                   }) {
                   clientMutationId
                 }
