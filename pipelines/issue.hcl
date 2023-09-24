@@ -1,7 +1,14 @@
+locals {
+  github_owner = split("/", var.repository_full_name)[0]
+  github_repo  = split("/", var.repository_full_name)[1]
+}
+
 pipeline "get_current_user" {
+  description = "Get the details of the current authenticated user."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later! // TODO: This is not implemented yet, check later!
   }
 
   step "http" "get_current_user" {
@@ -9,8 +16,9 @@ pipeline "get_current_user" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     // TODO: limit socialAccounts to 5 or include a param?
@@ -39,21 +47,24 @@ pipeline "get_current_user" {
 }
 
 pipeline "list_issues" {
+  description = "List of the first 20 OPEN issues in the repository."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "octocat"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "hello-world"
+    // default = local.github_repo
   }
 
   step "http" "list_issues" {
@@ -61,8 +72,9 @@ pipeline "list_issues" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     // TODO: limit of first 20 issues?
@@ -98,20 +110,22 @@ pipeline "list_issues" {
 }
 
 pipeline "list_issues_with_sp_query" {
+  description = "List of all OPEN issues in the repository using steampipe query."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "octocat"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "hello-world"
   }
 
@@ -121,6 +135,7 @@ pipeline "list_issues_with_sp_query" {
   }
 
   // TODO: use params in the where clause. Causes a panic error right now. Check later!
+  // https://github.com/turbot/flowpipe/issues/82
   step "query" "list_issues" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
     sql               = "select number,url,title,body from github_issue where repository_full_name ='turbot/steampipe' and state = 'OPEN'"
@@ -129,20 +144,22 @@ pipeline "list_issues_with_sp_query" {
 }
 
 pipeline "get_issue" {
+  description = "Get single issue details from the current repository by number."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "octocat"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "hello-world"
   }
 
@@ -155,8 +172,9 @@ pipeline "get_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     request_body = jsonencode({
@@ -182,22 +200,23 @@ pipeline "get_issue" {
 
 }
 
-
 pipeline "get_repository_id" {
+  description = "Get the repository node ID."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "vkumbha"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "deleteme"
   }
 
@@ -206,8 +225,9 @@ pipeline "get_repository_id" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     request_body = jsonencode({
@@ -227,20 +247,22 @@ pipeline "get_repository_id" {
 }
 
 pipeline "create_issue" {
+  description = "Create a new issue."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "vkumbha"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "deleteme"
   }
 
@@ -266,8 +288,9 @@ pipeline "create_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     request_body = jsonencode({
@@ -292,20 +315,22 @@ pipeline "create_issue" {
 }
 
 pipeline "add_comment" {
+  description = "Add a comment to an Issue."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "octocat"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "hello-world"
   }
 
@@ -332,8 +357,9 @@ pipeline "add_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
     }
 
     request_body = jsonencode({
@@ -354,40 +380,42 @@ pipeline "add_comment" {
 }
 
 pipeline "my_notification_pipeline" {
+  description = "Send a slack notification."
 
   param "github_token" {
     type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
   }
 
   param "github_owner" {
     type = string
-    // default = var.github_owner // TODO: This is not implemented yet, check later!
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
     default = "octocat"
   }
 
   param "github_repo" {
     type = string
-    // default = var.github_repo // TODO: This is not implemented yet, check later!
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
     default = "hello-world"
   }
 
-    step "pipeline" "list_issues" {
-        pipeline = pipeline.list_issues
-            args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
+  step "pipeline" "list_issues" {
+    pipeline = pipeline.list_issues
+    args = {
+      github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
     }
-    }
+  }
 
-    step "http" "notify_slack" {
-    url = "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+  step "http" "notify_slack" {
+    url    = var.slack_webhook_url
     method = "post"
     request_headers = {
-      Content-Type  = "application/json"
+      Content-Type = "application/json"
     }
 
-    request_body = jsonencode({   
+    request_body = jsonencode({
       text = "Total Open issues: ${step.pipeline.list_issues.total_open_issues}"
     })
   }
