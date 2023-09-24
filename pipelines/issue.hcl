@@ -44,6 +44,17 @@ pipeline "get_current_user" {
             EOM
     })
   }
+
+  output "response_body" {
+    value = step.http.get_current_user.response_body
+  }
+  output "response_headers" {
+    value = step.http.get_current_user.response_headers
+  }
+  output "status_code" {
+    value = step.http.get_current_user.status_code
+  }
+
 }
 
 pipeline "list_issues" {
@@ -107,6 +118,16 @@ pipeline "list_issues" {
     value = jsondecode(step.http.list_issues.response_body).data.repository.issues.totalCount
   }
 
+  output "response_body" {
+    value = step.http.list_issues.response_body
+  }
+  output "response_headers" {
+    value = step.http.list_issues.response_headers
+  }
+  output "status_code" {
+    value = step.http.list_issues.status_code
+  }
+
 }
 
 pipeline "list_issues_with_sp_query" {
@@ -139,7 +160,10 @@ pipeline "list_issues_with_sp_query" {
   step "query" "list_issues" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
     sql               = "select number,url,title,body from github_issue where repository_full_name ='turbot/steampipe' and state = 'OPEN'"
+  }
 
+  output "rows" {
+    value = step.query.list_issues.rows
   }
 }
 
@@ -198,6 +222,16 @@ pipeline "get_issue" {
     value = jsondecode(step.http.get_issue.response_body).data.repository.issue.id
   }
 
+  output "response_body" {
+    value = step.http.get_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.get_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.get_issue.status_code
+  }
+
 }
 
 pipeline "get_repository_id" {
@@ -244,6 +278,16 @@ pipeline "get_repository_id" {
   output "repository_id" {
     value = jsondecode(step.http.get_repository_id.response_body).data.repository.id
   }
+  output "response_body" {
+    value = step.http.get_repository_id.response_body
+  }
+  output "response_headers" {
+    value = step.http.get_repository_id.response_headers
+  }
+  output "status_code" {
+    value = step.http.get_repository_id.status_code
+  }
+
 }
 
 pipeline "create_issue" {
@@ -277,7 +321,7 @@ pipeline "create_issue" {
   step "pipeline" "get_repository_id" {
     pipeline = pipeline.get_repository_id
     args = {
-      github_token = param.github_token
+      github_token = var.github_token
       github_owner = param.github_owner
       github_repo  = param.github_repo
     }
@@ -310,11 +354,25 @@ pipeline "create_issue" {
               }
             EOM
     })
+
+    // error {
+    //   max_retries = 3
+    // } 
+  }
+
+  output "response_body" {
+    value = step.http.create_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.create_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.create_issue.status_code
   }
 
 }
 
-pipeline "add_comment" {
+pipeline "add_comment_on_issue" {
   description = "Add a comment to an Issue."
 
   param "github_token" {
@@ -377,6 +435,16 @@ pipeline "add_comment" {
     })
   }
 
+  output "response_body" {
+    value = step.http.add_comment_on_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.add_comment_on_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.add_comment_on_issue.status_code
+  }
+
 }
 
 pipeline "my_notification_pipeline" {
@@ -416,8 +484,18 @@ pipeline "my_notification_pipeline" {
     }
 
     request_body = jsonencode({
-      text = "Total Open issues: ${step.pipeline.list_issues.total_open_issues}"
+      text = "Total Open issues: ${step.pipeline.list_issues.total_open_issues}. \n List of first 20 Issues:\n ${join("", [for issue in jsondecode(step.pipeline.list_issues.list_nodes) : format("%s - %s\n", issue.number, issue.title)])}"
     })
+  }
+
+  output "response_body" {
+    value = step.http.notify_slack.response_body
+  }
+  output "response_headers" {
+    value = step.http.notify_slack.response_headers
+  }
+  output "status_code" {
+    value = step.http.notify_slack.status_code
   }
 
 }
