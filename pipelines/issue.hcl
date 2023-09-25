@@ -499,3 +499,120 @@ pipeline "my_notification_pipeline" {
   }
 
 }
+
+pipeline "create_issue_send_notification" {
+  description = "Create a new issue and send slack notification."
+
+  param "github_token" {
+    type = string
+    // default = var.github_token // TODO: This is not implemented yet, check later!
+  }
+
+  param "github_owner" {
+    type = string
+    // default = local.github_owner // TODO: This is not implemented yet, check later!
+    default = "vkumbha"
+  }
+
+  param "github_repo" {
+    type = string
+    // default = local.github_repo // TODO: This is not implemented yet, check later!
+    default = "deleteme"
+  }
+
+  param "issue_title" {
+    type = string
+  }
+
+  param "issue_body" {
+    type = string
+  }
+
+  param "slack_token" {
+    type = string
+  }
+
+  param "message" {
+    type    = string
+  }
+
+  param "channel" {
+    type = string
+    // default = "ABCD0XYZ1" // using channel ID works
+    default = "test-build-slack-room" // using channel name also works
+  }
+
+  // Calling a pipeline within the mod
+  step "pipeline" "get_repository_id" {
+    pipeline = pipeline.get_repository_id
+    args = {
+      github_token = var.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
+    }
+  }
+
+  // Calling a Pipeline from a different mod
+  step "pipeline" "post_message" {
+    pipeline = slack_mod.pipeline.post_message
+    args = {
+      slack_token = param.slack_token
+      channel = param.channel
+      message = (step.http.create_issue.status_code == 200  ? "Following issue is created with the Flowpipe Pipeline: ${jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url}" : "Failed to create issue with status code ${step.http.create_issue.status_code}")
+    }
+  }
+
+  step "http" "create_issue" {
+    title  = "Create Issue"
+    method = "post"
+    url    = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type = "application/json"
+      // Authorization = "Bearer ${param.github_token}" // TODO: Use param when variables are accepted.
+      Authorization = "Bearer ${var.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              mutation {
+                createIssue(input: 
+                  { 
+                    repositoryId: "${step.pipeline.get_repository_id.repository_id}",
+                    title: "${param.issue_title}",
+                    body: "${param.issue_body}"
+                  }) {
+                  clientMutationId
+                  issue {
+                    id
+                    url
+                  }
+                }
+              }
+            EOM
+    })
+
+    error {
+      ignore = true
+    }
+
+  }
+
+  trigger "http" "my_webhook" {
+    pipeline = "${step.pipeline.post_message}"
+  }
+
+  output "issue_url" {
+    value = jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url
+  }
+
+  output "response_body" {
+    value = step.http.create_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.create_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.create_issue.status_code
+  }
+
+}
