@@ -174,7 +174,7 @@ pipeline "get_issue" {
   }
 
   param "github_issue_number" {
-    type = string
+    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
   }
 
   step "http" "get_issue" {
@@ -567,11 +567,6 @@ pipeline "create_issue_send_notification" {
     }
 
   }
-
-  trigger "http" "my_webhook" {
-    pipeline = step.pipeline.post_message
-  }
-
   output "issue_url" {
     value = jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url
   }
