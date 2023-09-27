@@ -56,6 +56,68 @@ pipeline "get_current_user" {
 
 }
 
+pipeline "get_user" {
+  description = "Get the details of the current authenticated user."
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "user_login" {
+    type = string
+  }
+
+  step "http" "get_user" {
+    title  = "Get the details of a user"
+    method = "post"
+    url    = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    // TODO: limit socialAccounts to 5 or include a param?
+    request_body = jsonencode({
+      query = <<EOM
+              query {
+                user(login: "${param.user_login}") {
+                  id
+                  name
+                  email
+                  location
+                  login
+                  company
+                  socialAccounts(first: 5) {
+                    edges {
+                      node {
+                        provider
+                        url
+                      }
+                    }
+                  }
+                }
+              }
+            EOM
+    })
+  }
+
+  output "user_node_id" {
+    value = jsondecode(step.http.get_user.response_body).data.user.id
+  }
+
+  output "response_body" {
+    value = step.http.get_user.response_body
+  }
+  output "response_headers" {
+    value = step.http.get_user.response_headers
+  }
+  output "status_code" {
+    value = step.http.get_user.status_code
+  }
+
+}
+
 pipeline "list_issues" {
   description = "List of the first 20 OPEN issues in the repository."
 
@@ -328,15 +390,17 @@ pipeline "create_issue" {
                   clientMutationId
                   issue {
                     id
+                    url
                   }
                 }
               }
             EOM
     })
 
-    // error {
-    //   max_retries = 3
-    // } 
+    error {
+      max_retries = 3
+    }
+
   }
 
   output "response_body" {
@@ -351,8 +415,8 @@ pipeline "create_issue" {
 
 }
 
-pipeline "add_comment_on_issue" {
-  description = "Add a comment to an Issue."
+pipeline "create_comment_on_issue" {
+  description = "Creates a comment on an Issue."
 
   param "github_token" {
     type    = string
@@ -387,8 +451,8 @@ pipeline "add_comment_on_issue" {
     }
   }
 
-  step "http" "add_comment_on_issue" {
-    title  = "Add comment on an Issue"
+  step "http" "create_comment_on_issue" {
+    title  = "Creates a comment on an Issue"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -412,19 +476,19 @@ pipeline "add_comment_on_issue" {
   }
 
   output "response_body" {
-    value = step.http.add_comment_on_issue.response_body
+    value = step.http.create_comment_on_issue.response_body
   }
   output "response_headers" {
-    value = step.http.add_comment_on_issue.response_headers
+    value = step.http.create_comment_on_issue.response_headers
   }
   output "status_code" {
-    value = step.http.add_comment_on_issue.status_code
+    value = step.http.create_comment_on_issue.status_code
   }
 
 }
 
-pipeline "my_notification_pipeline" {
-  description = "Send a slack notification."
+pipeline "search_issue" {
+  description = "Find an issue in a repository."
 
   param "github_token" {
     type    = string
@@ -441,101 +505,13 @@ pipeline "my_notification_pipeline" {
     default = local.github_repo
   }
 
-  step "pipeline" "list_issues" {
-    pipeline = pipeline.list_issues
-    args = {
-      github_token = param.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
-    }
-  }
-
-  step "http" "notify_slack" {
-    url    = var.slack_webhook_url
-    method = "post"
-    request_headers = {
-      Content-Type = "application/json"
-    }
-
-    request_body = jsonencode({
-      text = "Total Open issues: ${step.pipeline.list_issues.total_open_issues}. \n List of first 20 Issues:\n ${join("", [for issue in jsondecode(step.pipeline.list_issues.list_nodes) : format("%s - %s\n", issue.number, issue.title)])}"
-    })
-  }
-
-  output "response_body" {
-    value = step.http.notify_slack.response_body
-  }
-  output "response_headers" {
-    value = step.http.notify_slack.response_headers
-  }
-  output "status_code" {
-    value = step.http.notify_slack.status_code
-  }
-
-}
-
-pipeline "create_issue_send_notification" {
-  description = "Create a new issue and send slack notification."
-
-  param "github_token" {
+  param "search_value" {
     type    = string
-    default = var.github_token
+    default = ""
   }
 
-  param "github_owner" {
-    type    = string
-    default = local.github_owner
-  }
-
-  param "github_repo" {
-    type    = string
-    default = local.github_repo
-  }
-
-  param "issue_title" {
-    type = string
-  }
-
-  param "issue_body" {
-    type = string
-  }
-
-  param "slack_token" {
-    type = string
-  }
-
-  param "message" {
-    type = string
-  }
-
-  param "channel" {
-    type = string
-    // default = "ABCD0XYZ1" // using channel ID works
-    default = "test-build-slack-room" // using channel name also works
-  }
-
-  // Calling a pipeline within the mod
-  step "pipeline" "get_repository_id" {
-    pipeline = pipeline.get_repository_id
-    args = {
-      github_token = var.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
-    }
-  }
-
-  // Calling a Pipeline from a different mod
-  step "pipeline" "post_message" {
-    pipeline = slack_mod.pipeline.post_message
-    args = {
-      slack_token = param.slack_token
-      channel     = param.channel
-      message     = (step.http.create_issue.status_code == 200 ? "Following issue is created with the Flowpipe Pipeline: ${jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url}" : "Failed to create issue with status code ${step.http.create_issue.status_code}")
-    }
-  }
-
-  step "http" "create_issue" {
-    title  = "Create Issue"
+  step "http" "search_issue" {
+    title  = "Finds an issue in a repository using search value"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -545,30 +521,180 @@ pipeline "create_issue_send_notification" {
 
     request_body = jsonencode({
       query = <<EOM
-              mutation {
-                createIssue(input: 
-                  { 
-                    repositoryId: "${step.pipeline.get_repository_id.repository_id}",
-                    title: "${param.issue_title}",
-                    body: "${param.issue_body}"
-                  }) {
-                  clientMutationId
-                  issue {
-                    id
-                    url
+              query find_issue {
+                search(type: ISSUE, query: "owner:${param.github_owner} repo:${param.github_repo} state:open ${param.search_value}", last: 20) {
+                  issueCount
+                  nodes {
+                    ... on Issue {
+                      createdAt
+                      title
+                      number
+                      url
+                      repository {
+                        name
+                      }
+                    }
                   }
                 }
               }
             EOM
     })
+  }
 
-    error {
-      ignore = true
+  output "response_body" {
+    value = step.http.create_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.create_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.create_issue.status_code
+  }
+
+}
+
+pipeline "update_issue" {
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "github_issue_number" {
+    type = string
+  }
+
+  param "new_body" {
+    type = string
+  }
+
+  param "new_title" {
+    type = string
+  }
+
+  param "assigneeIds" {
+    type    = list(string)
+    default = ["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]
+  }
+
+  step "pipeline" "get_issue_node" {
+    pipeline = pipeline.get_issue
+    args = {
+      github_token        = param.github_token
+      github_owner        = param.github_owner
+      github_repo         = param.github_repo
+      github_issue_number = param.github_issue_number
+    }
+  }
+
+  step "http" "update_issue" {
+    for_each = param.assigneeIds // TODO: updating the title and body twice (or count of assigneeIds)
+    title    = "Update an Issue"
+    method   = "post"
+    url      = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
     }
 
+    request_body = jsonencode({
+      query = <<EOM
+              mutation {
+                updateIssue(input: 
+                  {
+                    id: "${step.pipeline.get_issue_node.issue_node_id}", 
+                    body: "${param.new_body}",
+                    title: "${param.new_title}",
+                    assigneeIds: "${each.value}"
+                  }) {
+                  clientMutationId
+                }
+              }
+            EOM
+    })
   }
-  output "issue_url" {
-    value = jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url
+
+  output "response_body" {
+    value = step.http.create_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.create_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.create_issue.status_code
+  }
+
+}
+
+pipeline "add_issue_assignee" {
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "github_issue_number" {
+    type = string
+  }
+
+  param "assigneeIds" {
+    type    = list(string)
+    default = ["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]
+  }
+
+  step "pipeline" "get_issue_node" {
+    pipeline = pipeline.get_issue
+    args = {
+      github_token        = param.github_token
+      github_owner        = param.github_owner
+      github_repo         = param.github_repo
+      github_issue_number = param.github_issue_number
+    }
+  }
+
+  step "http" "add_issue_assignee" {
+    for_each = param.assigneeIds // TODO: updating the title and body twice (or count of assigneeIds)
+    title    = "Update an Issue"
+    method   = "post"
+    url      = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              mutation {
+                addAssigneesToAssignable(input: 
+                  {
+                    assignableId: "${step.pipeline.get_issue_node.issue_node_id}", 
+                    assigneeIds: "${each.value}"
+                  }) {
+                  clientMutationId
+                }
+              }
+            EOM
+    })
   }
 
   output "response_body" {
