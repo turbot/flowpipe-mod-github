@@ -728,12 +728,10 @@ pipeline "close_issue" {
     type = string
   }
 
-  param "state_reason" {
-    // type    = set(string) // TODO: The CLI only supports string parameter right now. Use API
-    // default = ["COMPLETED", "NOT_PLANNED"]
-    type = string
-    default = "COMPLETED"
-  }
+  // param "state_reason" {
+  //   type    = set(string) // TODO: The CLI only supports string parameter right now. Use API
+  //   default = ["COMPLETED", "NOT_PLANNED"]
+  // }
 
   step "pipeline" "get_issue_node" {
     pipeline = pipeline.get_issue
@@ -760,7 +758,6 @@ pipeline "close_issue" {
                 closeIssue(
                   input: {
                     issueId: "${step.pipeline.get_issue_node.issue_node_id}", 
-                    stateReason: ${jsonencode(param.state_reason)}
                     }
                 ) {
                   clientMutationId
