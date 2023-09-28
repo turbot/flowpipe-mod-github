@@ -542,13 +542,13 @@ pipeline "search_issue" {
   }
 
   output "response_body" {
-    value = step.http.create_issue.response_body
+    value = step.http.search_issue.response_body
   }
   output "response_headers" {
-    value = step.http.create_issue.response_headers
+    value = step.http.search_issue.response_headers
   }
   output "status_code" {
-    value = step.http.create_issue.status_code
+    value = step.http.search_issue.status_code
   }
 
 }
@@ -583,7 +583,8 @@ pipeline "update_issue" {
   }
 
   param "assignee_ids" {
-    type    = list(string)
+    type    = list(string)  // TODO: The CLI only supports string parameter right now. Use API
+    default = ["U_kgDOAnE2Jw"]
   }
 
   step "pipeline" "get_issue_node" {
@@ -623,13 +624,13 @@ pipeline "update_issue" {
   }
 
   output "response_body" {
-    value = step.http.create_issue.response_body
+    value = step.http.update_issue.response_body
   }
   output "response_headers" {
-    value = step.http.create_issue.response_headers
+    value = step.http.update_issue.response_headers
   }
   output "status_code" {
-    value = step.http.create_issue.status_code
+    value = step.http.update_issue.status_code
   }
 
 }
@@ -656,7 +657,8 @@ pipeline "add_issue_assignee" {
   }
 
   param "assignee_ids" {
-    type    = list(string)
+    type    = list(string) // TODO: The CLI only supports string parameter right now. Use API
+    default = ["U_kgDOAnE2Jw"]
   }
 
   step "pipeline" "get_issue_node" {
@@ -694,13 +696,88 @@ pipeline "add_issue_assignee" {
   }
 
   output "response_body" {
-    value = step.http.create_issue.response_body
+    value = step.http.add_issue_assignee.response_body
   }
   output "response_headers" {
-    value = step.http.create_issue.response_headers
+    value = step.http.add_issue_assignee.response_headers
   }
   output "status_code" {
-    value = step.http.create_issue.status_code
+    value = step.http.add_issue_assignee.status_code
+  }
+
+}
+
+pipeline "close_issue" {
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "github_issue_number" {
+    type = string
+  }
+
+  param "state_reason" {
+    // type    = set(string) // TODO: The CLI only supports string parameter right now. Use API
+    // default = ["COMPLETED", "NOT_PLANNED"]
+    type = string
+    default = "COMPLETED"
+  }
+
+  step "pipeline" "get_issue_node" {
+    pipeline = pipeline.get_issue
+    args = {
+      github_token        = param.github_token
+      github_owner        = param.github_owner
+      github_repo         = param.github_repo
+      github_issue_number = param.github_issue_number
+    }
+  }
+
+  step "http" "close_issue" {
+    title    = "Close an Issue"
+    method   = "post"
+    url      = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              mutation {
+                closeIssue(
+                  input: {
+                    issueId: "${step.pipeline.get_issue_node.issue_node_id}", 
+                    stateReason: ${jsonencode(param.state_reason)}
+                    }
+                ) {
+                  clientMutationId
+                }
+              }
+            EOM
+    })
+  }
+
+  output "response_body" {
+    value = step.http.close_issue.response_body
+  }
+  output "response_headers" {
+    value = step.http.close_issue.response_headers
+  }
+  output "status_code" {
+    value = step.http.close_issue.status_code
   }
 
 }
