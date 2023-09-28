@@ -582,9 +582,8 @@ pipeline "update_issue" {
     type = string
   }
 
-  param "assigneeIds" {
+  param "assignee_ids" {
     type    = list(string)
-    default = ["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]
   }
 
   step "pipeline" "get_issue_node" {
@@ -598,7 +597,6 @@ pipeline "update_issue" {
   }
 
   step "http" "update_issue" {
-    for_each = param.assigneeIds // TODO: updating the title and body twice (or count of assigneeIds)
     title    = "Update an Issue"
     method   = "post"
     url      = "https://api.github.com/graphql"
@@ -615,7 +613,7 @@ pipeline "update_issue" {
                     id: "${step.pipeline.get_issue_node.issue_node_id}", 
                     body: "${param.new_body}",
                     title: "${param.new_title}",
-                    assigneeIds: "${each.value}"
+                    assigneeIds: ${jsonencode(param.assignee_ids)}
                   }) {
                   clientMutationId
                 }
@@ -657,9 +655,8 @@ pipeline "add_issue_assignee" {
     type = string
   }
 
-  param "assigneeIds" {
+  param "assignee_ids" {
     type    = list(string)
-    default = ["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]
   }
 
   step "pipeline" "get_issue_node" {
@@ -673,7 +670,6 @@ pipeline "add_issue_assignee" {
   }
 
   step "http" "add_issue_assignee" {
-    for_each = param.assigneeIds // TODO: updating the title and body twice (or count of assigneeIds)
     title    = "Update an Issue"
     method   = "post"
     url      = "https://api.github.com/graphql"
@@ -688,7 +684,7 @@ pipeline "add_issue_assignee" {
                 addAssigneesToAssignable(input: 
                   {
                     assignableId: "${step.pipeline.get_issue_node.issue_node_id}", 
-                    assigneeIds: "${each.value}"
+                    assigneeIds: ${jsonencode(param.assignee_ids)},
                   }) {
                   clientMutationId
                 }
