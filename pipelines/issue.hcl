@@ -1,8 +1,3 @@
-locals {
-  github_owner = split("/", var.repository_full_name)[0]
-  github_repo  = split("/", var.repository_full_name)[1]
-}
-
 pipeline "get_current_user" {
   description = "Get the details of the current authenticated user."
 
@@ -281,59 +276,6 @@ pipeline "get_issue" {
 
 }
 
-pipeline "get_repository_id" {
-  description = "Get the repository node ID."
-
-  param "github_token" {
-    type    = string
-    default = var.github_token
-  }
-
-  param "github_owner" {
-    type    = string
-    default = local.github_owner
-  }
-
-  param "github_repo" {
-    type    = string
-    default = local.github_repo
-  }
-
-  step "http" "get_repository_id" {
-    title  = "Get repository Id"
-    method = "post"
-    url    = "https://api.github.com/graphql"
-    request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
-    }
-
-    request_body = jsonencode({
-      query = <<EOM
-              query {
-                repository(owner:"${param.github_owner}", name:"${param.github_repo}") {
-                  id
-                }
-              }
-            EOM
-    })
-  }
-
-  output "repository_id" {
-    value = jsondecode(step.http.get_repository_id.response_body).data.repository.id
-  }
-  output "response_body" {
-    value = step.http.get_repository_id.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_repository_id.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_repository_id.status_code
-  }
-
-}
-
 pipeline "create_issue" {
   description = "Create a new issue."
 
@@ -434,7 +376,7 @@ pipeline "create_comment_on_issue" {
   }
 
   param "github_issue_number" {
-    type = string
+    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
   }
 
   param "comment_body" {
@@ -571,7 +513,7 @@ pipeline "update_issue" {
   }
 
   param "github_issue_number" {
-    type = string
+    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
   }
 
   param "new_body" {
@@ -653,7 +595,7 @@ pipeline "add_issue_assignee" {
   }
 
   param "github_issue_number" {
-    type = string
+    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
   }
 
   param "assignee_ids" {
@@ -725,7 +667,7 @@ pipeline "close_issue" {
   }
 
   param "github_issue_number" {
-    type = string
+    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
   }
 
   // param "state_reason" {
