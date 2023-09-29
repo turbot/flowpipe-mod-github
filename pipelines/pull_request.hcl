@@ -17,7 +17,7 @@ pipeline "get_pull_request" {
   }
 
   param "github_pull_request_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   step "http" "get_pull_request" {
@@ -168,7 +168,7 @@ pipeline "create_comment_on_pull_request" {
   }
 
   param "github_pull_request_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   param "comment_body" {
@@ -203,6 +203,14 @@ pipeline "create_comment_on_pull_request" {
                     body: "${param.comment_body}"
                   }) {
                   clientMutationId
+                  commentEdge {
+                    node {
+                      pullRequest {
+                        url
+                        id
+                      }
+                    }
+                  }
                 }
               }
             EOM
@@ -222,6 +230,7 @@ pipeline "create_comment_on_pull_request" {
 }
 
 pipeline "update_pull_request" {
+  description = "Update a Pull Request in a repository."
 
   param "github_token" {
     type    = string
@@ -239,7 +248,7 @@ pipeline "update_pull_request" {
   }
 
   param "github_pull_request_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   param "new_body" {
@@ -248,6 +257,10 @@ pipeline "update_pull_request" {
 
   param "new_title" {
     type = string
+  }
+
+  param "assignee_ids" {
+    type = list(string)
   }
 
   step "pipeline" "get_pull_request_node" {
@@ -277,6 +290,7 @@ pipeline "update_pull_request" {
                   pullRequestId: "${step.pipeline.get_pull_request_node.pull_request_node_id}",
                   title: "${param.new_title}",
                   body: "${param.new_body}",
+                  assigneeIds: ${jsonencode(param.assignee_ids)}
                 }) {
                   clientMutationId
                   pullRequest{
@@ -298,6 +312,216 @@ pipeline "update_pull_request" {
   }
   output "status_code" {
     value = step.http.update_pull_request.status_code
+  }
+
+}
+
+pipeline "search_pull_request" {
+  description = "Find a pull request in a repository."
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "search_value" {
+    type    = string
+    default = ""
+  }
+
+  step "http" "search_pull_request" {
+    title  = "Finds a pull request in a repository using search value"
+    method = "post"
+    url    = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              query find_issue {
+                search(type: ISSUE, query: "owner:${param.github_owner} repo:${param.github_repo} state:open ${param.search_value}", last: 20) {
+                  nodes {
+                    ... on PullRequest {
+                      createdAt
+                      title
+                      number
+                      url
+                      repository {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            EOM
+    })
+  }
+
+  output "response_body" {
+    value = step.http.search_pull_request.response_body
+  }
+  output "response_headers" {
+    value = step.http.search_pull_request.response_headers
+  }
+  output "status_code" {
+    value = step.http.search_pull_request.status_code
+  }
+
+}
+
+pipeline "close_pull_request" {
+  description = "Close a pull request in a repository."
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "github_pull_request_number" {
+    type = number
+  }
+
+  step "pipeline" "get_pull_request_node" {
+    pipeline = pipeline.get_pull_request
+    args = {
+      github_token               = param.github_token
+      github_owner               = param.github_owner
+      github_repo                = param.github_repo
+      github_pull_request_number = param.github_pull_request_number
+    }
+  }
+
+  step "http" "close_pull_request" {
+    title  = "Close a Pull Request"
+    method = "post"
+    url    = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              mutation {
+                closePullRequest(
+                  input: {
+                    pullRequestId: "${step.pipeline.get_pull_request_node.pull_request_node_id}"
+                  }) {
+                  clientMutationId
+                  pullRequest {
+                    url
+                    id
+                  }
+                }
+              }
+            EOM
+    })
+  }
+
+  output "response_body" {
+    value = step.http.close_pull_request.response_body
+  }
+  output "response_headers" {
+    value = step.http.close_pull_request.response_headers
+  }
+  output "status_code" {
+    value = step.http.close_pull_request.status_code
+  }
+
+}
+
+pipeline "search_issues_pull_requests" {
+  description = "Find Issues and pull requests by state and keyword in a repository."
+
+  param "github_token" {
+    type    = string
+    default = var.github_token
+  }
+
+  param "github_owner" {
+    type    = string
+    default = local.github_owner
+  }
+
+  param "github_repo" {
+    type    = string
+    default = local.github_repo
+  }
+
+  param "search_value" {
+    type    = string
+    default = ""
+  }
+
+  step "http" "search_issues_pull_requests" {
+    title  = "Finds a pull request in a repository using search value"
+    method = "post"
+    url    = "https://api.github.com/graphql"
+    request_headers = {
+      Content-Type  = "application/json"
+      Authorization = "Bearer ${param.github_token}"
+    }
+
+    request_body = jsonencode({
+      query = <<EOM
+              query find_issue {
+                search(type: ISSUE, query: "owner:${param.github_owner} repo:${param.github_repo} state:open ${param.search_value}", last: 20) {
+                  nodes {
+                    ... on Issue {
+                      createdAt
+                      title
+                      number
+                      url
+                      repository {
+                        name
+                      }
+                    }
+                    ... on PullRequest {
+                      createdAt
+                      title
+                      number
+                      url
+                      repository {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            EOM
+    })
+  }
+
+  output "response_body" {
+    value = step.http.search_issues_pull_requests.response_body
+  }
+  output "response_headers" {
+    value = step.http.search_issues_pull_requests.response_headers
+  }
+  output "status_code" {
+    value = step.http.search_issues_pull_requests.status_code
   }
 
 }

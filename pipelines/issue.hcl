@@ -131,8 +131,13 @@ pipeline "list_issues" {
     default = local.github_repo
   }
 
+  param "issues_limit" {
+    type    = number
+    default = 20
+  }
+
   step "http" "list_issues" {
-    title  = "List the first 20 Open Issues"
+    title  = "List the first (oldest) Open Issues"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -140,12 +145,11 @@ pipeline "list_issues" {
       Authorization = "Bearer ${param.github_token}"
     }
 
-    // TODO: limit of first 20 issues?
     request_body = jsonencode({
       query = <<EOM
               query {
                 repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  issues(first: 20, states: OPEN) {
+                  issues(first: ${param.issues_limit}, states: OPEN) {
                     totalCount
                     nodes {
                       number
@@ -182,6 +186,7 @@ pipeline "list_issues" {
 
 }
 
+// NOTE: Make sure the github plugin is installed and steampipe service is up and running.
 pipeline "list_issues_with_sp_query" {
   description = "List of all OPEN issues in the repository using steampipe query."
 
@@ -231,7 +236,7 @@ pipeline "get_issue" {
   }
 
   param "github_issue_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   step "http" "get_issue" {
@@ -376,7 +381,7 @@ pipeline "create_comment_on_issue" {
   }
 
   param "github_issue_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   param "comment_body" {
@@ -411,6 +416,14 @@ pipeline "create_comment_on_issue" {
                     body: "${param.comment_body}"
                   }) {
                   clientMutationId
+                  commentEdge {
+                    node {
+                      issue {
+                        id
+                        url
+                      }
+                    }
+                  }
                 }
               }
             EOM
@@ -496,6 +509,7 @@ pipeline "search_issue" {
 }
 
 pipeline "update_issue" {
+  description = "Update an Issue in a repository."
 
   param "github_token" {
     type    = string
@@ -513,7 +527,7 @@ pipeline "update_issue" {
   }
 
   param "github_issue_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   param "new_body" {
@@ -525,7 +539,7 @@ pipeline "update_issue" {
   }
 
   param "assignee_ids" {
-    type    = list(string)  // TODO: The CLI only supports string parameter right now. Use API
+    type    = list(string)
     default = ["U_kgDOAnE2Jw"]
   }
 
@@ -540,9 +554,9 @@ pipeline "update_issue" {
   }
 
   step "http" "update_issue" {
-    title    = "Update an Issue"
-    method   = "post"
-    url      = "https://api.github.com/graphql"
+    title  = "Update an Issue"
+    method = "post"
+    url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
@@ -577,7 +591,9 @@ pipeline "update_issue" {
 
 }
 
+// usage: flowpipe pipeline run add_issue_assignee  --pipeline-arg "github_issue_number=143" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "add_issue_assignee" {
+  description = "Add assignee(s) to an issue in a repository."
 
   param "github_token" {
     type    = string
@@ -595,12 +611,11 @@ pipeline "add_issue_assignee" {
   }
 
   param "github_issue_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
   param "assignee_ids" {
-    type    = list(string) // TODO: The CLI only supports string parameter right now. Use API
-    default = ["U_kgDOAnE2Jw"]
+    type = list(string)
   }
 
   step "pipeline" "get_issue_node" {
@@ -614,9 +629,9 @@ pipeline "add_issue_assignee" {
   }
 
   step "http" "add_issue_assignee" {
-    title    = "Update an Issue"
-    method   = "post"
-    url      = "https://api.github.com/graphql"
+    title  = "Update an Issue"
+    method = "post"
+    url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
@@ -650,6 +665,7 @@ pipeline "add_issue_assignee" {
 }
 
 pipeline "close_issue" {
+  description = "Close an Issue in a repository."
 
   param "github_token" {
     type    = string
@@ -667,13 +683,13 @@ pipeline "close_issue" {
   }
 
   param "github_issue_number" {
-    type = string //TODO: Use number once the issue is fixed. https://github.com/turbot/flowpipe/issues/87
+    type = number
   }
 
-  // param "state_reason" {
-  //   type    = set(string) // TODO: The CLI only supports string parameter right now. Use API
-  //   default = ["COMPLETED", "NOT_PLANNED"]
-  // }
+  param "state_reason" {
+    type    = set(string) //TODO
+    default = ["COMPLETED", "NOT_PLANNED"]
+  }
 
   step "pipeline" "get_issue_node" {
     pipeline = pipeline.get_issue
@@ -686,9 +702,9 @@ pipeline "close_issue" {
   }
 
   step "http" "close_issue" {
-    title    = "Close an Issue"
-    method   = "post"
-    url      = "https://api.github.com/graphql"
+    title  = "Close an Issue"
+    method = "post"
+    url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
@@ -700,9 +716,14 @@ pipeline "close_issue" {
                 closeIssue(
                   input: {
                     issueId: "${step.pipeline.get_issue_node.issue_node_id}", 
-                    }
+                    #stateReason: ${jsonencode(param.state_reason)}
+                  }
                 ) {
                   clientMutationId
+                  issue {
+                    url
+                    id
+                  }
                 }
               }
             EOM
