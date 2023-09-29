@@ -488,6 +488,11 @@ pipeline "search_issues_pull_requests" {
       query = <<EOM
               query find_issue {
                 search(type: ISSUE, query: "${param.search_value}", last: 20) {
+                  issueCount
+                  repositoryCount
+                  wikiCount
+                  discussionCount
+                  codeCount
                   nodes {
                     ... on Issue {
                       createdAt
