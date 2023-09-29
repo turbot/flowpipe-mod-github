@@ -487,7 +487,7 @@ pipeline "search_issues_pull_requests" {
     request_body = jsonencode({
       query = <<EOM
               query find_issue {
-                search(type: ISSUE, query: "owner:${param.github_owner} repo:${param.github_repo} state:open ${param.search_value}", last: 20) {
+                search(type: ISSUE, query: "${param.search_value}", last: 20) {
                   nodes {
                     ... on Issue {
                       createdAt
