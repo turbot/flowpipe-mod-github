@@ -372,7 +372,7 @@ pipeline "search_pull_request" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-
+    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
     request_body = jsonencode({
       query = <<EOM
               query {
@@ -519,7 +519,7 @@ pipeline "search_issues_pull_requests" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-
+    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
     request_body = jsonencode({
       query = <<EOM
               query find_issue {

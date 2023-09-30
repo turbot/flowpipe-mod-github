@@ -371,7 +371,7 @@ pipeline "search_issue" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-
+    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
     request_body = jsonencode({
       query = <<EOM
               query {
@@ -633,7 +633,7 @@ pipeline "close_issue" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-
+    // TODO: use param for stateReason
     request_body = jsonencode({
       query = <<EOM
               mutation {
