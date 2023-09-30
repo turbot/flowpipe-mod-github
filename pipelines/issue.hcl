@@ -1,120 +1,5 @@
-pipeline "get_current_user" {
-  description = "Get the details of the current authenticated user."
-
-  param "github_token" {
-    type    = string
-    default = var.github_token
-  }
-
-  step "http" "get_current_user" {
-    title  = "Get the details of current logged in user"
-    method = "post"
-    url    = "https://api.github.com/graphql"
-    request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
-    }
-
-    // TODO: limit socialAccounts to 5 or include a param?
-    request_body = jsonencode({
-      query = <<EOM
-              query {
-                viewer {
-                  login
-                  name
-                  email
-                  location
-                  company
-                  socialAccounts(first:5) {
-                    edges {
-                      node {
-                        provider
-                        url
-                      }
-                    }
-                  }
-                }
-              }
-            EOM
-    })
-  }
-
-  output "response_body" {
-    value = step.http.get_current_user.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_current_user.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_current_user.status_code
-  }
-
-}
-
-pipeline "get_user" {
-  description = "Get the details of the current authenticated user."
-
-  param "github_token" {
-    type    = string
-    default = var.github_token
-  }
-
-  param "user_login" {
-    type = string
-  }
-
-  step "http" "get_user" {
-    title  = "Get the details of a user"
-    method = "post"
-    url    = "https://api.github.com/graphql"
-    request_headers = {
-      Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
-    }
-
-    // TODO: limit socialAccounts to 5 or include a param?
-    request_body = jsonencode({
-      query = <<EOM
-              query {
-                user(login: "${param.user_login}") {
-                  id
-                  name
-                  email
-                  location
-                  login
-                  company
-                  socialAccounts(first: 5) {
-                    edges {
-                      node {
-                        provider
-                        url
-                      }
-                    }
-                  }
-                }
-              }
-            EOM
-    })
-  }
-
-  output "user_node_id" {
-    value = jsondecode(step.http.get_user.response_body).data.user.id
-  }
-
-  output "response_body" {
-    value = step.http.get_user.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_user.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_user.status_code
-  }
-
-}
-
 pipeline "list_issues" {
-  description = "List of the first 20 OPEN issues in the repository."
+  description = "List of OPEN issues in the repository."
 
   param "github_token" {
     type    = string
@@ -137,7 +22,7 @@ pipeline "list_issues" {
   }
 
   step "http" "list_issues" {
-    title  = "List the first (oldest) Open Issues"
+    title  = "List of first (oldest) OPEN issues in the repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -152,12 +37,12 @@ pipeline "list_issues" {
                   issues(first: ${param.issues_limit}, states: OPEN) {
                     totalCount
                     nodes {
-                      number
-                      url
-                      title
                       body
                       createdAt
+                      number
                       state
+                      title
+                      url
                     }
                   }
                 }
@@ -169,11 +54,9 @@ pipeline "list_issues" {
   output "list_nodes" {
     value = jsondecode(step.http.list_issues.response_body).data.repository.issues.nodes
   }
-
   output "total_open_issues" {
     value = jsondecode(step.http.list_issues.response_body).data.repository.issues.totalCount
   }
-
   output "response_body" {
     value = step.http.list_issues.response_body
   }
@@ -186,7 +69,7 @@ pipeline "list_issues" {
 
 }
 
-// NOTE: Make sure the github plugin is installed and steampipe service is up and running.
+// // NOTE: Make sure the github plugin is installed and steampipe service is up and running.
 pipeline "list_issues_with_sp_query" {
   description = "List of all OPEN issues in the repository using steampipe query."
 
@@ -215,10 +98,11 @@ pipeline "list_issues_with_sp_query" {
   output "rows" {
     value = step.query.list_issues.rows
   }
+
 }
 
 pipeline "get_issue" {
-  description = "Get single issue details from the current repository by number."
+  description = "Get issue details from the current repository by number."
 
   param "github_token" {
     type    = string
@@ -235,12 +119,12 @@ pipeline "get_issue" {
     default = local.github_repo
   }
 
-  param "github_issue_number" {
+  param "issue_number" {
     type = number
   }
 
   step "http" "get_issue" {
-    title  = "Get details about an issue"
+    title  = "Get issue details from the current repository by number."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -252,12 +136,12 @@ pipeline "get_issue" {
       query = <<EOM
               query {
                 repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  issue(number: ${param.github_issue_number}) {
+                  issue(number: ${param.issue_number}) {
+                    body
                     id
                     number
-                    url
                     title
-                    body
+                    url
                   }
                 }
               }
@@ -265,10 +149,12 @@ pipeline "get_issue" {
     })
   }
 
-  output "issue_node_id" {
+  output "issue_id" {
     value = jsondecode(step.http.get_issue.response_body).data.repository.issue.id
   }
-
+  output "issue_url" {
+    value = jsondecode(step.http.get_issue.response_body).data.repository.issue.url
+  }
   output "response_body" {
     value = step.http.get_issue.response_body
   }
@@ -299,16 +185,16 @@ pipeline "create_issue" {
     default = local.github_repo
   }
 
-  param "issue_title" {
+  param "title" {
     type = string
   }
 
-  param "issue_body" {
+  param "body" {
     type = string
   }
 
-  step "pipeline" "get_repository_id" {
-    pipeline = pipeline.get_repository_id
+  step "pipeline" "get_repository" {
+    pipeline = pipeline.get_repository
     args = {
       github_token = var.github_token
       github_owner = param.github_owner
@@ -317,7 +203,7 @@ pipeline "create_issue" {
   }
 
   step "http" "create_issue" {
-    title  = "Create Issue"
+    title  = "Create a new issue."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -330,9 +216,9 @@ pipeline "create_issue" {
               mutation {
                 createIssue(input: 
                   { 
-                    repositoryId: "${step.pipeline.get_repository_id.repository_id}",
-                    title: "${param.issue_title}",
-                    body: "${param.issue_body}"
+                    repositoryId: "${step.pipeline.get_repository.repository_id}",
+                    title: "${param.title}",
+                    body: "${param.body}"
                   }) {
                   clientMutationId
                   issue {
@@ -350,6 +236,12 @@ pipeline "create_issue" {
 
   }
 
+  output "issue_url" {
+    value = jsondecode(step.http.create_issue.response_body).data.createIssue.issue.url
+  }
+  output "issue_id" {
+    value = jsondecode(step.http.create_issue.response_body).data.createIssue.issue.id
+  }
   output "response_body" {
     value = step.http.create_issue.response_body
   }
@@ -363,7 +255,7 @@ pipeline "create_issue" {
 }
 
 pipeline "create_comment_on_issue" {
-  description = "Creates a comment on an Issue."
+  description = "Create a comment on an Issue."
 
   param "github_token" {
     type    = string
@@ -380,26 +272,26 @@ pipeline "create_comment_on_issue" {
     default = local.github_repo
   }
 
-  param "github_issue_number" {
+  param "issue_number" {
     type = number
   }
 
-  param "comment_body" {
+  param "comment" {
     type = string
   }
 
-  step "pipeline" "get_issue_node" {
+  step "pipeline" "get_issue" {
     pipeline = pipeline.get_issue
     args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
-      github_issue_number = param.github_issue_number
+      github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
+      issue_number = param.issue_number
     }
   }
 
   step "http" "create_comment_on_issue" {
-    title  = "Creates a comment on an Issue"
+    title  = "Create a comment on an Issue."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -412,8 +304,8 @@ pipeline "create_comment_on_issue" {
               mutation {
                 addComment(input: 
                   {
-                    subjectId: "${step.pipeline.get_issue_node.issue_node_id}", 
-                    body: "${param.comment_body}"
+                    subjectId: "${step.pipeline.get_issue.issue_id}", 
+                    body: "${param.comment}"
                   }) {
                   clientMutationId
                   commentEdge {
@@ -430,6 +322,12 @@ pipeline "create_comment_on_issue" {
     })
   }
 
+  output "issue_url" {
+    value = jsondecode(step.http.create_comment_on_issue.response_body).data.addComment.commentEdge.node.issue.url
+  }
+  output "issue_id" {
+    value = jsondecode(step.http.create_comment_on_issue.response_body).data.addComment.commentEdge.node.issue.id
+  }
   output "response_body" {
     value = step.http.create_comment_on_issue.response_body
   }
@@ -476,14 +374,14 @@ pipeline "search_issue" {
 
     request_body = jsonencode({
       query = <<EOM
-              query find_issue {
-                search(type: ISSUE, query: "owner:${param.github_owner} repo:${param.github_repo} state:open ${param.search_value}", last: 20) {
+              query {
+                search(type: ISSUE, query: "type:issue owner:${param.github_owner} repo:${param.github_repo} ${param.search_value}", last: 20) {
                   issueCount
                   nodes {
                     ... on Issue {
                       createdAt
-                      title
                       number
+                      title
                       url
                       repository {
                         name
@@ -496,6 +394,9 @@ pipeline "search_issue" {
     })
   }
 
+  output "issues_count" {
+    value = jsondecode(step.http.search_issue.response_body).data.search.issueCount
+  }
   output "response_body" {
     value = step.http.search_issue.response_body
   }
@@ -508,6 +409,7 @@ pipeline "search_issue" {
 
 }
 
+// usage: flowpipe pipeline run update_issue --pipeline-arg 'issue_number=153' --pipeline-arg title="[bug] - there is a bug" --pipeline-arg body="please fix the bug" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "update_issue" {
   description = "Update an Issue in a repository."
 
@@ -526,15 +428,15 @@ pipeline "update_issue" {
     default = local.github_repo
   }
 
-  param "github_issue_number" {
+  param "issue_number" {
     type = number
   }
 
-  param "new_body" {
+  param "body" {
     type = string
   }
 
-  param "new_title" {
+  param "title" {
     type = string
   }
 
@@ -543,18 +445,18 @@ pipeline "update_issue" {
     default = ["U_kgDOAnE2Jw"]
   }
 
-  step "pipeline" "get_issue_node" {
+  step "pipeline" "get_issue" {
     pipeline = pipeline.get_issue
     args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
-      github_issue_number = param.github_issue_number
+      github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
+      issue_number = param.issue_number
     }
   }
 
   step "http" "update_issue" {
-    title  = "Update an Issue"
+    title  = "Update an Issue in a repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -567,18 +469,28 @@ pipeline "update_issue" {
               mutation {
                 updateIssue(input: 
                   {
-                    id: "${step.pipeline.get_issue_node.issue_node_id}", 
-                    body: "${param.new_body}",
-                    title: "${param.new_title}",
+                    id: "${step.pipeline.get_issue.issue_id}", 
+                    body: "${param.body}",
+                    title: "${param.title}",
                     assigneeIds: ${jsonencode(param.assignee_ids)}
                   }) {
                   clientMutationId
+                  issue {
+                    id
+                    url
+                  }
                 }
               }
             EOM
     })
   }
 
+  output "issue_url" {
+    value = jsondecode(step.http.update_issue.response_body).data.updateIssue.issue.url
+  }
+  output "issue_id" {
+    value = jsondecode(step.http.update_issue.response_body).data.updateIssue.issue.id
+  }
   output "response_body" {
     value = step.http.update_issue.response_body
   }
@@ -591,7 +503,7 @@ pipeline "update_issue" {
 
 }
 
-// usage: flowpipe pipeline run add_issue_assignee  --pipeline-arg "github_issue_number=143" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
+// usage: flowpipe pipeline run add_issue_assignee  --pipeline-arg "issue_number=143" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "add_issue_assignee" {
   description = "Add assignee(s) to an issue in a repository."
 
@@ -610,7 +522,7 @@ pipeline "add_issue_assignee" {
     default = local.github_repo
   }
 
-  param "github_issue_number" {
+  param "issue_number" {
     type = number
   }
 
@@ -618,18 +530,18 @@ pipeline "add_issue_assignee" {
     type = list(string)
   }
 
-  step "pipeline" "get_issue_node" {
+  step "pipeline" "get_issue" {
     pipeline = pipeline.get_issue
     args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
-      github_issue_number = param.github_issue_number
+      github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
+      issue_number = param.issue_number
     }
   }
 
   step "http" "add_issue_assignee" {
-    title  = "Update an Issue"
+    title  = "Add assignee(s) to an issue in a repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -642,16 +554,28 @@ pipeline "add_issue_assignee" {
               mutation {
                 addAssigneesToAssignable(input: 
                   {
-                    assignableId: "${step.pipeline.get_issue_node.issue_node_id}", 
+                    assignableId: "${step.pipeline.get_issue.issue_id}", 
                     assigneeIds: ${jsonencode(param.assignee_ids)},
                   }) {
                   clientMutationId
+                  assignable {
+                    ... on Issue{
+                      id
+                      url
+                    }
+                  }
                 }
               }
             EOM
     })
   }
 
+  output "issue_url" {
+    value = jsondecode(step.http.add_issue_assignee.response_body).data.addAssigneesToAssignable.assignable.url
+  }
+  output "issue_id" {
+    value = jsondecode(step.http.add_issue_assignee.response_body).data.addAssigneesToAssignable.assignable.id
+  }
   output "response_body" {
     value = step.http.add_issue_assignee.response_body
   }
@@ -682,7 +606,7 @@ pipeline "close_issue" {
     default = local.github_repo
   }
 
-  param "github_issue_number" {
+  param "issue_number" {
     type = number
   }
 
@@ -691,18 +615,18 @@ pipeline "close_issue" {
     default = ["COMPLETED", "NOT_PLANNED"]
   }
 
-  step "pipeline" "get_issue_node" {
+  step "pipeline" "get_issue" {
     pipeline = pipeline.get_issue
     args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
-      github_issue_number = param.github_issue_number
+      github_token = param.github_token
+      github_owner = param.github_owner
+      github_repo  = param.github_repo
+      issue_number = param.issue_number
     }
   }
 
   step "http" "close_issue" {
-    title  = "Close an Issue"
+    title  = "Close an Issue in a repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -715,14 +639,14 @@ pipeline "close_issue" {
               mutation {
                 closeIssue(
                   input: {
-                    issueId: "${step.pipeline.get_issue_node.issue_node_id}", 
+                    issueId: "${step.pipeline.get_issue.issue_id}", 
                     #stateReason: ${jsonencode(param.state_reason)}
                   }
                 ) {
                   clientMutationId
                   issue {
-                    url
                     id
+                    url
                   }
                 }
               }
@@ -730,6 +654,12 @@ pipeline "close_issue" {
     })
   }
 
+  output "issue_url" {
+    value = jsondecode(step.http.closeIssue.response_body).data.closeIssue.issue.url
+  }
+  output "issue_id" {
+    value = jsondecode(step.http.closeIssue.response_body).data.closeIssue.issue.id
+  }
   output "response_body" {
     value = step.http.close_issue.response_body
   }
