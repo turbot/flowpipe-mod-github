@@ -1,5 +1,5 @@
-// usage: flowpipe pipeline run issue_get_by_number --pipeline-arg issue_number=151
-pipeline "issue_get_by_number" {
+// usage: flowpipe pipeline run issue_get --pipeline-arg issue_number=151
+pipeline "issue_get" {
   description = "Get issue details from the current repository by number."
 
   param "github_token" {
@@ -21,7 +21,7 @@ pipeline "issue_get_by_number" {
     type = number
   }
 
-  step "http" "issue_get_by_number" {
+  step "http" "issue_get" {
     title  = "Get issue details from the current repository by number."
     method = "post"
     url    = "https://api.github.com/graphql"
@@ -48,19 +48,19 @@ pipeline "issue_get_by_number" {
   }
 
   output "issue_id" {
-    value = jsondecode(step.http.issue_get_by_number.response_body).data.repository.issue.id
+    value = jsondecode(step.http.issue_get.response_body).data.repository.issue.id
   }
   output "issue_url" {
-    value = jsondecode(step.http.issue_get_by_number.response_body).data.repository.issue.url
+    value = jsondecode(step.http.issue_get.response_body).data.repository.issue.url
   }
   output "response_body" {
-    value = step.http.issue_get_by_number.response_body
+    value = step.http.issue_get.response_body
   }
   output "response_headers" {
-    value = step.http.issue_get_by_number.response_headers
+    value = step.http.issue_get.response_headers
   }
   output "status_code" {
-    value = step.http.issue_get_by_number.status_code
+    value = step.http.issue_get.status_code
   }
 
 }

@@ -26,8 +26,8 @@ pipeline "issue_close" {
     default = ["COMPLETED", "NOT_PLANNED"]
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "issue_get" {
+    pipeline = pipeline.issue_get
     args = {
       github_token = param.github_token
       github_owner = param.github_owner
@@ -50,7 +50,7 @@ pipeline "issue_close" {
               mutation {
                 closeIssue(
                   input: {
-                    issueId: "${step.pipeline.issue_get_by_number.issue_id}", 
+                    issueId: "${step.pipeline.issue_get.issue_id}", 
                     #stateReason: ${jsonencode(param.state_reason)}
                   }
                 ) {

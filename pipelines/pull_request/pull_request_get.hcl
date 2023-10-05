@@ -1,6 +1,6 @@
-// usage: flowpipe pipeline run pull_request_get_by_number --pipeline-arg pull_request_number=160
-// usage: flowpipe pipeline run pull_request_get_by_number --pipeline-arg 'pull_request_number=160'
-pipeline "pull_request_get_by_number" {
+// usage: flowpipe pipeline run pull_request_get --pipeline-arg pull_request_number=160
+// usage: flowpipe pipeline run pull_request_get --pipeline-arg 'pull_request_number=160'
+pipeline "pull_request_get" {
   description = "Get the details of a Pull Request."
 
   param "github_token" {
@@ -22,7 +22,7 @@ pipeline "pull_request_get_by_number" {
     type = number
   }
 
-  step "http" "pull_request_get_by_number" {
+  step "http" "pull_request_get" {
     title  = "Get the details of a Pull Request."
     method = "post"
     url    = "https://api.github.com/graphql"
@@ -49,19 +49,19 @@ pipeline "pull_request_get_by_number" {
   }
 
   output "pull_request_id" {
-    value = jsondecode(step.http.pull_request_get_by_number.response_body).data.repository.pullRequest.id
+    value = jsondecode(step.http.pull_request_get.response_body).data.repository.pullRequest.id
   }
   output "pull_request_url" {
-    value = jsondecode(step.http.pull_request_get_by_number.response_body).data.repository.pullRequest.url
+    value = jsondecode(step.http.pull_request_get.response_body).data.repository.pullRequest.url
   }
   output "response_body" {
-    value = step.http.pull_request_get_by_number.response_body
+    value = step.http.pull_request_get.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_get_by_number.response_headers
+    value = step.http.pull_request_get.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_get_by_number.status_code
+    value = step.http.pull_request_get.status_code
   }
 
 }

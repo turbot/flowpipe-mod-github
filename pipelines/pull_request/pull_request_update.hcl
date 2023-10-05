@@ -33,8 +33,8 @@ pipeline "pull_request_update" {
     type = list(string)
   }
 
-  step "pipeline" "pull_request_get_by_number" {
-    pipeline = pipeline.pull_request_get_by_number
+  step "pipeline" "pull_request_get" {
+    pipeline = pipeline.pull_request_get
     args = {
       github_token        = param.github_token
       github_owner        = param.github_owner
@@ -57,7 +57,7 @@ pipeline "pull_request_update" {
               mutation {
                 updatePullRequest(input:
                 {
-                  pullRequestId: "${step.pipeline.pull_request_get_by_number.pull_request_id}",
+                  pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}",
                   title: "${param.title}",
                   body: "${param.body}",
                   assigneeIds: ${jsonencode(param.assignee_ids)}

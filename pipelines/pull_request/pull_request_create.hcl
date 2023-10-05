@@ -33,8 +33,8 @@ pipeline "pull_request_create" {
     type = string
   }
 
-  step "pipeline" "repository_get_by_full_name" {
-    pipeline = pipeline.repository_get_by_full_name
+  step "pipeline" "repository_get" {
+    pipeline = pipeline.repository_get
     args = {
       github_token = var.github_token
       github_owner = param.github_owner
@@ -57,7 +57,7 @@ pipeline "pull_request_create" {
                 createPullRequest(input: 
                 {
                   title: "${param.title}", 
-                  repositoryId: "${step.pipeline.repository_get_by_full_name.repository_id}",
+                  repositoryId: "${step.pipeline.repository_get.repository_id}",
                   baseRefName: "${param.base_branch}", 
                   headRefName: "${param.head_branch}",
                   body: "${param.body}"

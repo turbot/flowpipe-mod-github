@@ -25,8 +25,8 @@ pipeline "issue_comment" {
     type = string
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "issue_get" {
+    pipeline = pipeline.issue_get
     args = {
       github_token = param.github_token
       github_owner = param.github_owner
@@ -49,7 +49,7 @@ pipeline "issue_comment" {
               mutation {
                 addComment(input: 
                   {
-                    subjectId: "${step.pipeline.issue_get_by_number.issue_id}", 
+                    subjectId: "${step.pipeline.issue_get.issue_id}", 
                     body: "${param.comment}"
                   }) {
                   clientMutationId

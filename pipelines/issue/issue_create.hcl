@@ -25,8 +25,8 @@ pipeline "issue_create" {
     type = string
   }
 
-  step "pipeline" "repository_get_by_full_name" {
-    pipeline = pipeline.repository_get_by_full_name
+  step "pipeline" "repository_get" {
+    pipeline = pipeline.repository_get
     args = {
       github_token = var.github_token
       github_owner = param.github_owner
@@ -48,7 +48,7 @@ pipeline "issue_create" {
               mutation {
                 createIssue(input: 
                   { 
-                    repositoryId: "${step.pipeline.repository_get_by_full_name.repository_id}",
+                    repositoryId: "${step.pipeline.repository_get.repository_id}",
                     title: "${param.title}",
                     body: "${param.body}"
                   }) {

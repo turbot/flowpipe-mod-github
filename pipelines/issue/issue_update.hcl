@@ -30,12 +30,12 @@ pipeline "issue_update" {
   }
 
   param "assignee_ids" {
-    type    = list(string)
+    type = list(string)
     // default = ["U_kgDOAnE2Jw"]
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "issue_get" {
+    pipeline = pipeline.issue_get
     args = {
       github_token = param.github_token
       github_owner = param.github_owner
@@ -58,7 +58,7 @@ pipeline "issue_update" {
               mutation {
                 updateIssue(input: 
                   {
-                    id: "${step.pipeline.issue_get_by_number.issue_id}", 
+                    id: "${step.pipeline.issue_get.issue_id}", 
                     body: "${param.body}",
                     title: "${param.title}",
                     assigneeIds: ${jsonencode(param.assignee_ids)}

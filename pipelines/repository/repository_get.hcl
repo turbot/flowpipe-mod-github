@@ -1,5 +1,5 @@
-// usage: flowpipe pipeline run repository_get_by_full_name
-pipeline "repository_get_by_full_name" {
+// usage: flowpipe pipeline run repository_get
+pipeline "repository_get" {
   description = "Get the details of a given repository by the owner and repository name."
 
   param "github_token" {
@@ -17,7 +17,7 @@ pipeline "repository_get_by_full_name" {
     default = local.github_repo
   }
 
-  step "http" "repository_get_by_full_name" {
+  step "http" "repository_get" {
     title  = "Get the details of a given repository by the owner and repository name."
     method = "post"
     url    = "https://api.github.com/graphql"
@@ -47,16 +47,16 @@ pipeline "repository_get_by_full_name" {
   }
 
   output "repository_id" {
-    value = jsondecode(step.http.repository_get_by_full_name.response_body).data.repository.id
+    value = jsondecode(step.http.repository_get.response_body).data.repository.id
   }
   output "response_body" {
-    value = step.http.repository_get_by_full_name.response_body
+    value = step.http.repository_get.response_body
   }
   output "response_headers" {
-    value = step.http.repository_get_by_full_name.response_headers
+    value = step.http.repository_get.response_headers
   }
   output "status_code" {
-    value = step.http.repository_get_by_full_name.status_code
+    value = step.http.repository_get.status_code
   }
 
 }
