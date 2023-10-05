@@ -26,3 +26,11 @@
 | github_mod | github_mod.pipeline.repository_search         | Find a repository.                                                                     |
 | github_mod | github_mod.pipeline.user_get_by_login         | Get the details of a user by login.                                                    |
 | github_mod | github_mod.pipeline.user_get_current          | Get the details of currently authenticated user.                                       |
+
+## Triggers
+
+| PIPELINE                                | TYPE     | NAME                                                   | DESCRIPTION                                                                     |
+|-----------------------------------------|----------|--------------------------------------------------------|---------------------------------------------------------------------------------|
+| github_mod.pipeline.pull_request_list   | interval | github_mod.trigger.interval.pull_request_list          | Get the count and list of open pull requests in a repository at daily interval. |
+| github_mod.pipeline.repository_get      | schedule | github_mod.trigger.schedule.stargazer_count            | Get the stargazers count of a repository (on cron) at 9AM every Monday UTC.     |
+| github_mod.pipeline.router_issue_create | http     | github_mod.trigger.http.create_issue_event_add_comment | Add a comment on a newly opened issue based on live event issues.opened         |
