@@ -49,6 +49,9 @@ pipeline "repository_get" {
   output "repository_id" {
     value = jsondecode(step.http.repository_get.response_body).data.repository.id
   }
+  output "stargazer_count" {
+    value = jsondecode(step.http.repository_get.response_body).data.repository.stargazerCount
+  } 
   output "response_body" {
     value = step.http.repository_get.response_body
   }

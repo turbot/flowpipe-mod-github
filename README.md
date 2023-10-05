@@ -17,6 +17,7 @@
 | github_mod | github_mod.pipeline.pull_request_comment      | Create a comment on pull request.                                                      |
 | github_mod | github_mod.pipeline.pull_request_create       | Create a Pull request.                                                                 |
 | github_mod | github_mod.pipeline.pull_request_get          | Get the details of a Pull Request.                                                     |
+| github_mod | github_mod.pipeline.pull_request_list         | List of Open Pull Requests in the repository.                                          |
 | github_mod | github_mod.pipeline.pull_request_search       | Find a pull request in a repository.                                                   |
 | github_mod | github_mod.pipeline.pull_request_update       | Update a Pull Request in a repository.                                                 |
 | github_mod | github_mod.pipeline.repository_create         | Create a new repository.                                                               |
