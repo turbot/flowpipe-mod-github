@@ -45,25 +45,23 @@ pipeline "issue_comment" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                addComment(input: 
-                  {
-                    subjectId: "${step.pipeline.issue_get.issue_id}", 
-                    body: "${param.comment}"
-                  }) {
-                  clientMutationId
-                  commentEdge {
-                    node {
-                      issue {
-                        id
-                        url
-                      }
-                    }
-                  }
+      query = <<EOQ
+        mutation {
+          addComment(
+            input: {subjectId: "${step.pipeline.issue_get.issue_id}", body: "${param.comment}"}
+          ) {
+            clientMutationId
+            commentEdge {
+              node {
+                issue {
+                  id
+                  url
                 }
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

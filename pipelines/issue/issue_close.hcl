@@ -22,8 +22,10 @@ pipeline "issue_close" {
   }
 
   param "state_reason" {
-    type    = set(string) //TODO
-    default = ["COMPLETED", "NOT_PLANNED"]
+    // type    = set(string) //TODO
+    // default = ["COMPLETED", "NOT_PLANNED"]
+    type = string
+    default = "COMPLETED"
   }
 
   step "pipeline" "issue_get" {
@@ -44,24 +46,21 @@ pipeline "issue_close" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-    // TODO: use param for stateReason
+
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                closeIssue(
-                  input: {
-                    issueId: "${step.pipeline.issue_get.issue_id}", 
-                    #stateReason: ${jsonencode(param.state_reason)}
-                  }
-                ) {
-                  clientMutationId
-                  issue {
-                    id
-                    url
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          closeIssue(
+            input: {issueId: "${step.pipeline.issue_get.issue_id}", stateReason: ${param.state_reason}}
+          ) {
+            clientMutationId
+            issue {
+              id
+              url
+            }
+          }
+        }
+        EOQ
     })
   }
 

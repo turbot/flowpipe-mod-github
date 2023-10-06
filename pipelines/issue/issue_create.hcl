@@ -44,27 +44,20 @@ pipeline "issue_create" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                createIssue(input: 
-                  { 
-                    repositoryId: "${step.pipeline.repository_get.repository_id}",
-                    title: "${param.title}",
-                    body: "${param.body}"
-                  }) {
-                  clientMutationId
-                  issue {
-                    id
-                    url
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          createIssue(
+            input: {repositoryId: "${step.pipeline.repository_get.repository_id}", title: "${param.title}", body: "${param.body}"}
+          ) {
+            clientMutationId
+            issue {
+              id
+              url
+            }
+          }
+        }
+        EOQ
     })
-
-    error {
-      max_retries = 3
-    }
 
   }
 

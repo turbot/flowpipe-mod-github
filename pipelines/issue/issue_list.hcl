@@ -22,6 +22,11 @@ pipeline "issue_list" {
     default = 20
   }
 
+  param "status" {
+    type = string
+    default = "OPEN"
+  }
+
   step "http" "issue_list" {
     title  = "List of first (oldest) Open issues in the repository."
     method = "post"
@@ -32,23 +37,23 @@ pipeline "issue_list" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  issues(first: ${param.issues_limit}, states: OPEN) {
-                    totalCount
-                    nodes {
-                      body
-                      createdAt
-                      number
-                      state
-                      title
-                      url
-                    }
-                  }
-                }
+      query = <<EOQ
+        query {
+          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
+            issues(first: ${param.issues_limit}, states: ${param.status}) {
+              totalCount
+              nodes {
+                body
+                createdAt
+                number
+                state
+                title
+                url
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

@@ -1,5 +1,6 @@
 // usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=steampipe"
 // usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=owner:turbot steampipe"
+// usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=repo:vkumbha/deleteme"
 pipeline "repository_search" {
   description = "Find a repository."
 
@@ -23,6 +24,11 @@ pipeline "repository_search" {
     default = ""
   }
 
+  param "search_limit" {
+    type    = number
+    default = 20
+  }
+
   step "http" "repository_search" {
     title  = "Find a repository."
     method = "post"
@@ -32,28 +38,27 @@ pipeline "repository_search" {
       Authorization = "Bearer ${param.github_token}"
     }
 
-    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                search(type: REPOSITORY, query: "${param.search_value}", last: 20) {
-                  repositoryCount
-                  edges {
-                    node {
-                      ... on Repository {
-                        createdAt
-                        forkCount
-                        homepageUrl
-                        name
-                        stargazerCount
-                        url
-                        visibility
-                      }
-                    }
-                  }
+      query = <<EOQ
+        query {
+          search(type: REPOSITORY, query: "${param.search_value}", last: ${param.search_limit}) {
+            repositoryCount
+            edges {
+              node {
+                ... on Repository {
+                  createdAt
+                  forkCount
+                  homepageUrl
+                  name
+                  stargazerCount
+                  url
+                  visibility
                 }
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

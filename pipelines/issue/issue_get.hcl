@@ -31,19 +31,19 @@ pipeline "issue_get" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  issue(number: ${param.issue_number}) {
-                    body
-                    id
-                    number
-                    title
-                    url
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        query {
+          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
+            issue(number: ${param.issue_number}) {
+              body
+              id
+              number
+              title
+              url
+            }
+          }
+        }
+        EOQ
     })
   }
 

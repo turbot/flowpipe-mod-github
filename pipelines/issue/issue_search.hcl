@@ -1,4 +1,4 @@
-// usage: $ flowpipe pipeline run issue_search --pipeline-arg "search_value=[BUG]"
+// usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=[BUG]"
 // usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=151"
 pipeline "issue_search" {
   description = "Find an issue in a repository."
@@ -23,6 +23,11 @@ pipeline "issue_search" {
     default = ""
   }
 
+  param "search_limit" {
+    type    = number
+    default = 20
+  }
+
   step "http" "issue_search" {
     title  = "Finds an issue in a repository using search value"
     method = "post"
@@ -31,26 +36,30 @@ pipeline "issue_search" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
+
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                search(type: ISSUE, query: "type:issue owner:${param.github_owner} repo:${param.github_repo} ${param.search_value}", last: 20) {
-                  issueCount
-                  nodes {
-                    ... on Issue {
-                      createdAt
-                      number
-                      title
-                      url
-                      repository {
-                        name
-                      }
-                    }
-                  }
+      query = <<EOQ
+        query {
+          search(
+            type: ISSUE
+            query: "type:issue owner:${param.github_owner} repo:${param.github_repo} ${param.search_value}"
+            last: ${param.search_limit}
+          ) {
+            issueCount
+            nodes {
+              ... on Issue {
+                createdAt
+                number
+                title
+                url
+                repository {
+                  name
                 }
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

@@ -53,24 +53,20 @@ pipeline "pull_request_update" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                updatePullRequest(input:
-                {
-                  pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}",
-                  title: "${param.title}",
-                  body: "${param.body}",
-                  assigneeIds: ${jsonencode(param.assignee_ids)}
-                }) {
-                  clientMutationId
-                  pullRequest{
-                    url
-                    id
-                  }
-                }
-
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          updatePullRequest(
+            input: {pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}", title: "${param.title}", 
+            body: "${param.body}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+          ) {
+            clientMutationId
+            pullRequest {
+              id
+              url
+            }
+          }
+        }
+        EOQ
     })
   }
 

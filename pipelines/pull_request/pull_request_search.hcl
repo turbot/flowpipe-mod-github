@@ -23,6 +23,11 @@ pipeline "pull_request_search" {
     default = ""
   }
 
+  param "search_limit" {
+    type    = number
+    default = 20
+  }
+
   step "http" "pull_request_search" {
     title  = "Find a pull request in a repository."
     method = "post"
@@ -31,26 +36,30 @@ pipeline "pull_request_search" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-    // TODO: last:20? should that be a parameter? is there performance issue or rate limit if we do beyond 20
+
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                search(type: ISSUE, query: "type:pr owner:${param.github_owner} repo:${param.github_repo} ${param.search_value}", last: 20) {
-                  issueCount
-                  nodes {
-                    ... on PullRequest {
-                      createdAt
-                      title
-                      number
-                      url
-                      repository {
-                        name
-                      }
-                    }
-                  }
+      query = <<EOQ
+        query {
+          search(
+            type: ISSUE
+            query: "type:pr owner:${param.github_owner} repo:${param.github_repo} ${param.search_value}"
+            last: ${param.search_limit}
+          ) {
+            issueCount
+            nodes {
+              ... on PullRequest {
+                createdAt
+                number
+                repository {
+                  name
                 }
+                title
+                url
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

@@ -1,3 +1,4 @@
+// usage: flowpipe pipeline run user_get_current
 pipeline "user_get_current" {
   description = "Get the details of currently authenticated user."
 
@@ -19,26 +20,26 @@ pipeline "user_get_current" {
 
     // TODO: limit socialAccounts to 5 or include a param?
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                viewer {
-                  company
-                  email
-                  id
-                  location
-                  login
-                  name
-                  socialAccounts(first:5) {
-                    edges {
-                      node {
-                        provider
-                        url
-                      }
-                    }
-                  }
+      query = <<EOQ
+        query {
+          viewer {
+            company
+            email
+            id
+            location
+            login
+            name
+            socialAccounts(first: 5) {
+              edges {
+                node {
+                  provider
+                  url
                 }
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

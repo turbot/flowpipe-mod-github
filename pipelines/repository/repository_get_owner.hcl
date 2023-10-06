@@ -22,16 +22,15 @@ pipeline "repository_get_owner" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                repositoryOwner(login: "${param.github_login}") {
-                  id
-                  login
-                  url
-                }
-
-              }
-            EOM
+      query = <<EOQ
+        query {
+          repositoryOwner(login: "${param.github_login}") {
+            id
+            login
+            url
+          }
+        }
+        EOQ
     })
   }
 

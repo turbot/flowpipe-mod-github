@@ -50,28 +50,24 @@ pipeline "repository_create" {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.github_token}"
     }
-    // TODO: Use param for visibility
-    request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                createRepository(
-                  input: {name: "${param.name}", ownerId: "${step.pipeline.repository_get_owner.owner_id}", visibility: ${param.visibility}}
-                ) {
-                  clientMutationId
-                  repository {
-                    id
-                    url
-                    name
-                    visibility
-                  }
-                }
-              }
-            EOM
-    })
 
-    error {
-      max_retries = 3
-    }
+    request_body = jsonencode({
+      query = <<EOQ
+        mutation {
+          createRepository(
+            input: {name: "${param.name}", ownerId: "${step.pipeline.repository_get_owner.owner_id}", visibility: ${param.visibility}}
+          ) {
+            clientMutationId
+            repository {
+              id
+              name
+              url
+              visibility
+            }
+          }
+        }
+        EOQ
+    })
 
   }
 

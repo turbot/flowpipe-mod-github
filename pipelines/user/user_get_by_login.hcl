@@ -1,3 +1,4 @@
+// usage: flowpipe pipeline run user_get_by_login --pipeline-arg "user_login=vkumbha"
 pipeline "user_get_by_login" {
   description = "Get the details of a user by login."
 
@@ -21,26 +22,26 @@ pipeline "user_get_by_login" {
 
     // TODO: limit socialAccounts to 5 or include a param?
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                user(login: "${param.user_login}") {
-                  company
-                  email
-                  id
-                  location
-                  login
-                  name
-                  socialAccounts(first: 5) {
-                    edges {
-                      node {
-                        provider
-                        url
-                      }
-                    }
-                  }
+      query = <<EOQ
+        query {
+          user(login: "${param.user_login}") {
+            company
+            email
+            id
+            location
+            login
+            name
+            socialAccounts(first: 5) {
+              edges {
+                node {
+                  provider
+                  url
                 }
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

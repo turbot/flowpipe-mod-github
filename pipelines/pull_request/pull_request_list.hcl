@@ -22,6 +22,11 @@ pipeline "pull_request_list" {
     default = 20
   }
 
+  param "status" {
+    type = string
+    default = "OPEN"
+  }
+
   step "http" "pull_request_list" {
     title  = "List of first (oldest) Open Pull Requests in the repository."
     method = "post"
@@ -32,34 +37,34 @@ pipeline "pull_request_list" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  pullRequests(first: ${param.pull_request_limit}, states: OPEN) {
-                    totalCount
-                    nodes {
-                      baseRepository {
-                        name
-                      }
-                      baseRef {
-                        name
-                      }
-                      headRepository {
-                        name
-                      }
-                      headRef {
-                        name
-                      }
-                      isDraft
-                      number
-                      state
-                      title
-                      url
-                    }
-                  }
+      query = <<EOQ
+        query {
+          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
+            pullRequests(first: ${param.pull_request_limit}, states: ${param.status}) {
+              totalCount
+              nodes {
+                baseRepository {
+                  name
                 }
+                baseRef {
+                  name
+                }
+                headRepository {
+                  name
+                }
+                headRef {
+                  name
+                }
+                isDraft
+                number
+                state
+                title
+                url
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 

@@ -54,23 +54,19 @@ pipeline "issue_update" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                updateIssue(input: 
-                  {
-                    id: "${step.pipeline.issue_get.issue_id}", 
-                    body: "${param.body}",
-                    title: "${param.title}",
-                    assigneeIds: ${jsonencode(param.assignee_ids)}
-                  }) {
-                  clientMutationId
-                  issue {
-                    id
-                    url
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          updateIssue(
+            input: {id: "${step.pipeline.issue_get.issue_id}", body: "${param.body}", title: "${param.title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+          ) {
+            clientMutationId
+            issue {
+              id
+              url
+            }
+          }
+        }
+        EOQ
     })
   }
 

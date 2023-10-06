@@ -17,11 +17,25 @@ pipeline "issue_list_by_query" {
     default = local.github_repo
   }
 
-  // TODO: use params in the where clause. Causes a panic error right now. Check later!
-  // https://github.com/turbot/flowpipe/issues/82
+  param "repository_full_name" {
+    type    = string
+    default = var.repository_full_name
+  }
+
   step "query" "issue_list_by_query" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
-    sql               = "select number,url,title,body from github_issue where repository_full_name ='turbot/steampipe' and state = 'OPEN'"
+    sql               = <<EOQ
+      select
+        number,
+        url,
+        title,
+        body
+      from
+        github_issue
+      where
+        repository_full_name = '${param.repository_full_name}'
+        and state = 'OPEN'
+      EOQ
   }
 
   output "rows" {

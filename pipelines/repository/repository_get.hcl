@@ -27,22 +27,22 @@ pipeline "repository_get" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              query {
-                repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-                  description
-                  forkCount
-                  id
-                  name
-                  owner {
-                    id
-                  }
-                  stargazerCount
-                  url
-                  visibility
-                }
-              }
-            EOM
+      query = <<EOQ
+        query {
+          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
+            description
+            forkCount
+            id
+            name
+            owner {
+              id
+            }
+            stargazerCount
+            url
+            visibility
+          }
+        }
+        EOQ
     })
   }
 

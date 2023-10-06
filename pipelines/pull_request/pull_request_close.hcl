@@ -41,20 +41,19 @@ pipeline "pull_request_close" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                closePullRequest(
-                  input: {
-                    pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}"
-                  }) {
-                  clientMutationId
-                  pullRequest {
-                    url
-                    id
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          closePullRequest(
+            input: {pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}"}
+          ) {
+            clientMutationId
+            pullRequest {
+              url
+              id
+            }
+          }
+        }
+        EOQ
     })
   }
 

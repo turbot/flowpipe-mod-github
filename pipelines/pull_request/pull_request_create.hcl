@@ -1,4 +1,4 @@
-// usage: flowpipe pipeline run create_pull_request --pipeline-arg "title=new PR title" --pipeline-arg "body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
+// usage: flowpipe pipeline run pull_request_create --pipeline-arg "title=new PR title" --pipeline-arg "body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
 pipeline "pull_request_create" {
   description = "Create a Pull request."
 
@@ -52,29 +52,21 @@ pipeline "pull_request_create" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                createPullRequest(input: 
-                {
-                  title: "${param.title}", 
-                  repositoryId: "${step.pipeline.repository_get.repository_id}",
-                  baseRefName: "${param.base_branch}", 
-                  headRefName: "${param.head_branch}",
-                  body: "${param.body}"
-                }) {
-                  clientMutationId
-                  pullRequest {
-                    id
-                    url
-                  }
-                }
-              }
-            EOM
+      query = <<EOQ
+        mutation {
+          createPullRequest(
+            input: {title: "${param.title}", repositoryId: "${step.pipeline.repository_get.repository_id}", 
+            baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.body}"}
+          ) {
+            clientMutationId
+            pullRequest {
+              id
+              url
+            }
+          }
+        }
+        EOQ
     })
-
-    error {
-      max_retries = 3
-    }
 
   }
 

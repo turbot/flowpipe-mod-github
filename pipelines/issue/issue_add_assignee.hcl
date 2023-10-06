@@ -45,23 +45,21 @@ pipeline "issue_add_assignee" {
     }
 
     request_body = jsonencode({
-      query = <<EOM
-              mutation {
-                addAssigneesToAssignable(input: 
-                  {
-                    assignableId: "${step.pipeline.issue_get.issue_id}", 
-                    assigneeIds: ${jsonencode(param.assignee_ids)},
-                  }) {
-                  clientMutationId
-                  assignable {
-                    ... on Issue{
-                      id
-                      url
-                    }
-                  }
-                }
+      query = <<EOQ
+        mutation {
+          addAssigneesToAssignable(
+            input: {assignableId: "${step.pipeline.issue_get.issue_id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+          ) {
+            clientMutationId
+            assignable {
+              ... on Issue {
+                id
+                url
               }
-            EOM
+            }
+          }
+        }
+        EOQ
     })
   }
 
