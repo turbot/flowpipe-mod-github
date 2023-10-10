@@ -2,20 +2,19 @@
 pipeline "user_get_current" {
   description = "Get the details of currently authenticated user."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
   step "http" "user_get_current" {
-    title  = "Get the details of currently authenticated user."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
-      #Authorization = "Bearer ${jsonencode(param.github_token)}"
-      #Authorization = "Bearer " + jsonencode(param.github_token)
+      Authorization = "Bearer ${param.token}"
+      #Authorization = "Bearer ${jsonencode(param.token)}"
+      #Authorization = "Bearer " + jsonencode(param.token)
     }
 
     // TODO: limit socialAccounts to 5 or include a param?

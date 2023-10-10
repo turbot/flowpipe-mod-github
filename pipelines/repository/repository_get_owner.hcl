@@ -1,30 +1,29 @@
-// usage: flowpipe pipeline run repository_get_owner --pipeline-arg "github_login=steampipe"
+// usage: flowpipe pipeline run repository_get_owner --pipeline-arg "repository_owner=steampipe"
 pipeline "repository_get_owner" {
   description = "Get the details of a repository owner (ie. either a User or an Organization) by login."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_login" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
   step "http" "repository_get_owner" {
-    title  = "Get repository Owner Id"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         query {
-          repositoryOwner(login: "${param.github_login}") {
+          repositoryOwner(login: "${param.repository_owner}") {
             id
             login
             url

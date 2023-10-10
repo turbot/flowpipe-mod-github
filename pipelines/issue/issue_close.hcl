@@ -1,20 +1,20 @@
 // usage: flowpipe pipeline run issue_close --pipeline-arg issue_number=151
 pipeline "issue_close" {
-  description = "Close an Issue in a repository."
+  description = "Close an issue with the given ID."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "issue_number" {
@@ -28,30 +28,30 @@ pipeline "issue_close" {
     default = "COMPLETED"
   }
 
-  step "pipeline" "issue_get" {
-    pipeline = pipeline.issue_get
+  step "pipeline" "issue_get_by_number" {
+    pipeline = pipeline.issue_get_by_number
+
     args = {
-      github_token = param.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
+      token = param.token
+      repository_owner = param.repository_owner
+      repository_name  = param.repository_name
       issue_number = param.issue_number
     }
   }
 
   step "http" "issue_close" {
-    title  = "Close an Issue in a repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           closeIssue(
-            input: {issueId: "${step.pipeline.issue_get.issue_id}", stateReason: ${param.state_reason}}
+            input: {issueId: "${step.pipeline.issue_get_by_number.issue_id}", stateReason: ${param.state_reason}}
           ) {
             clientMutationId
             issue {

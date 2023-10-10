@@ -1,27 +1,27 @@
-// usage: flowpipe pipeline run pull_request_create --pipeline-arg "title=new PR title" --pipeline-arg "body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
+// usage: flowpipe pipeline run pull_request_create --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
 pipeline "pull_request_create" {
-  description = "Create a Pull request."
+  description = "Create a pull request."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
-  param "title" {
+  param "pull_request_title" {
     type = string
   }
 
-  param "body" {
+  param "pull_request_body" {
     type = string
   }
 
@@ -33,30 +33,29 @@ pipeline "pull_request_create" {
     type = string
   }
 
-  step "pipeline" "repository_get" {
-    pipeline = pipeline.repository_get
+  step "pipeline" "repository_get_by_full_name" {
+    pipeline = pipeline.repository_get_by_full_name
     args = {
-      github_token = var.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
+      token = var.token
+      repository_owner = param.repository_owner
+      repository_name  = param.repository_name
     }
   }
 
   step "http" "pull_request_create" {
-    title  = "Create Pull Request"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           createPullRequest(
-            input: {title: "${param.title}", repositoryId: "${step.pipeline.repository_get.repository_id}", 
-            baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.body}"}
+            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.repository_get_by_full_name.repository_id}",
+            baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
             clientMutationId
             pullRequest {

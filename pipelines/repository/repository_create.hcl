@@ -1,18 +1,18 @@
-// usage: flowpipe pipeline run repository_create --pipeline-arg "name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
+// usage: flowpipe pipeline run repository_create --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
 pipeline "repository_create" {
   description = "Create a new repository."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_login" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "name" {
+  param "repository_name" {
     type = string
   }
 
@@ -21,8 +21,8 @@ pipeline "repository_create" {
     type = string
     // type    = set(string)
     // default = [
-    // "PRIVATE", 
-    // "PUBLIC", 
+    // "PRIVATE",
+    // "PUBLIC",
     // "INTERNAL"
     // ]
     default = "PRIVATE"
@@ -37,25 +37,24 @@ pipeline "repository_create" {
   step "pipeline" "repository_get_owner" {
     pipeline = pipeline.repository_get_owner
     args = {
-      github_token = var.github_token
-      github_login = param.github_login
+      token            = var.token
+      repository_owner = param.repository_owner
     }
   }
 
   step "http" "repository_create" {
-    title  = "Create a new repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           createRepository(
-            input: {name: "${param.name}", ownerId: "${step.pipeline.repository_get_owner.owner_id}", visibility: ${param.visibility}}
+            input: {name: "${param.repository_name}", ownerId: "${step.pipeline.repository_get_owner.owner_id}", visibility: ${param.visibility}}
           ) {
             clientMutationId
             repository {

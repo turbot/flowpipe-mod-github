@@ -1,20 +1,20 @@
 // usage: flowpipe pipeline run pull_request_list --pipeline-arg pull_request_limit=10
 pipeline "pull_request_list" {
-  description = "List of Open Pull Requests in the repository."
+  description = "List pull requests in the repository."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "pull_request_limit" {
@@ -22,25 +22,24 @@ pipeline "pull_request_list" {
     default = 20
   }
 
-  param "status" {
+  param "pull_request_state" {
     type = string
     default = "OPEN"
   }
 
   step "http" "pull_request_list" {
-    title  = "List of first (oldest) Open Pull Requests in the repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         query {
-          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-            pullRequests(first: ${param.pull_request_limit}, states: ${param.status}) {
+          repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
+            pullRequests(first: ${param.pull_request_limit}, states: ${param.pull_request_state}) {
               totalCount
               nodes {
                 baseRepository {

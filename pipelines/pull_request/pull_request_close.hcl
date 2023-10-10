@@ -1,50 +1,49 @@
 // usage: flowpipe pipeline run pull_request_close --pipeline-arg pull_request_number=160
 pipeline "pull_request_close" {
-  description = "Close a pull request in a repository."
+  description = "Close a pull request."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "pull_request_number" {
     type = number
   }
 
-  step "pipeline" "pull_request_get" {
-    pipeline = pipeline.pull_request_get
+  step "pipeline" "pull_request_get_by_number" {
+    pipeline = pipeline.pull_request_get_by_number
     args = {
-      github_token        = param.github_token
-      github_owner        = param.github_owner
-      github_repo         = param.github_repo
+      token        = param.token
+      repository_owner        = param.repository_owner
+      repository_name         = param.repository_name
       pull_request_number = param.pull_request_number
     }
   }
 
   step "http" "pull_request_close" {
-    title  = "Close a Pull Request"
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           closePullRequest(
-            input: {pullRequestId: "${step.pipeline.pull_request_get.pull_request_id}"}
+            input: {pullRequestId: "${step.pipeline.pull_request_get_by_number.pull_request_id}"}
           ) {
             clientMutationId
             pullRequest {

@@ -2,19 +2,24 @@
 pipeline "issue_list_by_query" {
   description = "List of all Open issues in the repository using steampipe query."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
+  }
+
+  param "issue_state" {
+    type = string
+    default = "OPEN"
   }
 
   param "repository_full_name" {
@@ -24,7 +29,7 @@ pipeline "issue_list_by_query" {
 
   step "query" "issue_list_by_query" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
-    sql               = <<EOQ
+    sql = <<EOQ
       select
         number,
         url,
@@ -33,8 +38,8 @@ pipeline "issue_list_by_query" {
       from
         github_issue
       where
-        repository_full_name = '${param.repository_full_name}'
-        and state = 'OPEN'
+        repository_full_name = '${param.repository_owner}/${param.repository_name}'
+        and state = '${param.issue_state}'
       EOQ
   }
 

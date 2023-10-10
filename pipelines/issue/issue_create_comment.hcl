@@ -1,54 +1,53 @@
-// usage: flowpipe pipeline run issue_comment --pipeline-arg "issue_number=151" --pipeline-arg "comment=please provide update on the issue, Thanks."
-pipeline "issue_comment" {
-  description = "Create a comment on an Issue."
+// usage: flowpipe pipeline run issue_create_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
+pipeline "issue_create_comment" {
+  description = "Add a comment in an issue."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "issue_number" {
     type = number
   }
 
-  param "comment" {
+  param "issue_comment" {
     type = string
   }
 
-  step "pipeline" "issue_get" {
-    pipeline = pipeline.issue_get
+  step "pipeline" "issue_get_by_number" {
+    pipeline = pipeline.issue_get_by_number
     args = {
-      github_token = param.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
+      token = param.token
+      repository_owner = param.repository_owner
+      repository_name  = param.repository_name
       issue_number = param.issue_number
     }
   }
 
-  step "http" "issue_comment" {
-    title  = "Create a comment on an Issue."
+  step "http" "issue_create_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.issue_get.issue_id}", body: "${param.comment}"}
+            input: {subjectId: "${step.pipeline.issue_get_by_number.issue_id}", body: "${param.issue_comment}"}
           ) {
             clientMutationId
             commentEdge {
