@@ -53,7 +53,7 @@ flowpipe pipeline run user_get_current
 
 ### Credentials
 
-This mod uses the credentials configured in `flowpipe.pvars` or passed through `--pipeline-args github_token`.
+This mod uses the credentials configured in `flowpipe.pvars` or passed through `--pipeline-args token`.
 
 ### Configuration
 
@@ -63,7 +63,7 @@ Pipelines have [input variables](https://flowpipe.io/docs/using-flowpipe/mod-var
 - Pass in a value on the command line:
 
   ```shell
-  flowpipe pipeline run user_get_current --pipeline-arg github_token="ghp_Abc123"
+  flowpipe pipeline run user_get_current --pipeline-arg token="ghp_Abc123"
   ```
 
 These are only some of the ways you can set variables. For a full list, please see [Passing Input Variables](https://flowpipe.io/docs/using-flowpipe/mod-variables#passing-input-variables).
