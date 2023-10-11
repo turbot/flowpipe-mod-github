@@ -4,19 +4,19 @@
 pipeline "repository_search" {
   description = "Find a repository."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "search_value" {
@@ -30,12 +30,11 @@ pipeline "repository_search" {
   }
 
   step "http" "repository_search" {
-    title  = "Find a repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({

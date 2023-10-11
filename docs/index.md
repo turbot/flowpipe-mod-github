@@ -1,6 +1,23 @@
-# GitHub Mod for Flowpipe
+---
+repository: "https://github.com/turbot/flowpipe-mod-github"
+---
+
+# Flowpipe GitHub Mod
 
 Run pipelines and use triggers for GitHub resources.
+
+## References
+
+[GitHub](https://github.com/) is a provider of Internet hosting for software development and version control using Git.
+
+[Flowpipe](https://flowpipe.io) is an open source workflow tool.
+
+[Flowpipe Mods](https://flowpipe.io/docs/reference/mod-resources#mod) are collections of `pipelines` and `triggers`.
+
+## Documentation
+
+- **[Pipelines →](https://hub.flowpipe.io/mods/turbot/github/pipelines)**
+- **[Triggers →](https://hub.flowpipe.io/mods/turbot/github/triggers)**
 
 ## Getting started
 

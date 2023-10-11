@@ -1,53 +1,52 @@
-// usage: flowpipe pipeline run issue_create --pipeline-arg "title=[SUPPORT] please help" --pipeline-arg "body=I need help with..."
+// usage: flowpipe pipeline run issue_create --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
 pipeline "issue_create" {
   description = "Create a new issue."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
-  param "title" {
+  param "issue_title" {
     type = string
   }
 
-  param "body" {
+  param "issue_body" {
     type = string
   }
 
-  step "pipeline" "repository_get" {
-    pipeline = pipeline.repository_get
+  step "pipeline" "repository_get_by_full_name" {
+    pipeline = pipeline.repository_get_by_full_name
     args = {
-      github_token = var.github_token
-      github_owner = param.github_owner
-      github_repo  = param.github_repo
+      token = var.token
+      repository_owner = param.repository_owner
+      repository_name  = param.repository_name
     }
   }
 
   step "http" "issue_create" {
-    title  = "Create a new issue."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           createIssue(
-            input: {repositoryId: "${step.pipeline.repository_get.repository_id}", title: "${param.title}", body: "${param.body}"}
+            input: {repositoryId: "${step.pipeline.repository_get_by_full_name.repository_id}", title: "${param.issue_title}", body: "${param.issue_body}"}
           ) {
             clientMutationId
             issue {

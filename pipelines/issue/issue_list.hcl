@@ -1,20 +1,20 @@
 // usage: flowpipe pipeline run issue_list --pipeline-arg issues_limit=10
 pipeline "issue_list" {
-  description = "List of Open issues in the repository."
+  description = "List issues in the repository."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
   param "issues_limit" {
@@ -22,25 +22,24 @@ pipeline "issue_list" {
     default = 20
   }
 
-  param "status" {
+  param "issue_state" {
     type = string
     default = "OPEN"
   }
 
   step "http" "issue_list" {
-    title  = "List of first (oldest) Open issues in the repository."
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.github_token}"
+      Authorization = "Bearer ${param.token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         query {
-          repository(owner: "${param.github_owner}", name: "${param.github_repo}") {
-            issues(first: ${param.issues_limit}, states: ${param.status}) {
+          repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
+            issues(first: ${param.issues_limit}, states: ${param.issue_state}) {
               totalCount
               nodes {
                 body

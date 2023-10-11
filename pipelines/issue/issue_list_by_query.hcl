@@ -1,40 +1,40 @@
-// NOTE: Make sure the github plugin is installed and steampipe service is up and running.
+// This pipeline requires that Steampipe is installed, the service is started, and the github plugin is installed.
+// usage: flowpipe pipeline run issue_list_by_query --pipeline-arg repository_owner=turbot --pipeline-arg repository_name=steampipe-plugin-azure
 pipeline "issue_list_by_query" {
-  description = "List of all Open issues in the repository using steampipe query."
+  description = "List issues in the repository using a Steampipe query."
 
-  param "github_token" {
+  param "token" {
     type    = string
-    default = var.github_token
+    default = var.token
   }
 
-  param "github_owner" {
+  param "repository_owner" {
     type    = string
-    default = local.github_owner
+    default = local.repository_owner
   }
 
-  param "github_repo" {
+  param "repository_name" {
     type    = string
-    default = local.github_repo
+    default = local.repository_name
   }
 
-  param "repository_full_name" {
-    type    = string
-    default = var.repository_full_name
+  param "issue_state" {
+    type = string
+    default = "OPEN"
   }
 
   step "query" "issue_list_by_query" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
-    sql               = <<EOQ
+    sql = <<EOQ
       select
         number,
         url,
-        title,
-        body
+        title
       from
         github_issue
       where
-        repository_full_name = '${param.repository_full_name}'
-        and state = 'OPEN'
+        repository_full_name = '${param.repository_owner}/${param.repository_name}'
+        and state = '${param.issue_state}'
       EOQ
   }
 
