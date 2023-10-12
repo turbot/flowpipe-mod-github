@@ -13,6 +13,3 @@
 
 # Flowpipe variable files
 *.pvars
-
-# Flowpipe mod dependencies
-.flowpipe
