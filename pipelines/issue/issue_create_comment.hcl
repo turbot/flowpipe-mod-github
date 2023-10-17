@@ -65,19 +65,19 @@ pipeline "issue_create_comment" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.issue_comment.response_body).data.addComment.commentEdge.node.issue.url
+    value = jsondecode(step.http.issue_create_comment.response_body).data.addComment.commentEdge.node.issue.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.issue_comment.response_body).data.addComment.commentEdge.node.issue.id
+    value = jsondecode(step.http.issue_create_comment.response_body).data.addComment.commentEdge.node.issue.id
   }
   output "response_body" {
-    value = step.http.issue_comment.response_body
+    value = step.http.issue_create_comment.response_body
   }
   output "response_headers" {
-    value = step.http.issue_comment.response_headers
+    value = step.http.issue_create_comment.response_headers
   }
   output "status_code" {
-    value = step.http.issue_comment.status_code
+    value = step.http.issue_create_comment.status_code
   }
 
 }

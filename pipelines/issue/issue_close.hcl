@@ -65,10 +65,10 @@ pipeline "issue_close" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.closeIssue.response_body).data.closeIssue.issue.url
+    value = jsondecode(step.http.issue_close.response_body).data.closeIssue.issue.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.closeIssue.response_body).data.closeIssue.issue.id
+    value = jsondecode(step.http.issue_close.response_body).data.closeIssue.issue.id
   }
   output "response_body" {
     value = step.http.issue_close.response_body
