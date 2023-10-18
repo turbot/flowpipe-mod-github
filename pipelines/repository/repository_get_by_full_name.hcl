@@ -46,10 +46,10 @@ pipeline "repository_get_by_full_name" {
   }
 
   output "repository_id" {
-    value = jsondecode(step.http.repository_get_by_full_name.response_body).data.repository.id
+    value = step.http.repository_get_by_full_name.response_body.data.repository.id
   }
   output "stargazer_count" {
-    value = jsondecode(step.http.repository_get_by_full_name.response_body).data.repository.stargazerCount
+    value = step.http.repository_get_by_full_name.response_body.data.repository.stargazerCount
   } 
   output "response_body" {
     value = step.http.repository_get_by_full_name.response_body

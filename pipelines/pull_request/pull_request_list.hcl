@@ -68,10 +68,10 @@ pipeline "pull_request_list" {
   }
 
   output "list_nodes" {
-    value = jsondecode(step.http.pull_request_list.response_body).data.repository.pullRequests.nodes
+    value = step.http.pull_request_list.response_body.data.repository.pullRequests.nodes
   }
   output "total_open_pull_requests" {
-    value = jsondecode(step.http.pull_request_list.response_body).data.repository.pullRequests.totalCount
+    value = step.http.pull_request_list.response_body.data.repository.pullRequests.totalCount
   }
   output "response_body" {
     value = step.http.pull_request_list.response_body

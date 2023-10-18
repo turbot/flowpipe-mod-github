@@ -65,10 +65,10 @@ pipeline "pull_request_create_comment" {
   }
 
   output "pull_request_id" {
-    value = jsondecode(step.http.pull_request_create_comment.response_body).data.addComment.commentEdge.node.pullRequest.id
+    value = step.http.pull_request_create_comment.response_body.data.addComment.commentEdge.node.pullRequest.id
   }
   output "pull_request_url" {
-    value = jsondecode(step.http.pull_request_create_comment.response_body).data.addComment.commentEdge.node.pullRequest.url
+    value = step.http.pull_request_create_comment.response_body.data.addComment.commentEdge.node.pullRequest.url
   }
   output "response_body" {
     value = step.http.pull_request_create_comment.response_body

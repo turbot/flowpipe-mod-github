@@ -57,10 +57,10 @@ pipeline "issue_list" {
   }
 
   output "list_nodes" {
-    value = jsondecode(step.http.issue_list.response_body).data.repository.issues.nodes
+    value = step.http.issue_list.response_body.data.repository.issues.nodes
   }
   output "total_open_issues" {
-    value = jsondecode(step.http.issue_list.response_body).data.repository.issues.totalCount
+    value = step.http.issue_list.response_body.data.repository.issues.totalCount
   }
   output "response_body" {
     value = step.http.issue_list.response_body

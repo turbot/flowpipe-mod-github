@@ -70,10 +70,10 @@ pipeline "issue_update" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.issue_update.response_body).data.updateIssue.issue.url
+    value = step.http.issue_update.response_body.data.updateIssue.issue.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.issue_update.response_body).data.updateIssue.issue.id
+    value = step.http.issue_update.response_body.data.updateIssue.issue.id
   }
   output "response_body" {
     value = step.http.issue_update.response_body

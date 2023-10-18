@@ -45,7 +45,7 @@ pipeline "user_get_by_login" {
   }
 
   output "user_id" {
-    value = jsondecode(step.http.user_get_by_login.response_body).data.user.id
+    value = step.http.user_get_by_login.response_body.data.user.id
   }
   output "response_body" {
     value = step.http.user_get_by_login.response_body

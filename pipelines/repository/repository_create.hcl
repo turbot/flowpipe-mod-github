@@ -71,10 +71,10 @@ pipeline "repository_create" {
   }
 
   output "repository_url" {
-    value = jsondecode(step.http.repository_create.response_body).data.createRepository.repository.url
+    value = step.http.repository_create.response_body.data.createRepository.repository.url
   }
   output "repository_id" {
-    value = jsondecode(step.http.repository_create.response_body).data.createRepository.repository.id
+    value = step.http.repository_create.response_body.data.createRepository.repository.id
   }
   output "response_body" {
     value = step.http.repository_create.response_body

@@ -43,7 +43,7 @@ pipeline "user_get_current" {
   }
 
   output "user_id" {
-    value = jsondecode(step.http.user_get_current.response_body).data.viewer.id
+    value = step.http.user_get_current.response_body.data.viewer.id
   }
   output "response_body" {
     value = step.http.user_get_current.response_body

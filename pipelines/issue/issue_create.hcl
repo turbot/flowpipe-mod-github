@@ -61,10 +61,10 @@ pipeline "issue_create" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.issue_create.response_body).data.createIssue.issue.url
+    value = step.http.issue_create.response_body.data.createIssue.issue.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.issue_create.response_body).data.createIssue.issue.id
+    value = step.http.issue_create.response_body.data.createIssue.issue.id
   }
   output "response_body" {
     value = step.http.issue_create.response_body

@@ -34,7 +34,7 @@ pipeline "repository_get_owner" {
   }
 
   output "owner_id" {
-    value = jsondecode(step.http.repository_get_owner.response_body).data.repositoryOwner.id
+    value = step.http.repository_get_owner.response_body.data.repositoryOwner.id
   }
   output "response_body" {
     value = step.http.repository_get_owner.response_body

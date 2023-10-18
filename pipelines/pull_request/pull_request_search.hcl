@@ -63,7 +63,7 @@ pipeline "pull_request_search" {
   }
 
   output "pull_request_count" {
-    value = jsondecode(step.http.pull_request_search.response_body).data.search.issueCount
+    value = step.http.pull_request_search.response_body.data.search.issueCount
   }
   output "response_body" {
     value = step.http.pull_request_search.response_body

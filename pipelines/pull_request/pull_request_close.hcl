@@ -57,10 +57,10 @@ pipeline "pull_request_close" {
   }
 
   output "pull_request_id" {
-    value = jsondecode(step.http.pull_request_close.response_body).data.closePullRequest.pullRequest.id
+    value = step.http.pull_request_close.response_body.data.closePullRequest.pullRequest.id
   }
   output "pull_request_url" {
-    value = jsondecode(step.http.pull_request_close.response_body).data.closePullRequest.pullRequest.url
+    value = step.http.pull_request_close.response_body.data.closePullRequest.pullRequest.url
   }
   output "response_body" {
     value = step.http.pull_request_close.response_body

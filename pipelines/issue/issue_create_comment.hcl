@@ -65,10 +65,10 @@ pipeline "issue_create_comment" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.issue_create_comment.response_body).data.addComment.commentEdge.node.issue.url
+    value = step.http.issue_create_comment.response_body.data.addComment.commentEdge.node.issue.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.issue_create_comment.response_body).data.addComment.commentEdge.node.issue.id
+    value = step.http.issue_create_comment.response_body.data.addComment.commentEdge.node.issue.id
   }
   output "response_body" {
     value = step.http.issue_create_comment.response_body

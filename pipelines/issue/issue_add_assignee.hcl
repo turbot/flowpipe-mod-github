@@ -63,10 +63,10 @@ pipeline "issue_add_assignees" {
   }
 
   output "issue_url" {
-    value = jsondecode(step.http.issue_add_assignees.response_body).data.addAssigneesToAssignable.assignable.url
+    value = step.http.issue_add_assignees.response_body.data.addAssigneesToAssignable.assignable.url
   }
   output "issue_id" {
-    value = jsondecode(step.http.issue_add_assignees.response_body).data.addAssigneesToAssignable.assignable.id
+    value = step.http.issue_add_assignees.response_body.data.addAssigneesToAssignable.assignable.id
   }
   output "response_body" {
     value = step.http.issue_add_assignees.response_body

@@ -47,10 +47,10 @@ pipeline "issue_get_by_number" {
   }
 
   output "issue_id" {
-    value = jsondecode(step.http.issue_get_by_number.response_body).data.repository.issue.id
+    value = step.http.issue_get_by_number.response_body.data.repository.issue.id
   }
   output "issue_url" {
-    value = jsondecode(step.http.issue_get_by_number.response_body).data.repository.issue.url
+    value = step.http.issue_get_by_number.response_body.data.repository.issue.url
   }
   output "response_body" {
     value = step.http.issue_get_by_number.response_body

@@ -62,7 +62,7 @@ pipeline "repository_search" {
   }
 
   output "repository_count" {
-    value = jsondecode(step.http.repository_search.response_body).data.search.repositoryCount
+    value = step.http.repository_search.response_body.data.search.repositoryCount
   }
   output "response_body" {
     value = step.http.repository_search.response_body
