@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run user_get_by_login --pipeline-arg "user_login=vkumbha"
-pipeline "user_get_by_login" {
+// usage: flowpipe pipeline run get_user_by_login --pipeline-arg "user_login=vkumbha"
+pipeline "get_user_by_login" {
+  title = "Get User by Login"
   description = "Get the details of a user by login."
 
   param "token" {
@@ -11,7 +12,7 @@ pipeline "user_get_by_login" {
     type = string
   }
 
-  step "http" "user_get_by_login" {
+  step "http" "get_user_by_login" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -45,16 +46,16 @@ pipeline "user_get_by_login" {
   }
 
   output "user_id" {
-    value = step.http.user_get_by_login.response_body.data.user.id
+    value = step.http.get_user_by_login.response_body.data.user.id
   }
   output "response_body" {
-    value = step.http.user_get_by_login.response_body
+    value = step.http.get_user_by_login.response_body
   }
   output "response_headers" {
-    value = step.http.user_get_by_login.response_headers
+    value = step.http.get_user_by_login.response_headers
   }
   output "status_code" {
-    value = step.http.user_get_by_login.status_code
+    value = step.http.get_user_by_login.status_code
   }
 
 }

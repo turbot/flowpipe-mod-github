@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run pull_request_search --pipeline-arg "search_value=160"
-// usage: flowpipe pipeline run pull_request_search --pipeline-arg 'search_value=[URGENTFIX]'
-pipeline "pull_request_search" {
+// usage: flowpipe pipeline run search_pull_request --pipeline-arg "search_value=160"
+// usage: flowpipe pipeline run search_pull_request --pipeline-arg 'search_value=[URGENTFIX]'
+pipeline "search_pull_request" {
+  title       = "Search Pull Request"
   description = "Search for pull requests in a repository."
 
   param "token" {
@@ -28,7 +29,7 @@ pipeline "pull_request_search" {
     default = 20
   }
 
-  step "http" "pull_request_search" {
+  step "http" "search_pull_request" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -63,16 +64,16 @@ pipeline "pull_request_search" {
   }
 
   output "pull_request_count" {
-    value = step.http.pull_request_search.response_body.data.search.issueCount
+    value = step.http.search_pull_request.response_body.data.search.issueCount
   }
   output "response_body" {
-    value = step.http.pull_request_search.response_body
+    value = step.http.search_pull_request.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_search.response_headers
+    value = step.http.search_pull_request.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_search.status_code
+    value = step.http.search_pull_request.status_code
   }
 
 }

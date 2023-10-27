@@ -1,5 +1,6 @@
-//usage: flowpipe pipeline run pull_request_create_comment --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_comment=this is a comment with spaces and alphanumerics 12345."
-pipeline "pull_request_create_comment" {
+//usage: flowpipe pipeline run create_pull_request_comment --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_comment=this is a comment with spaces and alphanumerics 12345."
+pipeline "create_pull_request_comment" {
+  title = "Create Pull Request Comment"
   description = "Create a comment on pull request."
 
   param "token" {
@@ -25,8 +26,8 @@ pipeline "pull_request_create_comment" {
     type = string
   }
 
-  step "pipeline" "pull_request_get_by_number" {
-    pipeline = pipeline.pull_request_get_by_number
+  step "pipeline" "get_pull_request_by_number" {
+    pipeline = pipeline.get_pull_request_by_number
     args = {
       token               = param.token
       repository_owner    = param.repository_owner
@@ -35,7 +36,7 @@ pipeline "pull_request_create_comment" {
     }
   }
 
-  step "http" "pull_request_create_comment" {
+  step "http" "create_pull_request_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -47,7 +48,7 @@ pipeline "pull_request_create_comment" {
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.pull_request_get_by_number.pull_request_id}", body: "${param.pull_request_comment}"}
+            input: {subjectId: "${step.pipeline.get_pull_request_by_number.pull_request_id}", body: "${param.pull_request_comment}"}
           ) {
             clientMutationId
             commentEdge {
@@ -65,19 +66,19 @@ pipeline "pull_request_create_comment" {
   }
 
   output "pull_request_id" {
-    value = step.http.pull_request_create_comment.response_body.data.addComment.commentEdge.node.pullRequest.id
+    value = step.http.create_pull_request_comment.response_body.data.addComment.commentEdge.node.pullRequest.id
   }
   output "pull_request_url" {
-    value = step.http.pull_request_create_comment.response_body.data.addComment.commentEdge.node.pullRequest.url
+    value = step.http.create_pull_request_comment.response_body.data.addComment.commentEdge.node.pullRequest.url
   }
   output "response_body" {
-    value = step.http.pull_request_create_comment.response_body
+    value = step.http.create_pull_request_comment.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_create_comment.response_headers
+    value = step.http.create_pull_request_comment.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_create_comment.status_code
+    value = step.http.create_pull_request_comment.status_code
   }
 
 }

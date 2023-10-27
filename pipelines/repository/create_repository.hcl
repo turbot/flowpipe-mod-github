@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run repository_create --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
-pipeline "repository_create" {
-  description = "Create a new repository."
+// usage: flowpipe pipeline run create_repository --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
+pipeline "create_repository" {
+  title = "Create Repository"
+  description = "Creates a new repository."
 
   param "token" {
     type    = string
@@ -34,15 +35,15 @@ pipeline "repository_create" {
     // }
   }
 
-  step "pipeline" "repository_get_owner" {
-    pipeline = pipeline.repository_get_owner
+  step "pipeline" "get_repository_owner" {
+    pipeline = pipeline.get_repository_owner
     args = {
       token            = var.token
       repository_owner = param.repository_owner
     }
   }
 
-  step "http" "repository_create" {
+  step "http" "create_repository" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -54,7 +55,7 @@ pipeline "repository_create" {
       query = <<EOQ
         mutation {
           createRepository(
-            input: {name: "${param.repository_name}", ownerId: "${step.pipeline.repository_get_owner.owner_id}", visibility: ${param.visibility}}
+            input: {name: "${param.repository_name}", ownerId: "${step.pipeline.get_repository_owner.owner_id}", visibility: ${param.visibility}}
           ) {
             clientMutationId
             repository {
@@ -71,19 +72,19 @@ pipeline "repository_create" {
   }
 
   output "repository_url" {
-    value = step.http.repository_create.response_body.data.createRepository.repository.url
+    value = step.http.create_repository.response_body.data.createRepository.repository.url
   }
   output "repository_id" {
-    value = step.http.repository_create.response_body.data.createRepository.repository.id
+    value = step.http.create_repository.response_body.data.createRepository.repository.id
   }
   output "response_body" {
-    value = step.http.repository_create.response_body
+    value = step.http.create_repository.response_body
   }
   output "response_headers" {
-    value = step.http.repository_create.response_headers
+    value = step.http.create_repository.response_headers
   }
   output "status_code" {
-    value = step.http.repository_create.status_code
+    value = step.http.create_repository.status_code
   }
 
 }

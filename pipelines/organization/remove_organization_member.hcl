@@ -1,6 +1,6 @@
 pipeline "remove_organization_member" {
-  title       = "Remove an organization member"
-  description = "Remove an organization member."
+  title       = "Remove organization member"
+  description = "Removes a member from an organization."
 
   param "token" {
     type        = string

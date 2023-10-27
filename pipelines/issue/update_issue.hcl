@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_update --pipeline-arg 'issue_number=153' --pipeline-arg issue_title="[bug] - there is a bug" --pipeline-arg issue_body="please fix the bug" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
-pipeline "issue_update" {
+// usage: flowpipe pipeline run update_issue --pipeline-arg 'issue_number=153' --pipeline-arg issue_title="[bug] - there is a bug" --pipeline-arg issue_body="please fix the bug" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
+pipeline "update_issue" {
+  title = "Update Issue"
   description = "Update an issue's title, body, and assignees."
 
   param "token" {
@@ -34,8 +35,8 @@ pipeline "issue_update" {
     // default = ["U_kgDOAnE2Jw"]
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "get_issue_by_number" {
+    pipeline = pipeline.get_issue_by_number
     args = {
       token = param.token
       repository_owner = param.repository_owner
@@ -44,7 +45,7 @@ pipeline "issue_update" {
     }
   }
 
-  step "http" "issue_update" {
+  step "http" "update_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -56,7 +57,7 @@ pipeline "issue_update" {
       query = <<EOQ
         mutation {
           updateIssue(
-            input: {id: "${step.pipeline.issue_get_by_number.issue_id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+            input: {id: "${step.pipeline.get_issue_by_number.issue_id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
             issue {
@@ -70,19 +71,19 @@ pipeline "issue_update" {
   }
 
   output "issue_url" {
-    value = step.http.issue_update.response_body.data.updateIssue.issue.url
+    value = step.http.update_issue.response_body.data.updateIssue.issue.url
   }
   output "issue_id" {
-    value = step.http.issue_update.response_body.data.updateIssue.issue.id
+    value = step.http.update_issue.response_body.data.updateIssue.issue.id
   }
   output "response_body" {
-    value = step.http.issue_update.response_body
+    value = step.http.update_issue.response_body
   }
   output "response_headers" {
-    value = step.http.issue_update.response_headers
+    value = step.http.update_issue.response_headers
   }
   output "status_code" {
-    value = step.http.issue_update.status_code
+    value = step.http.update_issue.status_code
   }
 
 }

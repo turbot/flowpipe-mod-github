@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run pull_request_close --pipeline-arg pull_request_number=160
-pipeline "pull_request_close" {
-  description = "Close a pull request."
+// usage: flowpipe pipeline run close_pull_request --pipeline-arg pull_request_number=160
+pipeline "close_pull_request" {
+  title       = "Close Pull Request"
+  description = "Closes a pull request."
 
   param "token" {
     type    = string
@@ -21,8 +22,8 @@ pipeline "pull_request_close" {
     type = number
   }
 
-  step "pipeline" "pull_request_get_by_number" {
-    pipeline = pipeline.pull_request_get_by_number
+  step "pipeline" "get_pull_request_by_number" {
+    pipeline = pipeline.get_pull_request_by_number
     args = {
       token        = param.token
       repository_owner        = param.repository_owner
@@ -31,7 +32,7 @@ pipeline "pull_request_close" {
     }
   }
 
-  step "http" "pull_request_close" {
+  step "http" "close_pull_request" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -43,7 +44,7 @@ pipeline "pull_request_close" {
       query = <<EOQ
         mutation {
           closePullRequest(
-            input: {pullRequestId: "${step.pipeline.pull_request_get_by_number.pull_request_id}"}
+            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request_id}"}
           ) {
             clientMutationId
             pullRequest {
@@ -57,19 +58,19 @@ pipeline "pull_request_close" {
   }
 
   output "pull_request_id" {
-    value = step.http.pull_request_close.response_body.data.closePullRequest.pullRequest.id
+    value = step.http.close_pull_request.response_body.data.closePullRequest.pullRequest.id
   }
   output "pull_request_url" {
-    value = step.http.pull_request_close.response_body.data.closePullRequest.pullRequest.url
+    value = step.http.close_pull_request.response_body.data.closePullRequest.pullRequest.url
   }
   output "response_body" {
-    value = step.http.pull_request_close.response_body
+    value = step.http.close_pull_request.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_close.response_headers
+    value = step.http.close_pull_request.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_close.status_code
+    value = step.http.close_pull_request.status_code
   }
 
 }

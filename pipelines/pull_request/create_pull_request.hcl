@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run pull_request_create --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
-pipeline "pull_request_create" {
-  description = "Create a pull request."
+// usage: flowpipe pipeline run create_pull_request --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
+pipeline "create_pull_request" {
+  title       = "Create Pull Request"
+  description = "Creates a pull request."
 
   param "token" {
     type    = string
@@ -33,8 +34,8 @@ pipeline "pull_request_create" {
     type = string
   }
 
-  step "pipeline" "repository_get_by_full_name" {
-    pipeline = pipeline.repository_get_by_full_name
+  step "pipeline" "get_repository_by_full_name" {
+    pipeline = pipeline.get_repository_by_full_name
     args = {
       token = var.token
       repository_owner = param.repository_owner
@@ -42,7 +43,7 @@ pipeline "pull_request_create" {
     }
   }
 
-  step "http" "pull_request_create" {
+  step "http" "create_pull_request" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -54,7 +55,7 @@ pipeline "pull_request_create" {
       query = <<EOQ
         mutation {
           createPullRequest(
-            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.repository_get_by_full_name.repository_id}",
+            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.repository_id}",
             baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
             clientMutationId
@@ -70,19 +71,19 @@ pipeline "pull_request_create" {
   }
 
   output "pull_request_id" {
-    value = step.http.pull_request_create.response_body.data.createPullRequest.pullRequest.id
+    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest.id
   }
   output "pull_request_url" {
-    value = step.http.pull_request_create.response_body.data.createPullRequest.pullRequest.url
+    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest.url
   }
   output "response_body" {
-    value = step.http.pull_request_create.response_body
+    value = step.http.create_pull_request.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_create.response_headers
+    value = step.http.create_pull_request.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_create.status_code
+    value = step.http.create_pull_request.status_code
   }
 
 }

@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=[BUG]"
-// usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=151"
-pipeline "issue_search" {
+// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=[BUG]"
+// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=151"
+pipeline "search_issue" {
+  title = "Search Issue"
   description = "Search for issues in a repository."
 
   param "token" {
@@ -28,7 +29,7 @@ pipeline "issue_search" {
     default = 20
   }
 
-  step "http" "issue_search" {
+  step "http" "search_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -63,16 +64,16 @@ pipeline "issue_search" {
   }
 
   output "issues_count" {
-    value = step.http.issue_search.response_body.data.search.issueCount
+    value = step.http.search_issue.response_body.data.search.issueCount
   }
   output "response_body" {
-    value = step.http.issue_search.response_body
+    value = step.http.search_issue.response_body
   }
   output "response_headers" {
-    value = step.http.issue_search.response_headers
+    value = step.http.search_issue.response_headers
   }
   output "status_code" {
-    value = step.http.issue_search.status_code
+    value = step.http.search_issue.status_code
   }
 
 }

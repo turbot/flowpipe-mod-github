@@ -1,6 +1,7 @@
-// usage: flowpipe pipeline run issue_close --pipeline-arg issue_number=151
-pipeline "issue_close" {
-  description = "Close an issue with the given ID."
+// usage: flowpipe pipeline run create_issue --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
+pipeline "create_issue" {
+  title = "Create Issue"
+  description = "Create a new issue."
 
   param "token" {
     type    = string
@@ -17,29 +18,24 @@ pipeline "issue_close" {
     default = local.repository_name
   }
 
-  param "issue_number" {
-    type = number
-  }
-
-  param "state_reason" {
-    // type    = set(string) //TODO
-    // default = ["COMPLETED", "NOT_PLANNED"]
+  param "issue_title" {
     type = string
-    default = "COMPLETED"
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  param "issue_body" {
+    type = string
+  }
 
+  step "pipeline" "get_repository_by_full_name" {
+    pipeline = pipeline.get_repository_by_full_name
     args = {
-      token = param.token
+      token = var.token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
-      issue_number = param.issue_number
     }
   }
 
-  step "http" "issue_close" {
+  step "http" "create_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -50,8 +46,8 @@ pipeline "issue_close" {
     request_body = jsonencode({
       query = <<EOQ
         mutation {
-          closeIssue(
-            input: {issueId: "${step.pipeline.issue_get_by_number.issue_id}", stateReason: ${param.state_reason}}
+          createIssue(
+            input: {repositoryId: "${step.pipeline.get_repository_by_full_name.repository_id}", title: "${param.issue_title}", body: "${param.issue_body}"}
           ) {
             clientMutationId
             issue {
@@ -62,22 +58,23 @@ pipeline "issue_close" {
         }
         EOQ
     })
+
   }
 
   output "issue_url" {
-    value = step.http.issue_close.response_body.data.closeIssue.issue.url
+    value = step.http.create_issue.response_body.data.createIssue.issue.url
   }
   output "issue_id" {
-    value = step.http.issue_close.response_body.data.closeIssue.issue.id
+    value = step.http.create_issue.response_body.data.createIssue.issue.id
   }
   output "response_body" {
-    value = step.http.issue_close.response_body
+    value = step.http.create_issue.response_body
   }
   output "response_headers" {
-    value = step.http.issue_close.response_headers
+    value = step.http.create_issue.response_headers
   }
   output "status_code" {
-    value = step.http.issue_close.status_code
+    value = step.http.create_issue.status_code
   }
 
 }

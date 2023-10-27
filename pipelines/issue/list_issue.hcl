@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_list --pipeline-arg issues_limit=10
-pipeline "issue_list" {
+// usage: flowpipe pipeline run list_issue --pipeline-arg issues_limit=10
+pipeline "list_issue" {
+  title = "List Issue"
   description = "List issues in the repository."
 
   param "token" {
@@ -27,7 +28,7 @@ pipeline "issue_list" {
     default = "OPEN"
   }
 
-  step "http" "issue_list" {
+  step "http" "list_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -57,19 +58,19 @@ pipeline "issue_list" {
   }
 
   output "list_nodes" {
-    value = step.http.issue_list.response_body.data.repository.issues.nodes
+    value = step.http.list_issue.response_body.data.repository.issues.nodes
   }
   output "total_open_issues" {
-    value = step.http.issue_list.response_body.data.repository.issues.totalCount
+    value = step.http.list_issue.response_body.data.repository.issues.totalCount
   }
   output "response_body" {
-    value = step.http.issue_list.response_body
+    value = step.http.list_issue.response_body
   }
   output "response_headers" {
-    value = step.http.issue_list.response_headers
+    value = step.http.list_issue.response_headers
   }
   output "status_code" {
-    value = step.http.issue_list.status_code
+    value = step.http.list_issue.status_code
   }
 
 }

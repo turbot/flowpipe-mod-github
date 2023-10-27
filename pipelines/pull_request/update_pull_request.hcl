@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run pull_request_update --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_body=a very new and updated body" --pipeline-arg "pull_request_title=brand new title" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]' 
-pipeline "pull_request_update" {
+// usage: flowpipe pipeline run update_pull_request --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_body=a very new and updated body" --pipeline-arg "pull_request_title=brand new title" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
+pipeline "update_pull_request" {
+  title = "Update Pull Request"
   description = "Update a pull request's body, title, and assignees."
 
   param "token" {
@@ -33,8 +34,8 @@ pipeline "pull_request_update" {
     type = list(string)
   }
 
-  step "pipeline" "pull_request_get_by_number" {
-    pipeline = pipeline.pull_request_get_by_number
+  step "pipeline" "get_pull_request_by_number" {
+    pipeline = pipeline.get_pull_request_by_number
     args = {
       token        = param.token
       repository_owner        = param.repository_owner
@@ -43,7 +44,7 @@ pipeline "pull_request_update" {
     }
   }
 
-  step "http" "pull_request_update" {
+  step "http" "update_pull_request" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -55,7 +56,7 @@ pipeline "pull_request_update" {
       query = <<EOQ
         mutation {
           updatePullRequest(
-            input: {pullRequestId: "${step.pipeline.pull_request_get_by_number.pull_request_id}", title: "${param.pull_request_title}",
+            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request_id}", title: "${param.pull_request_title}",
             body: "${param.pull_request_body}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
@@ -70,19 +71,19 @@ pipeline "pull_request_update" {
   }
 
   output "pull_request_id" {
-    value = step.http.pull_request_update.response_body.data.updatePullRequest.pullRequest.id
+    value = step.http.update_pull_request.response_body.data.updatePullRequest.pullRequest.id
   }
   output "pull_request_url" {
-    value = step.http.pull_request_update.response_body.data.updatePullRequest.pullRequest.url
+    value = step.http.update_pull_request.response_body.data.updatePullRequest.pullRequest.url
   }
   output "response_body" {
-    value = step.http.pull_request_update.response_body
+    value = step.http.update_pull_request.response_body
   }
   output "response_headers" {
-    value = step.http.pull_request_update.response_headers
+    value = step.http.update_pull_request.response_headers
   }
   output "status_code" {
-    value = step.http.pull_request_update.status_code
+    value = step.http.update_pull_request.status_code
   }
 
 }

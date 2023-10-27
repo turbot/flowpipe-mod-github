@@ -1,6 +1,6 @@
 pipeline "create_organization_invitation" {
-  title       = "Invite an user to org"
-  description = "Create an Organization invitation."
+  title        = "Create Organization invitation"
+  description  = "Invites an user to an organization."
 
   param "token" {
     type        = string

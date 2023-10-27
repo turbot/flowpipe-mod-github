@@ -1,5 +1,6 @@
 // usage: flowpipe pipeline run pull_request_list --pipeline-arg pull_request_limit=10
 pipeline "pull_request_list" {
+  title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
   param "token" {
