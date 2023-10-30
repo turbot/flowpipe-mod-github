@@ -71,7 +71,7 @@ pipeline "pull_request_list" {
   output "list_nodes" {
     value = step.http.pull_request_list.response_body.data.repository.pullRequests.nodes
   }
-  output "total_open_pull_requests" {
+  output "pull_request_count" {
     value = step.http.pull_request_list.response_body.data.repository.pullRequests.totalCount
   }
   output "response_body" {

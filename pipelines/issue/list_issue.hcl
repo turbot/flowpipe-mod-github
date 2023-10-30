@@ -60,7 +60,7 @@ pipeline "list_issue" {
   output "list_nodes" {
     value = step.http.list_issue.response_body.data.repository.issues.nodes
   }
-  output "total_open_issues" {
+  output "total_count" {
     value = step.http.list_issue.response_body.data.repository.issues.totalCount
   }
   output "response_body" {
