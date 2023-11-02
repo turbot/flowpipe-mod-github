@@ -61,20 +61,8 @@ pipeline "create_issue" {
 
   }
 
-  output "issue_url" {
-    value = step.http.create_issue.response_body.data.createIssue.issue.url
-  }
-  output "issue_id" {
-    value = step.http.create_issue.response_body.data.createIssue.issue.id
-  }
-  output "response_body" {
-    value = step.http.create_issue.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_issue.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_issue.status_code
+  output "issue" {
+    value = step.http.create_issue.response_body.data.createIssue.issue
   }
 
 }

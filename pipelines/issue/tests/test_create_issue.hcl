@@ -27,10 +27,10 @@ pipeline "test_create_issue" {
   }
 
   step "pipeline" "get_issue_by_number" {
-    if = step.pipeline.create_issue.status_code == 200
+    if = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
-      issue_number     = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue_url)[0])
+      issue_number     = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue.url)[0])
     }
 
     # Ignore errors so we can delete
@@ -40,34 +40,34 @@ pipeline "test_create_issue" {
   }
 
   step "pipeline" "close_issue" {
-    if = step.pipeline.create_issue.status_code == 200
+    if = !is_error(step.pipeline.create_issue)
     # Don't run before we've had a chance to get the issue
     depends_on = [step.pipeline.get_issue_by_number]
 
     pipeline = pipeline.close_issue
     args = {
-      issue_number = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue_url)[0])
+      issue_number = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue.url)[0])
     }
   }
 
   output "created_issue" {
     description = "Created issue."
-    value       = step.pipeline.create_issue.issue_url
+    value       = step.pipeline.create_issue.issue
   }
 
   output "create_issue" {
     description = "Check for pipeline.create_issue."
-    value       = step.pipeline.create_issue.status_code == 200 ? "pass" : "fail: ${step.pipeline.create_issue.status_code}"
+    value       = !is_error(step.pipeline.create_issue) ? "pass" : "fail: ${step.pipeline.create_issue.errors}"
   }
 
   output "get_issue_by_number" {
     description = "Check for pipeline.get_issue_by_number."
-    value       = step.pipeline.get_issue_by_number.status_code == 200 ? "pass" : "fail: ${step.pipeline.get_issue_by_number.status_code}"
+    value       = !is_error(step.pipeline.get_issue_by_number) ? "pass" : "fail: ${step.pipeline.get_issue_by_number.errors}"
   }
 
   output "close_issue" {
     description = "Check for pipeline.close_issue."
-    value       = step.pipeline.close_issue.status_code == 200 ? "pass" : "fail: ${step.pipeline.create_issue.status_code}"
+    value       = !is_error(step.pipeline.close_issue) ? "pass" : "fail: ${step.pipeline.close_issue.errors}"
   }
 
 }

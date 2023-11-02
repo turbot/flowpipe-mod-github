@@ -16,12 +16,12 @@ pipeline "test_get_current_user" {
 
   output "returned_current_user" {
     description = "The current user returned by the pipeline."
-    value       = step.pipeline.get_current_user.user_id
+    value       = step.pipeline.get_current_user.user
   }
 
   output "get_current_user" {
     description = "Check for pipeline.get_current_user."
-    value       = step.pipeline.get_current_user.user_id != "" ? "pass" : "fail: ${step.pipeline.get_current_user.status_code}"
+    value       = !is_error(step.pipeline.get_current_user) ? "pass" : "fail: ${step.pipeline.get_current_user.errors}"
   }
 
 }

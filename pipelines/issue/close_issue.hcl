@@ -65,22 +65,9 @@ pipeline "close_issue" {
     })
   }
 
-  output "issue_url" {
-    description = "The URL of the closed issue."
-    value = step.http.close_issue.response_body.data.closeIssue.issue.url
-  }
-  output "issue_id" {
-    description = "The ID of the closed issue."
-    value = step.http.close_issue.response_body.data.closeIssue.issue.id
-  }
-  output "response_body" {
-    value = step.http.close_issue.response_body
-  }
-  output "response_headers" {
-    value = step.http.close_issue.response_headers
-  }
-  output "status_code" {
-    value = step.http.close_issue.status_code
+  output "issue" {
+    description = "The closed issue."
+    value = step.http.close_issue.response_body.data.closeIssue.issue
   }
 
 }

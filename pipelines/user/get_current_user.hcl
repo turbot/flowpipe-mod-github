@@ -41,17 +41,8 @@ pipeline "get_current_user" {
     })
   }
 
-  output "user_id" {
-    value = step.http.get_current_user.response_body.data.viewer.id
-  }
-  output "response_body" {
-    value = step.http.get_current_user.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_current_user.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_current_user.status_code
+  output "user" {
+    value = step.http.get_current_user.response_body.data.viewer
   }
 
 }

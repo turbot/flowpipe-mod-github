@@ -9,7 +9,7 @@ pipeline "test_get_user_by_login" {
 
   param "user_login" {
     type = string
-    default = "turbot"
+    default = "luisffc"
   }
 
   step "pipeline" "get_user_by_login" {
@@ -20,14 +20,14 @@ pipeline "test_get_user_by_login" {
     }
   }
 
-  output "returned_user_id" {
+  output "returned_user" {
     description = "The current user returned by the pipeline."
-    value       = step.pipeline.get_user_by_login.user_id
+    value       = step.pipeline.get_user_by_login.user
   }
 
   output "get_user_by_login" {
     description = "Check for pipeline.get_user_by_login."
-    value       = step.pipeline.get_user_by_login.user_id != "" ? "pass" : "fail: ${step.pipeline.get_user_by_login.status_code}"
+    value       = !is_error(step.pipeline.get_user_by_login) ? "pass" : "fail: ${step.pipeline.get_user_by_login.errors}"
   }
 
 }

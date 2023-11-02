@@ -45,17 +45,8 @@ pipeline "get_user_by_login" {
     })
   }
 
-  output "user_id" {
-    value = step.http.get_user_by_login.response_body.data.user.id
-  }
-  output "response_body" {
-    value = step.http.get_user_by_login.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_user_by_login.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_user_by_login.status_code
+  output "user" {
+    value = step.http.get_user_by_login.response_body.data.user
   }
 
 }
