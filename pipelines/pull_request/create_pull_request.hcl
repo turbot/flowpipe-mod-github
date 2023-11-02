@@ -55,7 +55,7 @@ pipeline "create_pull_request" {
       query = <<EOQ
         mutation {
           createPullRequest(
-            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.repository_id}",
+            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.repository.id}",
             baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
             clientMutationId
