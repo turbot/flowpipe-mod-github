@@ -71,20 +71,8 @@ pipeline "create_repository" {
 
   }
 
-  output "repository_url" {
-    value = step.http.create_repository.response_body.data.createRepository.repository.url
-  }
-  output "repository_id" {
-    value = step.http.create_repository.response_body.data.createRepository.repository.id
-  }
-  output "response_body" {
-    value = step.http.create_repository.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_repository.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_repository.status_code
+  output "repository" {
+    value = step.http.create_repository.response_body.data.createRepository.repository
   }
 
 }

@@ -42,7 +42,6 @@ pipeline "search_repository" {
       query = <<EOQ
         query {
           search(type: REPOSITORY, query: "${param.search_value}", last: ${param.search_limit}) {
-            repositoryCount
             edges {
               node {
                 ... on Repository {
@@ -62,17 +61,8 @@ pipeline "search_repository" {
     })
   }
 
-  output "repository_count" {
-    value = step.http.search_repository.response_body.data.search.repositoryCount
-  }
-  output "response_body" {
-    value = step.http.search_repository.response_body
-  }
-  output "response_headers" {
-    value = step.http.search_repository.response_headers
-  }
-  output "status_code" {
-    value = step.http.search_repository.status_code
+  output "repositories" {
+    value = step.http.search_repository.response_body.data.search.node
   }
 
 }

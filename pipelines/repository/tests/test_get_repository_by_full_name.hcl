@@ -8,6 +8,6 @@ pipeline "test_get_repository_by_full_name" {
 
   output "get_repository_by_full_name" {
     description = "Check for pipeline.get_repository_by_full_name."
-    value       = step.pipeline.get_repository_by_full_name.status_code == 200 ? "pass" : "fail: ${step.pipeline.get_repository_by_full_name.status_code}"
+    value       = !is_error(step.pipeline.get_repository_by_full_name) ? "pass" : "fail: ${step.pipeline.get_repository_by_full_name.error}"
   }
 }

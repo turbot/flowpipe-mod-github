@@ -46,20 +46,8 @@ pipeline "get_repository_by_full_name" {
     })
   }
 
-  output "repository_id" {
-    value = step.http.get_repository_by_full_name.response_body.data.repository.id
-  }
-  output "stargazer_count" {
-    value = step.http.get_repository_by_full_name.response_body.data.repository.stargazerCount
-  }
-  output "response_body" {
-    value = step.http.get_repository_by_full_name.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_repository_by_full_name.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_repository_by_full_name.status_code
+  output "repository" {
+    value = step.http.get_repository_by_full_name.response_body.data.repository
   }
 
 }

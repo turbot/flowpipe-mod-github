@@ -16,6 +16,6 @@ pipeline "test_search_repository" {
 
   output "search_repository" {
     description = "Check for pipeline.search_repository."
-    value       = step.pipeline.search_repository.repository_count > 0 ? "pass" : "fail: ${step.pipeline.search_repository.repository_count}"
+    value       = !is_error(step.pipeline.search_repository) ? "pass" : "fail: ${step.pipeline.search_repository.errors}"
   }
 }
