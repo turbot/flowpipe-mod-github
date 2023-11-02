@@ -70,20 +70,8 @@ pipeline "create_pull_request" {
 
   }
 
-  output "pull_request_id" {
-    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest.id
-  }
-  output "pull_request_url" {
-    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest.url
-  }
-  output "response_body" {
-    value = step.http.create_pull_request.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_pull_request.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_pull_request.status_code
+  output "pull_request" {
+    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest
   }
 
 }

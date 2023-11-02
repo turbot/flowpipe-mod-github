@@ -48,20 +48,8 @@ pipeline "get_pull_request_by_number" {
     })
   }
 
-  output "pull_request_id" {
-    value = step.http.get_pull_request_by_number.response_body.data.repository.pullRequest.id
-  }
-  output "pull_request_url" {
-    value = step.http.get_pull_request_by_number.response_body.data.repository.pullRequest.url
-  }
-  output "response_body" {
-    value = step.http.get_pull_request_by_number.response_body
-  }
-  output "response_headers" {
-    value = step.http.get_pull_request_by_number.response_headers
-  }
-  output "status_code" {
-    value = step.http.get_pull_request_by_number.status_code
+  output "pull_request" {
+    value = step.http.get_pull_request_by_number.response_body.data.repository.pullRequest
   }
 
 }

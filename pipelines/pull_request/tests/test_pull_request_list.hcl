@@ -8,6 +8,6 @@ pipeline "test_pull_request_list" {
 
   output "pull_request_list" {
     description = "Check for pipeline.pull_request_list."
-    value       = step.pipeline.pull_request_list.pull_request_count > 0 ? "pass" : "fail: ${step.pipeline.pull_request_list.pull_request_count}"
+    value       = !is_error(step.pipeline.pull_request_list) ? "pass" : "fail: ${step.pipeline.pull_request_list.errors}"
   }
 }

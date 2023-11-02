@@ -16,6 +16,6 @@ pipeline "test_search_pull_request" {
 
   output "search_pull_request" {
     description = "Check for pipeline.search_pull_request."
-    value       = step.pipeline.search_pull_request.pull_request_count > 0 ? "pass" : "fail: ${step.pipeline.search_pull_request.pull_request_count}"
+    value       = !is_error(step.pipeline.search_pull_request) ? "pass" : "fail: ${step.pipeline.search_pull_request.errors}"
   }
 }

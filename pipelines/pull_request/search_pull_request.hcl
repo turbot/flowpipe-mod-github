@@ -45,7 +45,6 @@ pipeline "search_pull_request" {
             query: "type:pr owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
             last: ${param.search_limit}
           ) {
-            issueCount
             nodes {
               ... on PullRequest {
                 createdAt
@@ -63,17 +62,8 @@ pipeline "search_pull_request" {
     })
   }
 
-  output "pull_request_count" {
-    value = step.http.search_pull_request.response_body.data.search.issueCount
-  }
-  output "response_body" {
-    value = step.http.search_pull_request.response_body
-  }
-  output "response_headers" {
-    value = step.http.search_pull_request.response_headers
-  }
-  output "status_code" {
-    value = step.http.search_pull_request.status_code
+  output "pull_requests" {
+    value = step.http.search_pull_request.response_body.data.search.nodes
   }
 
 }
