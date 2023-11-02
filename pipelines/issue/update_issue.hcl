@@ -57,7 +57,7 @@ pipeline "update_issue" {
       query = <<EOQ
         mutation {
           updateIssue(
-            input: {id: "${step.pipeline.get_issue_by_number.issue_id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+            input: {id: "${step.pipeline.get_issue_by_number.issue.id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
             issue {

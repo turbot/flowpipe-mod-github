@@ -44,7 +44,7 @@ pipeline "close_pull_request" {
       query = <<EOQ
         mutation {
           closePullRequest(
-            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request_id}"}
+            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request.id}"}
           ) {
             clientMutationId
             pullRequest {

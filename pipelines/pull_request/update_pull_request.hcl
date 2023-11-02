@@ -56,7 +56,7 @@ pipeline "update_pull_request" {
       query = <<EOQ
         mutation {
           updatePullRequest(
-            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request_id}", title: "${param.pull_request_title}",
+            input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.pull_request.id}", title: "${param.pull_request_title}",
             body: "${param.pull_request_body}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId

@@ -48,7 +48,7 @@ pipeline "create_pull_request_comment" {
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.get_pull_request_by_number.pull_request_id}", body: "${param.pull_request_comment}"}
+            input: {subjectId: "${step.pipeline.get_pull_request_by_number.pull_request.id}", body: "${param.pull_request_comment}"}
           ) {
             clientMutationId
             commentEdge {

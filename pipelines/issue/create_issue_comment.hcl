@@ -48,7 +48,7 @@ pipeline "create_issue_comment" {
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.get_issue_by_number.issue_id}", body: "${param.issue_comment}"}
+            input: {subjectId: "${step.pipeline.get_issue_by_number.issue.id}", body: "${param.issue_comment}"}
           ) {
             clientMutationId
             commentEdge {

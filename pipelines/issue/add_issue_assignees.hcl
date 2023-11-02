@@ -48,7 +48,7 @@ pipeline "add_issue_assignees" {
       query = <<EOQ
         mutation {
           addAssigneesToAssignable(
-            input: {assignableId: "${step.pipeline.get_issue_by_number.issue_id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+            input: {assignableId: "${step.pipeline.get_issue_by_number.issue.id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
             assignable {

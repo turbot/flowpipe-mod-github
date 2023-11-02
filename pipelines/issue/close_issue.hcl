@@ -52,7 +52,7 @@ pipeline "close_issue" {
       query = <<EOQ
         mutation {
           closeIssue(
-            input: {issueId: "${step.pipeline.get_issue_by_number.issue_id}", stateReason: ${param.state_reason}}
+            input: {issueId: "${step.pipeline.get_issue_by_number.issue.id}", stateReason: ${param.state_reason}}
           ) {
             clientMutationId
             issue {
