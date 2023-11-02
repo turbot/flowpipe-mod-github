@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_update_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --pipeline-arg "issue_comment=new comment goes here."
-pipeline "issue_update_comment" {
+// usage: flowpipe pipeline run update_issue_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --pipeline-arg "issue_comment=new comment goes here."
+pipeline "update_issue_comment" {
+  title = "Update Issue Comment"
   description = "Update a comment in an issue."
 
   param "token" {
@@ -25,7 +26,7 @@ pipeline "issue_update_comment" {
     type = string
   }
 
-  step "http" "issue_update_comment" {
+  step "http" "update_issue_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -42,16 +43,6 @@ pipeline "issue_update_comment" {
         }
         EOQ
     })
-  }
-
-  output "response_body" {
-    value = step.http.issue_update_comment.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_update_comment.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_update_comment.status_code
   }
 
 }

@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_create_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
-pipeline "issue_create_comment" {
+// usage: flowpipe pipeline run create_issue_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
+pipeline "create_issue_comment" {
+  title = "Create Issue Comment"
   description = "Add a comment in an issue."
 
   param "token" {
@@ -25,8 +26,8 @@ pipeline "issue_create_comment" {
     type = string
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "get_issue_by_number" {
+    pipeline = pipeline.get_issue_by_number
     args = {
       token = param.token
       repository_owner = param.repository_owner
@@ -35,7 +36,7 @@ pipeline "issue_create_comment" {
     }
   }
 
-  step "http" "issue_create_comment" {
+  step "http" "create_issue_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -47,7 +48,7 @@ pipeline "issue_create_comment" {
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.issue_get_by_number.issue_id}", body: "${param.issue_comment}"}
+            input: {subjectId: "${step.pipeline.get_issue_by_number.issue.id}", body: "${param.issue_comment}"}
           ) {
             clientMutationId
             commentEdge {
@@ -64,20 +65,8 @@ pipeline "issue_create_comment" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.issue_create_comment.response_body.data.addComment.commentEdge.node.issue.url
-  }
-  output "issue_id" {
-    value = step.http.issue_create_comment.response_body.data.addComment.commentEdge.node.issue.id
-  }
-  output "response_body" {
-    value = step.http.issue_create_comment.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_create_comment.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_create_comment.status_code
+  output "issue" {
+    value = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node.issue
   }
 
 }

@@ -1,7 +1,8 @@
-// usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=steampipe"
-// usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=owner:turbot steampipe"
-// usage: flowpipe pipeline run repository_search  --pipeline-arg "search_value=repo:vkumbha/deleteme"
-pipeline "repository_search" {
+// usage: flowpipe pipeline run search_repository  --pipeline-arg "search_value=steampipe"
+// usage: flowpipe pipeline run search_repository  --pipeline-arg "search_value=owner:turbot steampipe"
+// usage: flowpipe pipeline run search_repository  --pipeline-arg "search_value=repo:vkumbha/deleteme"
+pipeline "search_repository" {
+  title = "Search Repository"
   description = "Find a repository."
 
   param "token" {
@@ -29,7 +30,7 @@ pipeline "repository_search" {
     default = 20
   }
 
-  step "http" "repository_search" {
+  step "http" "search_repository" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -41,7 +42,6 @@ pipeline "repository_search" {
       query = <<EOQ
         query {
           search(type: REPOSITORY, query: "${param.search_value}", last: ${param.search_limit}) {
-            repositoryCount
             edges {
               node {
                 ... on Repository {
@@ -61,17 +61,8 @@ pipeline "repository_search" {
     })
   }
 
-  output "repository_count" {
-    value = step.http.repository_search.response_body.data.search.repositoryCount
-  }
-  output "response_body" {
-    value = step.http.repository_search.response_body
-  }
-  output "response_headers" {
-    value = step.http.repository_search.response_headers
-  }
-  output "status_code" {
-    value = step.http.repository_search.status_code
+  output "repositories" {
+    value = step.http.search_repository.response_body.data.search.node
   }
 
 }

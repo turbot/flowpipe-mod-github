@@ -1,5 +1,6 @@
 // usage: flowpipe pipeline run issue_add_assignee  --pipeline-arg "issue_number=151" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
-pipeline "issue_add_assignees" {
+pipeline "add_issue_assignees" {
+  title = "Add Issue Assignees"
   description = "Add assignees to an issue."
 
   param "token" {
@@ -25,8 +26,8 @@ pipeline "issue_add_assignees" {
     type = list(string)
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "get_issue_by_number" {
+    pipeline = pipeline.get_issue_by_number
     args = {
       token            = param.token
       repository_owner = param.owner
@@ -35,7 +36,7 @@ pipeline "issue_add_assignees" {
     }
   }
 
-  step "http" "issue_add_assignees" {
+  step "http" "add_issue_assignees" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -47,7 +48,7 @@ pipeline "issue_add_assignees" {
       query = <<EOQ
         mutation {
           addAssigneesToAssignable(
-            input: {assignableId: "${step.pipeline.issue_get_by_number.issue_id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+            input: {assignableId: "${step.pipeline.get_issue_by_number.issue.id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
             assignable {
@@ -62,20 +63,8 @@ pipeline "issue_add_assignees" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.issue_add_assignees.response_body.data.addAssigneesToAssignable.assignable.url
-  }
-  output "issue_id" {
-    value = step.http.issue_add_assignees.response_body.data.addAssigneesToAssignable.assignable.id
-  }
-  output "response_body" {
-    value = step.http.issue_add_assignees.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_add_assignees.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_add_assignees.status_code
+  output "issue" {
+    value = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable
   }
 
 }

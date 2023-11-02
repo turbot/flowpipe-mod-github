@@ -1,27 +1,30 @@
-// usage: flowpipe pipeline run user_get_current
-pipeline "user_get_current" {
-  description = "Get the details of currently authenticated user."
+// usage: flowpipe pipeline run get_user_by_login --pipeline-arg "user_login=vkumbha"
+pipeline "get_user_by_login" {
+  title = "Get User by Login"
+  description = "Get the details of a user by login."
 
   param "token" {
     type    = string
     default = var.token
   }
 
-  step "http" "user_get_current" {
+  param "user_login" {
+    type = string
+  }
+
+  step "http" "get_user_by_login" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
       Authorization = "Bearer ${param.token}"
-      #Authorization = "Bearer ${jsonencode(param.token)}"
-      #Authorization = "Bearer " + jsonencode(param.token)
     }
 
     // TODO: limit socialAccounts to 5 or include a param?
     request_body = jsonencode({
       query = <<EOQ
         query {
-          viewer {
+          user(login: "${param.user_login}") {
             company
             email
             id
@@ -42,17 +45,8 @@ pipeline "user_get_current" {
     })
   }
 
-  output "user_id" {
-    value = step.http.user_get_current.response_body.data.viewer.id
-  }
-  output "response_body" {
-    value = step.http.user_get_current.response_body
-  }
-  output "response_headers" {
-    value = step.http.user_get_current.response_headers
-  }
-  output "status_code" {
-    value = step.http.user_get_current.status_code
+  output "user" {
+    value = step.http.get_user_by_login.response_body.data.user
   }
 
 }

@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_close --pipeline-arg issue_number=151
-pipeline "issue_close" {
+// usage: flowpipe pipeline run close_issue --pipeline-arg issue_number=151
+pipeline "close_issue" {
+  title = "Close Issue"
   description = "Close an issue with the given ID."
 
   param "token" {
@@ -28,8 +29,8 @@ pipeline "issue_close" {
     default = "COMPLETED"
   }
 
-  step "pipeline" "issue_get_by_number" {
-    pipeline = pipeline.issue_get_by_number
+  step "pipeline" "get_issue_by_number" {
+    pipeline = pipeline.get_issue_by_number
 
     args = {
       token = param.token
@@ -39,7 +40,7 @@ pipeline "issue_close" {
     }
   }
 
-  step "http" "issue_close" {
+  step "http" "close_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -51,7 +52,7 @@ pipeline "issue_close" {
       query = <<EOQ
         mutation {
           closeIssue(
-            input: {issueId: "${step.pipeline.issue_get_by_number.issue_id}", stateReason: ${param.state_reason}}
+            input: {issueId: "${step.pipeline.get_issue_by_number.issue.id}", stateReason: ${param.state_reason}}
           ) {
             clientMutationId
             issue {
@@ -64,20 +65,9 @@ pipeline "issue_close" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.issue_close.response_body.data.closeIssue.issue.url
-  }
-  output "issue_id" {
-    value = step.http.issue_close.response_body.data.closeIssue.issue.id
-  }
-  output "response_body" {
-    value = step.http.issue_close.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_close.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_close.status_code
+  output "issue" {
+    description = "The closed issue."
+    value = step.http.close_issue.response_body.data.closeIssue.issue
   }
 
 }

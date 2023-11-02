@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run issue_delete_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pTwoh"
-pipeline "issue_delete_comment" {
+// usage: flowpipe pipeline run delete_issue_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pTwoh"
+pipeline "delete_issue_comment" {
+  title = "Delete Issue Comment"
   description = "Delete a comment in an issue."
 
   param "token" {
@@ -21,7 +22,7 @@ pipeline "issue_delete_comment" {
     type = string
   }
 
-  step "http" "issue_delete_comment" {
+  step "http" "delete_issue_comment" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -38,16 +39,6 @@ pipeline "issue_delete_comment" {
         }
         EOQ
     })
-  }
-
-  output "response_body" {
-    value = step.http.issue_delete_comment.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_delete_comment.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_delete_comment.status_code
   }
 
 }

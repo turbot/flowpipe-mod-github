@@ -1,7 +1,8 @@
-// usage: flowpipe pipeline run pull_request_search --pipeline-arg "search_value=160"
-// usage: flowpipe pipeline run pull_request_search --pipeline-arg 'search_value=[URGENTFIX]'
-pipeline "pull_request_search" {
-  description = "Search for pull requests in a repository."
+// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=[BUG]"
+// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=151"
+pipeline "search_issue" {
+  title = "Search Issue"
+  description = "Search for issues in a repository."
 
   param "token" {
     type    = string
@@ -28,7 +29,7 @@ pipeline "pull_request_search" {
     default = 20
   }
 
-  step "http" "pull_request_search" {
+  step "http" "search_issue" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -41,19 +42,18 @@ pipeline "pull_request_search" {
         query {
           search(
             type: ISSUE
-            query: "type:pr owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
+            query: "type:issue owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
             last: ${param.search_limit}
           ) {
-            issueCount
             nodes {
-              ... on PullRequest {
+              ... on Issue {
                 createdAt
                 number
+                title
+                url
                 repository {
                   name
                 }
-                title
-                url
               }
             }
           }
@@ -62,17 +62,8 @@ pipeline "pull_request_search" {
     })
   }
 
-  output "pull_request_count" {
-    value = step.http.pull_request_search.response_body.data.search.issueCount
-  }
-  output "response_body" {
-    value = step.http.pull_request_search.response_body
-  }
-  output "response_headers" {
-    value = step.http.pull_request_search.response_headers
-  }
-  output "status_code" {
-    value = step.http.pull_request_search.status_code
+  output "issues" {
+    value = step.http.search_issue.response_body.data.search.nodes
   }
 
 }

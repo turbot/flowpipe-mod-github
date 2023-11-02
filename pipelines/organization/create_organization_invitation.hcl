@@ -1,6 +1,8 @@
+## fp create_organization_invitation --pipeline-arg organization=fluent-cattle --pipeline-arg email=brief-ocelot@coffeetech.com.br
+
 pipeline "create_organization_invitation" {
-  title       = "Invite an user to org"
-  description = "Create an Organization invitation."
+  title        = "Create Organization Invitation"
+  description  = "Invites an user to an organization."
 
   param "token" {
     type        = string
@@ -45,13 +47,4 @@ pipeline "create_organization_invitation" {
     })
   }
 
-  output "response_body" {
-    value = step.http.create_organization_invitation.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_organization_invitation.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_organization_invitation.status_code
-  }
 }

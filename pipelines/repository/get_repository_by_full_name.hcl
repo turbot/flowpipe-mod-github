@@ -1,5 +1,6 @@
-// usage: flowpipe pipeline run repository_get_by_full_name
-pipeline "repository_get_by_full_name" {
+// usage: flowpipe pipeline run get_repository_by_full_name
+pipeline "get_repository_by_full_name" {
+  title       = "Get Repository by Full Name"
   description = "Get the details of a given repository by the owner and repository name."
 
   param "token" {
@@ -17,7 +18,7 @@ pipeline "repository_get_by_full_name" {
     default = local.repository_name
   }
 
-  step "http" "repository_get_by_full_name" {
+  step "http" "get_repository_by_full_name" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -45,20 +46,8 @@ pipeline "repository_get_by_full_name" {
     })
   }
 
-  output "repository_id" {
-    value = step.http.repository_get_by_full_name.response_body.data.repository.id
-  }
-  output "stargazer_count" {
-    value = step.http.repository_get_by_full_name.response_body.data.repository.stargazerCount
-  } 
-  output "response_body" {
-    value = step.http.repository_get_by_full_name.response_body
-  }
-  output "response_headers" {
-    value = step.http.repository_get_by_full_name.response_headers
-  }
-  output "status_code" {
-    value = step.http.repository_get_by_full_name.status_code
+  output "repository" {
+    value = step.http.get_repository_by_full_name.response_body.data.repository
   }
 
 }

@@ -1,5 +1,6 @@
 // usage: flowpipe pipeline run pull_request_list --pipeline-arg pull_request_limit=10
 pipeline "pull_request_list" {
+  title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
   param "token" {
@@ -40,7 +41,6 @@ pipeline "pull_request_list" {
         query {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
             pullRequests(first: ${param.pull_request_limit}, states: ${param.pull_request_state}) {
-              totalCount
               nodes {
                 baseRepository {
                   name
@@ -67,20 +67,8 @@ pipeline "pull_request_list" {
     })
   }
 
-  output "list_nodes" {
+  output "pull_requests" {
     value = step.http.pull_request_list.response_body.data.repository.pullRequests.nodes
-  }
-  output "total_open_pull_requests" {
-    value = step.http.pull_request_list.response_body.data.repository.pullRequests.totalCount
-  }
-  output "response_body" {
-    value = step.http.pull_request_list.response_body
-  }
-  output "response_headers" {
-    value = step.http.pull_request_list.response_headers
-  }
-  output "status_code" {
-    value = step.http.pull_request_list.status_code
   }
 
 }

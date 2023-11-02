@@ -1,6 +1,7 @@
 // This pipeline requires that Steampipe is installed, the service is started, and the github plugin is installed.
-// usage: flowpipe pipeline run issue_list_by_query --pipeline-arg repository_owner=turbot --pipeline-arg repository_name=steampipe-plugin-azure
-pipeline "issue_list_by_query" {
+// usage: flowpipe pipeline run list_issue_by_query --pipeline-arg repository_owner=turbot --pipeline-arg repository_name=steampipe-plugin-azure
+pipeline "list_issue_by_query" {
+  title = "List Issues by Query"
   description = "List issues in the repository using a Steampipe query."
 
   param "token" {
@@ -23,7 +24,7 @@ pipeline "issue_list_by_query" {
     default = "OPEN"
   }
 
-  step "query" "issue_list_by_query" {
+  step "query" "list_issue_by_query" {
     connection_string = "postgres://steampipe@localhost:9193/steampipe"
     sql = <<EOQ
       select
@@ -39,7 +40,7 @@ pipeline "issue_list_by_query" {
   }
 
   output "rows" {
-    value = step.query.issue_list_by_query.rows
+    value = step.query.list_issue_by_query.rows
   }
 
 }

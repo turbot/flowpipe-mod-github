@@ -1,17 +1,14 @@
-// usage: flowpipe pipeline run user_get_by_login --pipeline-arg "user_login=vkumbha"
-pipeline "user_get_by_login" {
-  description = "Get the details of a user by login."
+// usage: flowpipe pipeline run get_current_user
+pipeline "get_current_user" {
+  title       = "Get Current User"
+  description = "Get the details of currently authenticated user."
 
   param "token" {
     type    = string
     default = var.token
   }
 
-  param "user_login" {
-    type = string
-  }
-
-  step "http" "user_get_by_login" {
+  step "http" "get_current_user" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -23,7 +20,7 @@ pipeline "user_get_by_login" {
     request_body = jsonencode({
       query = <<EOQ
         query {
-          user(login: "${param.user_login}") {
+          viewer {
             company
             email
             id
@@ -44,17 +41,8 @@ pipeline "user_get_by_login" {
     })
   }
 
-  output "user_id" {
-    value = step.http.user_get_by_login.response_body.data.user.id
-  }
-  output "response_body" {
-    value = step.http.user_get_by_login.response_body
-  }
-  output "response_headers" {
-    value = step.http.user_get_by_login.response_headers
-  }
-  output "status_code" {
-    value = step.http.user_get_by_login.status_code
+  output "user" {
+    value = step.http.get_current_user.response_body.data.viewer
   }
 
 }

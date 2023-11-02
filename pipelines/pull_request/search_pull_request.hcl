@@ -1,7 +1,8 @@
-// usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=[BUG]"
-// usage: flowpipe pipeline run issue_search --pipeline-arg "search_value=151"
-pipeline "issue_search" {
-  description = "Search for issues in a repository."
+// usage: flowpipe pipeline run search_pull_request --pipeline-arg "search_value=160"
+// usage: flowpipe pipeline run search_pull_request --pipeline-arg 'search_value=[URGENTFIX]'
+pipeline "search_pull_request" {
+  title       = "Search Pull Request"
+  description = "Search for pull requests in a repository."
 
   param "token" {
     type    = string
@@ -28,7 +29,7 @@ pipeline "issue_search" {
     default = 20
   }
 
-  step "http" "issue_search" {
+  step "http" "search_pull_request" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
@@ -41,19 +42,18 @@ pipeline "issue_search" {
         query {
           search(
             type: ISSUE
-            query: "type:issue owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
+            query: "type:pr owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
             last: ${param.search_limit}
           ) {
-            issueCount
             nodes {
-              ... on Issue {
+              ... on PullRequest {
                 createdAt
                 number
-                title
-                url
                 repository {
                   name
                 }
+                title
+                url
               }
             }
           }
@@ -62,17 +62,8 @@ pipeline "issue_search" {
     })
   }
 
-  output "issues_count" {
-    value = step.http.issue_search.response_body.data.search.issueCount
-  }
-  output "response_body" {
-    value = step.http.issue_search.response_body
-  }
-  output "response_headers" {
-    value = step.http.issue_search.response_headers
-  }
-  output "status_code" {
-    value = step.http.issue_search.status_code
+  output "pull_requests" {
+    value = step.http.search_pull_request.response_body.data.search.nodes
   }
 
 }
