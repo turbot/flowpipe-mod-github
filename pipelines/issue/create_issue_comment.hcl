@@ -65,20 +65,8 @@ pipeline "create_issue_comment" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node.issue.url
-  }
-  output "issue_id" {
-    value = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node.issue.id
-  }
-  output "response_body" {
-    value = step.http.create_issue_comment.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_issue_comment.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_issue_comment.status_code
+  output "issue" {
+    value = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node.issue
   }
 
 }

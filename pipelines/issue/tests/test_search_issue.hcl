@@ -20,14 +20,9 @@ pipeline "test_search_issue" {
     }
   }
 
-  output "issues_count" {
-    description = "Count of issues found."
-    value       = step.pipeline.search_issue.issues_count
-  }
-
   output "search_issue" {
     description = "Check for pipeline.search_issue."
-    value       = step.pipeline.search_issue.issues_count != null ? "pass" : "fail: ${step.pipeline.search_issue.status_code}"
+    value       = !is_error(step.pipeline.search_issue) ? "pass" : "fail: ${step.pipeline.search_issue.errors}"
   }
 
 }

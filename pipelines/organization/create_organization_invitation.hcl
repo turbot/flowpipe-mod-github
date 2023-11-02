@@ -47,13 +47,4 @@ pipeline "create_organization_invitation" {
     })
   }
 
-  output "response_body" {
-    value = step.http.create_organization_invitation.response_body
-  }
-  output "response_headers" {
-    value = step.http.create_organization_invitation.response_headers
-  }
-  output "status_code" {
-    value = step.http.create_organization_invitation.status_code
-  }
 }

@@ -41,7 +41,6 @@ pipeline "list_issue" {
         query {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
             issues(first: ${param.issues_limit}, states: ${param.issue_state}) {
-              totalCount
               nodes {
                 body
                 createdAt
@@ -57,20 +56,8 @@ pipeline "list_issue" {
     })
   }
 
-  output "list_nodes" {
+  output "issues" {
     value = step.http.list_issue.response_body.data.repository.issues.nodes
-  }
-  output "total_count" {
-    value = step.http.list_issue.response_body.data.repository.issues.totalCount
-  }
-  output "response_body" {
-    value = step.http.list_issue.response_body
-  }
-  output "response_headers" {
-    value = step.http.list_issue.response_headers
-  }
-  output "status_code" {
-    value = step.http.list_issue.status_code
   }
 
 }

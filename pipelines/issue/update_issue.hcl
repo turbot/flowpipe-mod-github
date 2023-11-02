@@ -70,20 +70,8 @@ pipeline "update_issue" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.update_issue.response_body.data.updateIssue.issue.url
-  }
-  output "issue_id" {
-    value = step.http.update_issue.response_body.data.updateIssue.issue.id
-  }
-  output "response_body" {
-    value = step.http.update_issue.response_body
-  }
-  output "response_headers" {
-    value = step.http.update_issue.response_headers
-  }
-  output "status_code" {
-    value = step.http.update_issue.status_code
+  output "issue" {
+    value = step.http.update_issue.response_body.data.updateIssue.issue
   }
 
 }

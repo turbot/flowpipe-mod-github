@@ -45,14 +45,4 @@ pipeline "update_issue_comment" {
     })
   }
 
-  output "response_body" {
-    value = step.http.update_issue_comment.response_body
-  }
-  output "response_headers" {
-    value = step.http.update_issue_comment.response_headers
-  }
-  output "status_code" {
-    value = step.http.update_issue_comment.status_code
-  }
-
 }

@@ -30,13 +30,4 @@ pipeline "remove_organization_member" {
 
   }
 
-  output "response_body" {
-    value = step.http.remove_organization_member.response_body
-  }
-  output "response_headers" {
-    value = step.http.remove_organization_member.response_headers
-  }
-  output "status_code" {
-    value = step.http.remove_organization_member.status_code
-  }
 }

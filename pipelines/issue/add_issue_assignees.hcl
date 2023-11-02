@@ -63,20 +63,8 @@ pipeline "add_issue_assignees" {
     })
   }
 
-  output "issue_url" {
-    value = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable.url
-  }
-  output "issue_id" {
-    value = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable.id
-  }
-  output "response_body" {
-    value = step.http.add_issue_assignees.response_body
-  }
-  output "response_headers" {
-    value = step.http.add_issue_assignees.response_headers
-  }
-  output "status_code" {
-    value = step.http.add_issue_assignees.status_code
+  output "issue" {
+    value = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable
   }
 
 }

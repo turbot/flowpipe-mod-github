@@ -14,14 +14,9 @@ pipeline "test_list_issue" {
     }
   }
 
-  output "total_count" {
-    description = "Total count of issues."
-    value       = step.pipeline.list_issue.total_count
-  }
-
   output "list_issue" {
     description = "Check for pipeline.list_issue."
-    value       = step.pipeline.list_issue.total_count != null ? "pass" : "fail: ${step.pipeline.list_issue.status_code}"
+    value       = !is_error(step.pipeline.list_issue) ? "pass" : "fail: ${step.pipeline.list_issue.errors}"
   }
 
 }

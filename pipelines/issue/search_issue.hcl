@@ -45,7 +45,6 @@ pipeline "search_issue" {
             query: "type:issue owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
             last: ${param.search_limit}
           ) {
-            issueCount
             nodes {
               ... on Issue {
                 createdAt
@@ -63,17 +62,8 @@ pipeline "search_issue" {
     })
   }
 
-  output "issues_count" {
-    value = step.http.search_issue.response_body.data.search.issueCount
-  }
-  output "response_body" {
-    value = step.http.search_issue.response_body
-  }
-  output "response_headers" {
-    value = step.http.search_issue.response_headers
-  }
-  output "status_code" {
-    value = step.http.search_issue.status_code
+  output "issues" {
+    value = step.http.search_issue.response_body.data.search.nodes
   }
 
 }

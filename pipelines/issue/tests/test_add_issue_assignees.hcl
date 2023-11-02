@@ -28,7 +28,7 @@ pipeline "test_add_issue_assignees" {
 
   output "add_issue_assignees" {
     description = "Check for pipeline.add_issue_assignees."
-    value       = step.pipeline.add_issue_assignees.status_code == 200 ? "pass" : "fail: ${step.pipeline.add_issue_assignees.status_code}"
+    value       = !is_error(step.pipeline.add_issue_assignees) ? "pass" : "fail: ${step.pipeline.add_issue_assignees.errors}"
   }
 
 }
