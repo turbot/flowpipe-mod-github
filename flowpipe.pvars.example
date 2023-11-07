@@ -1,2 +1,2 @@
-# GitHub token
-token="ghpat-NotAReal_Token"
+# GitHub personal access token or fine-grained personal access token
+access_token="ghpat-NotAReal_Token"

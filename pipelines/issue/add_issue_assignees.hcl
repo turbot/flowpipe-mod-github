@@ -3,19 +3,22 @@ pipeline "add_issue_assignees" {
   title = "Add Issue Assignees"
   description = "Add assignees to an issue."
 
-  param "token" {
-    type    = string
-    default = var.token
+  param "access_token" {
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "issue_number" {
@@ -29,7 +32,7 @@ pipeline "add_issue_assignees" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      token            = param.token
+      access_token     = param.access_token
       repository_owner = param.owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
@@ -39,9 +42,10 @@ pipeline "add_issue_assignees" {
   step "http" "add_issue_assignees" {
     method = "post"
     url    = "https://api.github.com/graphql"
+
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

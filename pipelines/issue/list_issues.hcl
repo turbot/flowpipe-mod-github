@@ -1,11 +1,11 @@
-// usage: flowpipe pipeline run list_issue --pipeline-arg issues_limit=10
-pipeline "list_issue" {
-  title = "List Issue"
+// usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10
+pipeline "list_issues" {
+  title = "List Issues"
   description = "List issues in the repository."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -28,12 +28,12 @@ pipeline "list_issue" {
     default = "OPEN"
   }
 
-  step "http" "list_issue" {
+  step "http" "list_issues" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({
@@ -57,7 +57,7 @@ pipeline "list_issue" {
   }
 
   output "issues" {
-    value = step.http.list_issue.response_body.data.repository.issues.nodes
+    value = step.http.list_issues.response_body.data.repository.issues.nodes
   }
 
 }

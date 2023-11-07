@@ -2,7 +2,7 @@
 repository: "https://github.com/turbot/flowpipe-mod-github"
 ---
 
-# GitHub Mod for Flowpipe
+# GitHub Library Mod for Flowpipe
 
 A collection of [Flowpipe](https://flowpipe.io) pipelines that can be used to:
 - Create issues
@@ -87,7 +87,7 @@ Please see the [contribution guidelines](https://github.com/turbot/flowpipe/blob
 Want to help but not sure where to start? Pick up one of the `help wanted` issues:
 
 - [Flowpipe](https://github.com/turbot/flowpipe/labels/help%20wanted)
-- [GitHub Mod](https://github.com/turbot/flowpipe-mod-github/labels/help%20wanted)
+- [GitHub Library Mod](https://github.com/turbot/flowpipe-mod-github/labels/help%20wanted)
 
 ## License
 

@@ -3,9 +3,9 @@ pipeline "create_repository" {
   title = "Create Repository"
   description = "Creates a new repository."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -38,7 +38,7 @@ pipeline "create_repository" {
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      token            = var.token
+      access_token            = var.access_token
       repository_owner = param.repository_owner
     }
   }
@@ -48,7 +48,7 @@ pipeline "create_repository" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

@@ -3,9 +3,9 @@ pipeline "get_user_by_login" {
   title = "Get User by Login"
   description = "Get the details of a user by login."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "user_login" {
@@ -17,7 +17,7 @@ pipeline "get_user_by_login" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     // TODO: limit socialAccounts to 5 or include a param?

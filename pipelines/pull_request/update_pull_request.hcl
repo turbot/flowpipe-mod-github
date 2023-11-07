@@ -3,9 +3,9 @@ pipeline "update_pull_request" {
   title = "Update Pull Request"
   description = "Update a pull request's body, title, and assignees."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -37,7 +37,7 @@ pipeline "update_pull_request" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      token        = param.token
+      access_token        = param.access_token
       repository_owner        = param.repository_owner
       repository_name         = param.repository_name
       pull_request_number = param.pull_request_number
@@ -49,7 +49,7 @@ pipeline "update_pull_request" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

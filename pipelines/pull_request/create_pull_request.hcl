@@ -3,9 +3,9 @@ pipeline "create_pull_request" {
   title       = "Create Pull Request"
   description = "Creates a pull request."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -37,7 +37,7 @@ pipeline "create_pull_request" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      token = var.token
+      access_token = var.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -48,7 +48,7 @@ pipeline "create_pull_request" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

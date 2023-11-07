@@ -3,9 +3,9 @@ pipeline "get_repository_owner" {
   title = "Get Repository Owner"
   description = "Get the details of a repository owner (ie. either a User or an Organization) by login."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -18,7 +18,7 @@ pipeline "get_repository_owner" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

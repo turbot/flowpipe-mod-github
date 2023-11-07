@@ -1,11 +1,11 @@
 // usage: flowpipe pipeline run pull_request_list --pipeline-arg pull_request_limit=10
-pipeline "pull_request_list" {
+pipeline "list_pull_requests" {
   title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -28,12 +28,12 @@ pipeline "pull_request_list" {
     default = "OPEN"
   }
 
-  step "http" "pull_request_list" {
+  step "http" "list_pull_requests" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({
@@ -68,7 +68,7 @@ pipeline "pull_request_list" {
   }
 
   output "pull_requests" {
-    value = step.http.pull_request_list.response_body.data.repository.pullRequests.nodes
+    value = step.http.list_pull_requests.response_body.data.repository.pullRequests.nodes
   }
 
 }

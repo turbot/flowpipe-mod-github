@@ -3,9 +3,9 @@ pipeline "create_pull_request_comment" {
   title = "Create Pull Request Comment"
   description = "Create a comment on pull request."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -29,7 +29,7 @@ pipeline "create_pull_request_comment" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      token               = param.token
+      access_token               = param.access_token
       repository_owner    = param.repository_owner
       repository_name     = param.repository_name
       pull_request_number = param.pull_request_number
@@ -41,7 +41,7 @@ pipeline "create_pull_request_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

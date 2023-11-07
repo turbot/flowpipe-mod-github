@@ -2,9 +2,9 @@ pipeline "test_create_issue" {
   title       = "Test Create Issue"
   description = "Test the create issue pipeline."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "issue_title" {
@@ -20,7 +20,7 @@ pipeline "test_create_issue" {
   step "pipeline" "create_issue" {
     pipeline = pipeline.create_issue
     args = {
-      token       = param.token
+      access_token       = param.access_token
       issue_title = param.issue_title
       issue_body  = param.issue_body
     }

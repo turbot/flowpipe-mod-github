@@ -3,9 +3,9 @@ pipeline "update_issue" {
   title = "Update Issue"
   description = "Update an issue's title, body, and assignees."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -38,7 +38,7 @@ pipeline "update_issue" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      token = param.token
+      access_token = param.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number = param.issue_number
@@ -50,7 +50,7 @@ pipeline "update_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({

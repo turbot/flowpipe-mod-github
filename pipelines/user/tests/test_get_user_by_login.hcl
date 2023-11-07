@@ -2,9 +2,9 @@ pipeline "test_get_user_by_login" {
   title       = "Test Get User By Login"
   description = "Tests the get_user_by_login pipeline."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "user_login" {
@@ -15,7 +15,7 @@ pipeline "test_get_user_by_login" {
   step "pipeline" "get_user_by_login" {
     pipeline = pipeline.get_user_by_login
     args = {
-      token = param.token
+      access_token = param.access_token
       user_login = param.user_login
     }
   }

@@ -4,10 +4,10 @@ pipeline "create_organization_invitation" {
   title        = "Create Organization Invitation"
   description  = "Invites an user to an organization."
 
-  param "token" {
+  param "access_token" {
     type        = string
-    description = "The GitHub personal access token to authenticate to the GitHub APIs."
-    default     = var.token
+    description = "The GitHub personal access access_token to authenticate to the GitHub APIs."
+    default     = var.access_token
   }
 
   param "organization" {
@@ -37,7 +37,7 @@ pipeline "create_organization_invitation" {
     method = "post"
     request_headers = {
       Accept               = "application/vnd.github+json"
-      Authorization        = "Bearer ${param.token}"
+      Authorization        = "Bearer ${param.access_token}"
       X-GitHub-Api-Version = "2022-11-28"
     }
 

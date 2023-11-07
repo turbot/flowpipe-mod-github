@@ -1,12 +1,12 @@
-// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=[BUG]"
-// usage: flowpipe pipeline run search_issue --pipeline-arg "search_value=151"
-pipeline "search_issue" {
-  title = "Search Issue"
-  description = "Search for issues in a repository."
+// usage: flowpipe pipeline run search_pull_requests --pipeline-arg "search_value=160"
+// usage: flowpipe pipeline run search_pull_requests --pipeline-arg 'search_value=[URGENTFIX]'
+pipeline "search_pull_requests" {
+  title       = "Search Pull Requests"
+  description = "Search for pull requests in a repository."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -29,12 +29,12 @@ pipeline "search_issue" {
     default = 20
   }
 
-  step "http" "search_issue" {
+  step "http" "search_pull_requests" {
     method = "post"
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({
@@ -42,18 +42,18 @@ pipeline "search_issue" {
         query {
           search(
             type: ISSUE
-            query: "type:issue owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
+            query: "type:pr owner:${param.repository_owner} repo:${param.repository_name} ${param.search_value}"
             last: ${param.search_limit}
           ) {
             nodes {
-              ... on Issue {
+              ... on PullRequest {
                 createdAt
                 number
-                title
-                url
                 repository {
                   name
                 }
+                title
+                url
               }
             }
           }
@@ -62,8 +62,8 @@ pipeline "search_issue" {
     })
   }
 
-  output "issues" {
-    value = step.http.search_issue.response_body.data.search.nodes
+  output "pull_requests" {
+    value = step.http.search_pull_requests.response_body.data.search.nodes
   }
 
 }

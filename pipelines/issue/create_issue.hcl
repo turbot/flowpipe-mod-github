@@ -3,9 +3,9 @@ pipeline "create_issue" {
   title = "Create Issue"
   description = "Create a new issue."
 
-  param "token" {
+  param "access_token" {
     type    = string
-    default = var.token
+    default = var.access_token
   }
 
   param "repository_owner" {
@@ -29,7 +29,7 @@ pipeline "create_issue" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      token = var.token
+      access_token = var.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -40,7 +40,7 @@ pipeline "create_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.token}"
+      Authorization = "Bearer ${param.access_token}"
     }
 
     request_body = jsonencode({
