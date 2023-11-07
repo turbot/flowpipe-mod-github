@@ -1,3 +1,7 @@
+---
+repository: "https://github.com/turbot/flowpipe-mod-github"
+---
+
 # GitHub Library Mod for Flowpipe
 
 A collection of [Flowpipe](https://flowpipe.io) pipelines that can be used to:
@@ -5,8 +9,6 @@ A collection of [Flowpipe](https://flowpipe.io) pipelines that can be used to:
 - Close issues
 - Share projects with groups
 - And more!
-
-![image](https://github.com/turbot/flowpipe-mod-github/blob/main/docs/images/flowpipe_test_run.png?raw=true)
 
 ## Documentation
 

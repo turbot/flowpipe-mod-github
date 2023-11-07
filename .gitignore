@@ -11,5 +11,5 @@
 # Ignore Apple custom attributes file
 .DS_Store
 
-# Output directory for logfiles and snapshots
-tmp/
+# Flowpipe variable files
+*.pvars
