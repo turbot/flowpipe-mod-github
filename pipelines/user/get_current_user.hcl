@@ -1,11 +1,12 @@
-// usage: flowpipe pipeline run get_current_user
+# usage: flowpipe pipeline run get_current_user
 pipeline "get_current_user" {
   title       = "Get Current User"
   description = "Get the details of currently authenticated user."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   step "http" "get_current_user" {
@@ -42,7 +43,8 @@ pipeline "get_current_user" {
   }
 
   output "user" {
-    value = step.http.get_current_user.response_body.data.viewer
+    description = "Current user details."
+    value       = step.http.get_current_user.response_body.data.viewer
   }
 
 }

@@ -1,20 +1,24 @@
-// usage: flowpipe pipeline run create_repository --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
+# usage: flowpipe pipeline run create_repository --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
 pipeline "create_repository" {
-  title = "Create Repository"
+  title       = "Create Repository"
   description = "Creates a new repository."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type = string
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   // TODO: How to pass set(string) ?
@@ -26,7 +30,8 @@ pipeline "create_repository" {
     // "PUBLIC",
     // "INTERNAL"
     // ]
-    default = "PRIVATE"
+    description = "The visibility of the repository. Allowed values are PRIVATE, PUBLIC, or INTERNAL. Defaults to PRIVATE."
+    default     = "PRIVATE"
 
     // Unsupported block type: Blocks of type "validation" are not expected here.
     // validation {
@@ -38,7 +43,7 @@ pipeline "create_repository" {
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      access_token            = var.access_token
+      access_token     = param.access_token
       repository_owner = param.repository_owner
     }
   }
@@ -55,7 +60,7 @@ pipeline "create_repository" {
       query = <<EOQ
         mutation {
           createRepository(
-            input: {name: "${param.repository_name}", ownerId: "${step.pipeline.get_repository_owner.owner_id}", visibility: ${param.visibility}}
+            input: {name: "${param.repository_name}", ownerId: "${step.pipeline.get_repository_owner.output.repository_owner.id}", visibility: ${param.visibility}}
           ) {
             clientMutationId
             repository {
@@ -72,7 +77,8 @@ pipeline "create_repository" {
   }
 
   output "repository" {
-    value = step.http.create_repository.response_body.data.createRepository.repository
+    description = "Repository details."
+    value       = step.http.create_repository.response_body.data.createRepository.repository
   }
 
 }

@@ -3,34 +3,35 @@ pipeline "test_create_issue" {
   description = "Test the create issue pipeline."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "issue_title" {
-    type = string
+    type    = string
     default = "Test Issue"
   }
 
   param "issue_body" {
-    type = string
+    type    = string
     default = "This is a test issue."
   }
 
   step "pipeline" "create_issue" {
     pipeline = pipeline.create_issue
     args = {
-      access_token       = param.access_token
-      issue_title = param.issue_title
-      issue_body  = param.issue_body
+      access_token = param.access_token
+      issue_title  = param.issue_title
+      issue_body   = param.issue_body
     }
   }
 
   step "pipeline" "get_issue_by_number" {
-    if = !is_error(step.pipeline.create_issue)
+    if       = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
-      issue_number     = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue.url)[0])
+      issue_number = step.pipeline.create_issue.output.issue.number
     }
 
     # Ignore errors so we can delete
@@ -46,13 +47,13 @@ pipeline "test_create_issue" {
 
     pipeline = pipeline.close_issue
     args = {
-      issue_number = tonumber(regex("https://github.com/.*/issues/([0-9]+)", step.pipeline.create_issue.issue.url)[0])
+      issue_number = step.pipeline.create_issue.output.issue.number
     }
   }
 
   output "created_issue" {
     description = "Created issue."
-    value       = step.pipeline.create_issue.issue
+    value       = step.pipeline.create_issue.output.issue
   }
 
   output "create_issue" {

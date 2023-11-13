@@ -1,21 +1,25 @@
-// usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10
+# usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10
+# usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10 --pipeline-arg issue_state="OPEN,CLOSED"
 pipeline "list_issues" {
-  title = "List Issues"
+  title       = "List Issues"
   description = "List issues in the repository."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "issues_limit" {
@@ -24,8 +28,9 @@ pipeline "list_issues" {
   }
 
   param "issue_state" {
-    type = string
-    default = "OPEN"
+    type        = string
+    description = "The possible states of an issue. Allowed values are OPEN and CLOSED. Defaults to OPEN."
+    default     = "OPEN"
   }
 
   step "http" "list_issues" {
@@ -40,7 +45,7 @@ pipeline "list_issues" {
       query = <<EOQ
         query {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
-            issues(first: ${param.issues_limit}, states: ${param.issue_state}) {
+            issues(first: ${param.issues_limit}, states: [${param.issue_state}]) {
               nodes {
                 body
                 createdAt
@@ -57,7 +62,8 @@ pipeline "list_issues" {
   }
 
   output "issues" {
-    value = step.http.list_issues.response_body.data.repository.issues.nodes
+    description = "List of Issues."
+    value       = step.http.list_issues.response_body.data.repository.issues.nodes
   }
 
 }

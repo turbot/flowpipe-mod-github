@@ -1,31 +1,36 @@
-// usage: flowpipe pipeline run pull_request_list --pipeline-arg pull_request_limit=10
+# usage: flowpipe pipeline run list_pull_requests --pipeline-arg pull_request_limit=10 --pipeline-arg pull_request_state="OPEN,CLOSED"
 pipeline "list_pull_requests" {
   title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "pull_request_limit" {
-    type    = number
-    default = 20
+    type        = number
+    description = "Returns the first n elements from the list."
+    default     = 20
   }
 
   param "pull_request_state" {
-    type = string
-    default = "OPEN"
+    type        = string
+    description = "The state to filter the pull requests by. Allowed values are CLOSED, MERGED and OPEN. Defaults to OPEN."
+    default     = "OPEN"
   }
 
   step "http" "list_pull_requests" {
@@ -40,7 +45,7 @@ pipeline "list_pull_requests" {
       query = <<EOQ
         query {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
-            pullRequests(first: ${param.pull_request_limit}, states: ${param.pull_request_state}) {
+            pullRequests(first: ${param.pull_request_limit}, states: [${param.pull_request_state}]) {
               nodes {
                 baseRepository {
                   name
@@ -68,7 +73,8 @@ pipeline "list_pull_requests" {
   }
 
   output "pull_requests" {
-    value = step.http.list_pull_requests.response_body.data.repository.pullRequests.nodes
+    description = "List of pull requests."
+    value       = step.http.list_pull_requests.response_body.data.repository.pullRequests.nodes
   }
 
 }

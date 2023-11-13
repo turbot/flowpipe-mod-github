@@ -1,14 +1,15 @@
 pipeline "test_get_user_by_login" {
   title       = "Test Get User By Login"
-  description = "Tests the get_user_by_login pipeline."
+  description = "Test the get_user_by_login pipeline."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "user_login" {
-    type = string
+    type    = string
     default = "luisffc"
   }
 
@@ -16,13 +17,13 @@ pipeline "test_get_user_by_login" {
     pipeline = pipeline.get_user_by_login
     args = {
       access_token = param.access_token
-      user_login = param.user_login
+      user_login   = param.user_login
     }
   }
 
   output "returned_user" {
     description = "The current user returned by the pipeline."
-    value       = step.pipeline.get_user_by_login.user
+    value       = step.pipeline.get_user_by_login.output.user
   }
 
   output "get_user_by_login" {

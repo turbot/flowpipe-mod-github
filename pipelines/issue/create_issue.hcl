@@ -1,35 +1,40 @@
-// usage: flowpipe pipeline run create_issue --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
+# usage: flowpipe pipeline run create_issue --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
 pipeline "create_issue" {
-  title = "Create Issue"
+  title       = "Create Issue"
   description = "Create a new issue."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "issue_title" {
-    type = string
+    type        = string
+    description = "The title for the issue."
   }
 
   param "issue_body" {
-    type = string
+    type        = string
+    description = "The body for the issue description."
   }
 
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      access_token = var.access_token
+      access_token     = param.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -47,11 +52,12 @@ pipeline "create_issue" {
       query = <<EOQ
         mutation {
           createIssue(
-            input: {repositoryId: "${step.pipeline.get_repository_by_full_name.repository.id}", title: "${param.issue_title}", body: "${param.issue_body}"}
+            input: {repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}", title: "${param.issue_title}", body: "${param.issue_body}"}
           ) {
             clientMutationId
             issue {
               id
+              number
               url
             }
           }
@@ -62,7 +68,8 @@ pipeline "create_issue" {
   }
 
   output "issue" {
-    value = step.http.create_issue.response_body.data.createIssue.issue
+    description = "Issue details."
+    value       = step.http.create_issue.response_body.data.createIssue.issue
   }
 
 }

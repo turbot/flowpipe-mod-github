@@ -3,17 +3,19 @@ pipeline "test_add_issue_assignees" {
   description = "Test the add_issue_assignees pipeline."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "issue_number" {
-    type = number
-    default = 1
+    type        = number
+    default     = 1
+    description = "The number of the issue."
   }
 
   param "assignee_ids" {
-    type = list(string)
+    type    = list(string)
     default = ["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]
   }
 

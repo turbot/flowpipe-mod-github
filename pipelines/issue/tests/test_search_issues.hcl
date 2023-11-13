@@ -3,8 +3,9 @@ pipeline "test_search_issues" {
   description = "Test the search_issues pipeline."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "search_value" {

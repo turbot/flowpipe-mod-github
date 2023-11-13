@@ -1,6 +1,6 @@
 pipeline "test_list_pull_requests" {
   title       = "Test List Pull Requests"
-  description = "Tests the list_pull_requests pipeline."
+  description = "Test the list_pull_requests pipeline."
 
   step "pipeline" "list_pull_requests" {
     pipeline = pipeline.list_pull_requests
