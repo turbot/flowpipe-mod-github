@@ -1,38 +1,43 @@
-// usage: flowpipe pipeline run create_issue_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
+# usage: flowpipe pipeline run create_issue_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
 pipeline "create_issue_comment" {
-  title = "Create Issue Comment"
+  title       = "Create Issue Comment"
   description = "Add a comment in an issue."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "issue_number" {
-    type = number
+    type        = number
+    description = "The number of the Issue to comment."
   }
 
   param "issue_comment" {
-    type = string
+    type        = string
+    description = "The contents of the comment."
   }
 
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      access_token = param.access_token
+      access_token     = param.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
-      issue_number = param.issue_number
+      issue_number     = param.issue_number
     }
   }
 
@@ -48,11 +53,14 @@ pipeline "create_issue_comment" {
       query = <<EOQ
         mutation {
           addComment(
-            input: {subjectId: "${step.pipeline.get_issue_by_number.issue.id}", body: "${param.issue_comment}"}
+            input: {subjectId: "${step.pipeline.get_issue_by_number.output.issue.id}", body: "${param.issue_comment}"}
           ) {
             clientMutationId
             commentEdge {
               node {
+                id
+                body
+                url
                 issue {
                   id
                   url
@@ -65,8 +73,9 @@ pipeline "create_issue_comment" {
     })
   }
 
-  output "issue" {
-    value = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node.issue
+  output "issue_comment" {
+    description = "Issue comment details."
+    value       = step.http.create_issue_comment.response_body.data.addComment.commentEdge.node
   }
 
 }

@@ -1,25 +1,29 @@
-// usage: flowpipe pipeline run issue_get --pipeline-arg issue_number=151
+# usage: flowpipe pipeline run get_issue_by_number --pipeline-arg issue_number=151
 pipeline "get_issue_by_number" {
-  title = "Get Issue by Number"
+  title       = "Get Issue by Number"
   description = "Get issue details by issue number."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "issue_number" {
-    type = number
+    type        = number
+    description = "The number of the issue."
   }
 
   step "http" "get_issue_by_number" {
@@ -38,6 +42,9 @@ pipeline "get_issue_by_number" {
               body
               id
               number
+              reactions {
+                viewerHasReacted
+              }
               title
               url
             }
@@ -48,7 +55,8 @@ pipeline "get_issue_by_number" {
   }
 
   output "issue" {
-    value = step.http.get_issue_by_number.response_body.data.repository.issue
+    description = "Issue details."
+    value       = step.http.get_issue_by_number.response_body.data.repository.issue
   }
 
 }

@@ -1,32 +1,36 @@
-// usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=[BUG]"
-// usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=151"
+# usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=[BUG]"
+# usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=151"
 pipeline "search_issues" {
-  title = "Search Issues"
+  title       = "Search Issues"
   description = "Search for issues in a repository."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "search_value" {
-    type    = string
-    default = ""
+    type        = string
+    description = "The search string to look for."
   }
 
   param "search_limit" {
-    type    = number
-    default = 20
+    type        = number
+    description = "Returns the last n elements from the list."
+    default     = 20
   }
 
   step "http" "search_issues" {
@@ -63,7 +67,8 @@ pipeline "search_issues" {
   }
 
   output "issues" {
-    value = step.http.search_issues.response_body.data.search.nodes
+    description = "List of search issue results."
+    value       = step.http.search_issues.response_body.data.search.nodes
   }
 
 }

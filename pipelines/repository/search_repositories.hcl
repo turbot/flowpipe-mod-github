@@ -1,33 +1,37 @@
-// usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=steampipe"
-// usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=owner:turbot steampipe"
-// usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=repo:vkumbha/deleteme"
+# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=steampipe"
+# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=owner:turbot steampipe"
+# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=repo:vkumbha/deleteme"
 pipeline "search_repositories" {
-  title = "Search Repositories"
+  title       = "Search Repositories"
   description = "Find a repository."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "search_value" {
-    type    = string
-    default = ""
+    type        = string
+    description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme"
   }
 
   param "search_limit" {
-    type    = number
-    default = 20
+    type        = number
+    description = "Returns the last n elements from the list."
+    default     = 20
   }
 
   step "http" "search_repositories" {
@@ -42,17 +46,15 @@ pipeline "search_repositories" {
       query = <<EOQ
         query {
           search(type: REPOSITORY, query: "${param.search_value}", last: ${param.search_limit}) {
-            edges {
-              node {
-                ... on Repository {
-                  createdAt
-                  forkCount
-                  homepageUrl
-                  name
-                  stargazerCount
-                  url
-                  visibility
-                }
+            nodes {
+              ... on Repository {
+                createdAt
+                forkCount
+                homepageUrl
+                name
+                stargazerCount
+                url
+                visibility
               }
             }
           }
@@ -62,7 +64,8 @@ pipeline "search_repositories" {
   }
 
   output "repositories" {
-    value = step.http.search_repositories.response_body.data.search.node
+    description = "Repository details."
+    value       = step.http.search_repositories.response_body.data.search.nodes
   }
 
 }

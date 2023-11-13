@@ -1,6 +1,6 @@
 pipeline "test_get_repository_by_full_name" {
   title       = "Test Get Repository By Full Name"
-  description = "Tests the get_repository_by_full_name pipeline."
+  description = "Test the get_repository_by_full_name pipeline."
 
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name

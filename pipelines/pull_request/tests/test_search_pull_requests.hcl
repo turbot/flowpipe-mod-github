@@ -1,6 +1,6 @@
 pipeline "test_search_pull_requests" {
   title       = "Test Search Pull Requests"
-  description = "Tests the search_pull_requests pipeline."
+  description = "Test the search_pull_requests pipeline."
 
   param "search_value" {
     type    = string

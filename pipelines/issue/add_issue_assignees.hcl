@@ -1,6 +1,6 @@
-// usage: flowpipe pipeline run issue_add_assignee  --pipeline-arg "issue_number=151" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
+# usage: flowpipe pipeline run add_issue_assignees  --pipeline-arg "issue_number=151" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "add_issue_assignees" {
-  title = "Add Issue Assignees"
+  title       = "Add Issue Assignees"
   description = "Add assignees to an issue."
 
   param "access_token" {
@@ -22,18 +22,20 @@ pipeline "add_issue_assignees" {
   }
 
   param "issue_number" {
-    type = number
+    type        = number
+    description = "The number of the issue."
   }
 
   param "assignee_ids" {
-    type = list(string)
+    type        = list(string)
+    description = "The list of assignee IDs to add to the issue."
   }
 
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
       access_token     = param.access_token
-      repository_owner = param.owner
+      repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
     }
@@ -52,13 +54,23 @@ pipeline "add_issue_assignees" {
       query = <<EOQ
         mutation {
           addAssigneesToAssignable(
-            input: {assignableId: "${step.pipeline.get_issue_by_number.issue.id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
+            input: {assignableId: "${step.pipeline.get_issue_by_number.output.issue.id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
             clientMutationId
             assignable {
               ... on Issue {
                 id
                 url
+                assignees(last: 5) {
+                  totalCount
+                  nodes {
+                    id
+                    login
+                    url
+                    name
+                    email
+                  }
+                }
               }
             }
           }
@@ -68,7 +80,8 @@ pipeline "add_issue_assignees" {
   }
 
   output "issue" {
-    value = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable
+    description = "Issue assignee details."
+    value       = step.http.add_issue_assignees.response_body.data.addAssigneesToAssignable.assignable
   }
 
 }

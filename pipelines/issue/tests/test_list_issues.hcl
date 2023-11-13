@@ -3,8 +3,9 @@ pipeline "test_list_issues" {
   description = "Test the list_issues pipeline."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   step "pipeline" "list_issues" {

@@ -1,43 +1,50 @@
-// usage: flowpipe pipeline run create_pull_request --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
+# usage: flowpipe pipeline run create_pull_request --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
 pipeline "create_pull_request" {
   title       = "Create Pull Request"
   description = "Creates a pull request."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   param "repository_name" {
-    type    = string
-    default = local.repository_name
+    type        = string
+    description = local.repository_name_param_description
+    default     = local.repository_name
   }
 
   param "pull_request_title" {
-    type = string
+    type        = string
+    description = "The title of the pull request."
   }
 
   param "pull_request_body" {
-    type = string
+    type        = string
+    description = "The contents of the pull request."
   }
 
   param "base_branch" {
-    type = string
+    type        = string
+    description = "The name of the branch you want your changes pulled into. This should be an existing branch on the current repository. You cannot update the base branch on a pull request to point to another repository."
   }
 
   param "head_branch" {
-    type = string
+    type        = string
+    description = "The name of the branch where your changes are implemented. For cross-repository pull requests in the same network, namespace head_ref_name with a user like this: username:branch."
   }
 
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      access_token = var.access_token
+      access_token     = param.access_token
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -55,7 +62,7 @@ pipeline "create_pull_request" {
       query = <<EOQ
         mutation {
           createPullRequest(
-            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.repository.id}",
+            input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}",
             baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
             clientMutationId
@@ -71,7 +78,8 @@ pipeline "create_pull_request" {
   }
 
   output "pull_request" {
-    value = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest
+    description = "Pull request details."
+    value       = step.http.create_pull_request.response_body.data.createPullRequest.pullRequest
   }
 
 }

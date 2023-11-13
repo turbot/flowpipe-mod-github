@@ -4,7 +4,7 @@ pipeline "remove_organization_member" {
 
   param "access_token" {
     type        = string
-    description = "The GitHub personal access access_token to authenticate to the GitHub APIs."
+    description = local.access_token_param_description
     default     = var.access_token
   }
 
@@ -19,9 +19,9 @@ pipeline "remove_organization_member" {
   }
 
   step "http" "remove_organization_member" {
-    title  = "Remove an organization member"
-    url    = "https://api.github.com/orgs/${param.organization}/members/${param.username}"
     method = "DELETE"
+    url    = "https://api.github.com/orgs/${param.organization}/members/${param.username}"
+
     request_headers = {
       Accept               = "application/vnd.github+json"
       Authorization        = "Bearer ${param.access_token}"

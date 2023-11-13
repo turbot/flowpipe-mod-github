@@ -1,12 +1,12 @@
 ## fp create_organization_invitation --pipeline-arg organization=fluent-cattle --pipeline-arg email=brief-ocelot@coffeetech.com.br
 
 pipeline "create_organization_invitation" {
-  title        = "Create Organization Invitation"
-  description  = "Invites an user to an organization."
+  title       = "Create Organization Invitation"
+  description = "Invites an user to an organization."
 
   param "access_token" {
     type        = string
-    description = "The GitHub personal access access_token to authenticate to the GitHub APIs."
+    description = local.access_token_param_description
     default     = var.access_token
   }
 

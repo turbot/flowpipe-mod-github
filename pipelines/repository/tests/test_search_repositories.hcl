@@ -1,15 +1,16 @@
 pipeline "test_search_repositories" {
   title       = "Test Search Repositories"
-  description = "Tests the search_repositories pipeline."
+  description = "Test the search_repositories pipeline."
 
   param "search_value" {
-    type        = "string"
+    type        = string
+    description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme"
     default     = "test"
   }
 
   step "pipeline" "search_repositories" {
     pipeline = pipeline.search_repositories
-    args     = {
+    args = {
       search_value = param.search_value
     }
   }

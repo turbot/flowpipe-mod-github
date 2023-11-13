@@ -1,16 +1,18 @@
-// usage: flowpipe pipeline run get_repository_owner --pipeline-arg "repository_owner=steampipe"
+# usage: flowpipe pipeline run get_repository_owner --pipeline-arg "repository_owner=steampipe"
 pipeline "get_repository_owner" {
-  title = "Get Repository Owner"
+  title       = "Get Repository Owner"
   description = "Get the details of a repository owner (ie. either a User or an Organization) by login."
 
   param "access_token" {
-    type    = string
-    default = var.access_token
+    type        = string
+    description = local.access_token_param_description
+    default     = var.access_token
   }
 
   param "repository_owner" {
-    type    = string
-    default = local.repository_owner
+    type        = string
+    description = local.repository_owner_param_description
+    default     = local.repository_owner
   }
 
   step "http" "get_repository_owner" {
@@ -35,7 +37,8 @@ pipeline "get_repository_owner" {
   }
 
   output "repository_owner" {
-    value = step.http.get_repository_owner.response_body.data.repositoryOwner
+    description = "Repository owner details."
+    value       = step.http.get_repository_owner.response_body.data.repositoryOwner
   }
 
 }
