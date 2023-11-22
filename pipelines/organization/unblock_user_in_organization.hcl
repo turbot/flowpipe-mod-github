@@ -1,5 +1,5 @@
 pipeline "unblock_user_in_organization" {
-  title       = "Unblock user from  organization"
+  title       = "Unblock User in Organization"
   description = "Unblocks a specified user in an organization, allowing them collaborating on any repositories within that organization."
 
   param "access_token" {

@@ -1,5 +1,5 @@
 pipeline "block_user_in_organization" {
-  title       = "Block user from organization"
+  title       = "Block User in Organization"
   description = "Blocks a specified user from an organization, preventing them from collaborating on any repositories within that organization."
 
   param "access_token" {
