@@ -47,4 +47,8 @@ pipeline "create_organization_invitation" {
     })
   }
 
+  output "invitation" {
+    description = "Invitation details."
+    value       = step.http.create_organization_invitation.response_body
+  }
 }
