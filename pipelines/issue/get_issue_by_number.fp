@@ -39,6 +39,9 @@ pipeline "get_issue_by_number" {
         query {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
             issue(number: ${param.issue_number}) {
+              author {
+                  login
+                }
               body
               id
               number

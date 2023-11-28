@@ -47,6 +47,9 @@ pipeline "list_issues" {
           repository(owner: "${param.repository_owner}", name: "${param.repository_name}") {
             issues(first: ${param.issues_limit}, states: [${param.issue_state}]) {
               nodes {
+                author {
+                  login
+                }
                 body
                 createdAt
                 number
