@@ -2,10 +2,10 @@ pipeline "test_add_issue_assignees" {
   title       = "Test Add Issue Assignees"
   description = "Test the add_issue_assignees pipeline."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "issue_number" {
@@ -22,7 +22,7 @@ pipeline "test_add_issue_assignees" {
   step "pipeline" "add_issue_assignees" {
     pipeline = pipeline.add_issue_assignees
     args = {
-      access_token = param.access_token
+      cred         = param.cred
       issue_number = param.issue_number
       assignee_ids = param.assignee_ids
     }

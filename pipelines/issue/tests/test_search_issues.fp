@@ -2,10 +2,10 @@ pipeline "test_search_issues" {
   title       = "Test Search Issues"
   description = "Test the search_issues pipeline."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "search_value" {
@@ -16,7 +16,7 @@ pipeline "test_search_issues" {
   step "pipeline" "search_issues" {
     pipeline = pipeline.search_issues
     args = {
-      access_token = param.access_token
+      cred         = param.cred
       search_value = param.search_value
     }
   }

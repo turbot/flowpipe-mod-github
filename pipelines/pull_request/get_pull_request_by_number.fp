@@ -1,13 +1,13 @@
-# usage: flowpipe pipeline run get_pull_request_by_number --pipeline-arg pull_request_number=160
-# usage: flowpipe pipeline run get_pull_request_by_number --pipeline-arg 'pull_request_number=160'
+# usage: flowpipe pipeline run get_pull_request_by_number --arg pull_request_number=160
+# usage: flowpipe pipeline run get_pull_request_by_number --arg 'pull_request_number=160'
 pipeline "get_pull_request_by_number" {
   title       = "Get Pull Request By Number"
   description = "Get the details of a Pull Request."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -32,7 +32,7 @@ pipeline "get_pull_request_by_number" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

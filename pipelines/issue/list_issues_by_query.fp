@@ -1,13 +1,13 @@
 # This pipeline requires that Steampipe is installed, the service is started, and the github plugin is installed.
-# usage: flowpipe pipeline run list_issues_by_query --pipeline-arg repository_owner=turbot --pipeline-arg repository_name=steampipe-plugin-azure
+# usage: flowpipe pipeline run list_issues_by_query --arg repository_owner=turbot --arg repository_name=steampipe-plugin-azure
 pipeline "list_issues_by_query" {
   title       = "List Issues by Query"
   description = "List issues in the repository using a Steampipe query."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {

@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run create_repository --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
+# usage: flowpipe pipeline run create_repository --arg "repository_name=my-first-repo" --arg "visibility=PRIVATE"
 pipeline "create_repository" {
   title       = "Create Repository"
   description = "Creates a new repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -43,7 +43,7 @@ pipeline "create_repository" {
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
     }
   }
@@ -53,7 +53,7 @@ pipeline "create_repository" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run create_issue_comment --pipeline-arg "issue_number=151" --pipeline-arg "issue_comment=please provide update on the issue, Thanks."
+# usage: flowpipe pipeline run create_issue_comment --arg "issue_number=151" --arg "issue_comment=please provide update on the issue, Thanks."
 pipeline "create_issue_comment" {
   title       = "Create Issue Comment"
   description = "Add a comment in an issue."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -34,7 +34,7 @@ pipeline "create_issue_comment" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
@@ -46,7 +46,7 @@ pipeline "create_issue_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

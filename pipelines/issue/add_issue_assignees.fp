@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run add_issue_assignees  --pipeline-arg "issue_number=151" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
+# usage: flowpipe pipeline run add_issue_assignees  --arg "issue_number=151" --arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "add_issue_assignees" {
   title       = "Add Issue Assignees"
   description = "Add assignees to an issue."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -34,7 +34,7 @@ pipeline "add_issue_assignees" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
@@ -47,7 +47,7 @@ pipeline "add_issue_assignees" {
 
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

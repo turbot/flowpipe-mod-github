@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run list_pull_requests --pipeline-arg pull_request_limit=10 --pipeline-arg pull_request_state="OPEN,CLOSED"
+# usage: flowpipe pipeline run list_pull_requests --arg pull_request_limit=10 --arg pull_request_state="OPEN,CLOSED"
 pipeline "list_pull_requests" {
   title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -38,7 +38,7 @@ pipeline "list_pull_requests" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

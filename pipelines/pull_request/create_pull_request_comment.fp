@@ -1,12 +1,12 @@
-//usage: flowpipe pipeline run create_pull_request_comment --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_comment=this is a comment with spaces and alphanumerics 12345."
+# usage: flowpipe pipeline run create_pull_request_comment --arg pull_request_number=160 --arg "pull_request_comment=this is a comment with spaces and alphanumerics 12345."
 pipeline "create_pull_request_comment" {
   title       = "Create Pull Request Comment"
   description = "Create a comment on pull request."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -34,7 +34,7 @@ pipeline "create_pull_request_comment" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      access_token        = param.access_token
+      cred                = param.cred
       repository_owner    = param.repository_owner
       repository_name     = param.repository_name
       pull_request_number = param.pull_request_number
@@ -46,7 +46,7 @@ pipeline "create_pull_request_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

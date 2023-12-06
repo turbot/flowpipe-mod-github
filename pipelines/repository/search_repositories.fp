@@ -1,14 +1,14 @@
-# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=steampipe"
-# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=owner:turbot steampipe"
-# usage: flowpipe pipeline run search_repositories  --pipeline-arg "search_value=repo:vkumbha/deleteme"
+# usage: flowpipe pipeline run search_repositories  --arg "search_value=steampipe"
+# usage: flowpipe pipeline run search_repositories  --arg "search_value=owner:turbot steampipe"
+# usage: flowpipe pipeline run search_repositories  --arg "search_value=repo:vkumbha/deleteme"
 pipeline "search_repositories" {
   title       = "Search Repositories"
   description = "Find a repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -39,7 +39,7 @@ pipeline "search_repositories" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

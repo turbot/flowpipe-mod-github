@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run create_issue --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
+# usage: flowpipe pipeline run create_issue --arg "issue_title=[SUPPORT] please help" --arg "issue_body=I need help with..."
 pipeline "create_issue" {
   title       = "Create Issue"
   description = "Create a new issue."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -34,7 +34,7 @@ pipeline "create_issue" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -45,7 +45,7 @@ pipeline "create_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run update_issue_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --pipeline-arg "issue_comment=new comment goes here."
+# usage: flowpipe pipeline run update_issue_comment --arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --arg "issue_comment=new comment goes here."
 pipeline "update_issue_comment" {
   title       = "Update Issue Comment"
   description = "Update a comment in an issue."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -36,7 +36,7 @@ pipeline "update_issue_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

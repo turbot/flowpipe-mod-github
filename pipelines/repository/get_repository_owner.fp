@@ -1,12 +1,12 @@
-# usage: flowpipe pipeline run get_repository_owner --pipeline-arg "repository_owner=steampipe"
+# usage: flowpipe pipeline run get_repository_owner --arg "repository_owner=steampipe"
 pipeline "get_repository_owner" {
   title       = "Get Repository Owner"
   description = "Get the details of a repository owner (ie. either a User or an Organization) by login."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -20,7 +20,7 @@ pipeline "get_repository_owner" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({

@@ -1,13 +1,13 @@
-# usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10
-# usage: flowpipe pipeline run list_issues --pipeline-arg issues_limit=10 --pipeline-arg issue_state="OPEN,CLOSED"
+# usage: flowpipe pipeline run list_issues --arg issues_limit=10
+# usage: flowpipe pipeline run list_issues --arg issues_limit=10 --arg issue_state="OPEN,CLOSED"
 pipeline "list_issues" {
   title       = "List Issues"
   description = "List issues in the repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -38,7 +38,7 @@ pipeline "list_issues" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
