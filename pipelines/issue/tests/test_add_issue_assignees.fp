@@ -2,6 +2,10 @@ pipeline "test_add_issue_assignees" {
   title       = "Test Add Issue Assignees"
   description = "Test the add_issue_assignees pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

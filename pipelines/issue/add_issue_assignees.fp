@@ -3,6 +3,10 @@ pipeline "add_issue_assignees" {
   title       = "Add Issue Assignees"
   description = "Add assignees to an issue."
 
+  tags = {
+    type = "featured"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

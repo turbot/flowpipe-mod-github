@@ -2,6 +2,10 @@ pipeline "test_get_user_by_login" {
   title       = "Test Get User By Login"
   description = "Test the get_user_by_login pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

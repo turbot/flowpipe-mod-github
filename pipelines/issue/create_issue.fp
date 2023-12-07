@@ -3,6 +3,10 @@ pipeline "create_issue" {
   title       = "Create Issue"
   description = "Create a new issue."
 
+  tags = {
+    type = "featured"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

@@ -3,6 +3,10 @@ pipeline "create_pull_request_comment" {
   title       = "Create Pull Request Comment"
   description = "Create a comment on pull request."
 
+  tags = {
+    type = "featured"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

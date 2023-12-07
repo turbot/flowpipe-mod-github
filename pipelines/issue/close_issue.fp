@@ -3,6 +3,10 @@ pipeline "close_issue" {
   title       = "Close Issue"
   description = "Close an issue with the given ID."
 
+  tags = {
+    type = "featured"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

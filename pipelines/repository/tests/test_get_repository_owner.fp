@@ -2,6 +2,10 @@ pipeline "test_get_repository_owner" {
   title       = "Test Get Repository Owner"
   description = "Test the get_repository_owner pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
   }

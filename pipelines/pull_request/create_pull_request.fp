@@ -3,6 +3,10 @@ pipeline "create_pull_request" {
   title       = "Create Pull Request"
   description = "Creates a pull request."
 
+  tags = {
+    type = "featured"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description

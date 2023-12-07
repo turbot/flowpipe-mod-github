@@ -2,6 +2,10 @@ pipeline "test_search_pull_requests" {
   title       = "Test Search Pull Requests"
   description = "Test the search_pull_requests pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   param "search_value" {
     type    = string
     default = "test"

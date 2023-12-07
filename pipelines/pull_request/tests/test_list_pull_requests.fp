@@ -2,6 +2,10 @@ pipeline "test_list_pull_requests" {
   title       = "Test List Pull Requests"
   description = "Test the list_pull_requests pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   step "pipeline" "list_pull_requests" {
     pipeline = pipeline.list_pull_requests
   }

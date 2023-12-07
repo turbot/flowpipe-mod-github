@@ -2,6 +2,10 @@ pipeline "test_search_repositories" {
   title       = "Test Search Repositories"
   description = "Test the search_repositories pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   param "search_value" {
     type        = string
     description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme"

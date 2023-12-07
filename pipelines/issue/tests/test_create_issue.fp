@@ -2,6 +2,10 @@ pipeline "test_create_issue" {
   title       = "Test Create Issue"
   description = "Test the create issue pipeline."
 
+  tags = {
+    type = "test"
+  }
+
   param "cred" {
     type        = string
     description = local.cred_param_description
