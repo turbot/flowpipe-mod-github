@@ -44,6 +44,11 @@ pipeline "get_user_by_login" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "user" {

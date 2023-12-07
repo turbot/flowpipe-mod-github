@@ -43,6 +43,11 @@ pipeline "create_organization_invitation" {
       email = param.email
       role  = param.role
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "invitation" {

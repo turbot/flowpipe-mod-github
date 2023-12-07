@@ -34,6 +34,11 @@ pipeline "get_repository_owner" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "repository_owner" {

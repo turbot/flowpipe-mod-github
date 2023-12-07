@@ -71,6 +71,11 @@ pipeline "create_issue_comment" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "issue_comment" {

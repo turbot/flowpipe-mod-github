@@ -39,6 +39,11 @@ pipeline "get_current_user" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "user" {

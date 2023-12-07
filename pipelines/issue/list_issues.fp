@@ -59,6 +59,11 @@ pipeline "list_issues" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
   output "issues" {

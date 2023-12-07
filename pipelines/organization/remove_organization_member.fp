@@ -28,6 +28,10 @@ pipeline "remove_organization_member" {
       X-GitHub-Api-Version = "2022-11-28"
     }
 
+    throw {
+      if      = can(result.response_body.errors[0].message)
+      message = result.response_body.errors[0].message
+    }
   }
 
 }
