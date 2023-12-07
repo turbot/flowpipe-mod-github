@@ -69,7 +69,6 @@ pipeline "create_pull_request" {
             input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}",
             baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
-            clientMutationId
             pullRequest {
               id
               url

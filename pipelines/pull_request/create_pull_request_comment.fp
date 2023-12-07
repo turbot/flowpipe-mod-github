@@ -59,7 +59,6 @@ pipeline "create_pull_request_comment" {
           addComment(
             input: {subjectId: "${step.pipeline.get_pull_request_by_number.output.pull_request.id}", body: "${param.pull_request_comment}"}
           ) {
-            clientMutationId
             commentEdge {
               node {
                 pullRequest {

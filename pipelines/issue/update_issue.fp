@@ -65,7 +65,6 @@ pipeline "update_issue" {
           updateIssue(
             input: {id: "${step.pipeline.get_issue_by_number.output.issue.id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
-            clientMutationId
             issue {
               id
               url

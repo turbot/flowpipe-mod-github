@@ -55,7 +55,6 @@ pipeline "create_issue_comment" {
           addComment(
             input: {subjectId: "${step.pipeline.get_issue_by_number.output.issue.id}", body: "${param.issue_comment}"}
           ) {
-            clientMutationId
             commentEdge {
               node {
                 id

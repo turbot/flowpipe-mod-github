@@ -60,7 +60,6 @@ pipeline "add_issue_assignees" {
           addAssigneesToAssignable(
             input: {assignableId: "${step.pipeline.get_issue_by_number.output.issue.id}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
-            clientMutationId
             assignable {
               ... on Issue {
                 id

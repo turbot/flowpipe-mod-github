@@ -21,7 +21,6 @@ pipeline "get_user_by_login" {
       Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
-    // TODO: limit socialAccounts to 5 or include a param?
     request_body = jsonencode({
       query = <<EOQ
         query {

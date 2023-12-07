@@ -65,7 +65,6 @@ pipeline "update_pull_request" {
             input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.output.pull_request.id}", title: "${param.pull_request_title}",
             body: "${param.pull_request_body}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
-            clientMutationId
             pullRequest {
               id
               url

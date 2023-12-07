@@ -58,7 +58,6 @@ pipeline "create_issue" {
           createIssue(
             input: {repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}", title: "${param.issue_title}", body: "${param.issue_body}"}
           ) {
-            clientMutationId
             issue {
               id
               number

@@ -43,7 +43,6 @@ pipeline "update_issue_comment" {
       query = <<EOQ
         mutation {
           updateIssueComment(input: {id: "${param.issue_comment_id}", body: "${param.issue_comment}"}) {
-            clientMutationId
             issueComment {
               id
               body

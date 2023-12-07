@@ -50,7 +50,6 @@ pipeline "close_pull_request" {
           closePullRequest(
             input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.output.pull_request.id}"}
           ) {
-            clientMutationId
             pullRequest {
               url
               id

@@ -36,7 +36,7 @@ pipeline "delete_issue_comment" {
 
     request_body = jsonencode({
       query = <<EOQ
-        mutation add_comment {
+        mutation {
           deleteIssueComment(input: {id: "${param.issue_comment_id}"}) {
             clientMutationId
           }

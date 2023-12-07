@@ -21,23 +21,10 @@ pipeline "create_repository" {
     default     = local.repository_name
   }
 
-  // TODO: How to pass set(string) ?
   param "visibility" {
-    type = string
-    // type    = set(string)
-    // default = [
-    // "PRIVATE",
-    // "PUBLIC",
-    // "INTERNAL"
-    // ]
+    type        = string
     description = "The visibility of the repository. Allowed values are PRIVATE, PUBLIC, or INTERNAL. Defaults to PRIVATE."
     default     = "PRIVATE"
-
-    // Unsupported block type: Blocks of type "validation" are not expected here.
-    // validation {
-    //   condition     = contains(["PRIVATE", "PUBLIC", "INTERNAL"], param.visibility)
-    //   error_message = "Allowed values for input_parameter are \"PRIVATE\", \"PUBLIC\", or \"INTERNAL\"."
-    // }
   }
 
   step "pipeline" "get_repository_owner" {
@@ -62,7 +49,6 @@ pipeline "create_repository" {
           createRepository(
             input: {name: "${param.repository_name}", ownerId: "${step.pipeline.get_repository_owner.output.repository_owner.id}", visibility: ${param.visibility}}
           ) {
-            clientMutationId
             repository {
               id
               name

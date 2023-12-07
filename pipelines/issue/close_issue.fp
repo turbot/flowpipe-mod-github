@@ -31,8 +31,6 @@ pipeline "close_issue" {
   }
 
   param "state_reason" {
-    // type    = set(string) //TODO
-    // default = ["COMPLETED", "NOT_PLANNED"]
     type        = string
     description = "The reason for closing the issue. Supported values are COMPLETED and NOT_PLANNED."
     default     = "COMPLETED"
@@ -63,7 +61,6 @@ pipeline "close_issue" {
           closeIssue(
             input: {issueId: "${step.pipeline.get_issue_by_number.output.issue.id}", stateReason: ${param.state_reason}}
           ) {
-            clientMutationId
             issue {
               id
               url
