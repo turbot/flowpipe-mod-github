@@ -61,8 +61,8 @@ pipeline "create_repository" {
     })
 
     throw {
-      if      = can(result.response_body.errors[0].message)
-      message = result.response_body.errors[0].message
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
     }
   }
 
