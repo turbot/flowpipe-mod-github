@@ -4,7 +4,7 @@ mod "github" {
   color         = "#191717"
   documentation = file("./docs/index.md")
   icon          = "/images/flowpipe/mods/turbot/github.svg"
-  categories    = ["github"]
+  categories    = ["software development"]
 
   opengraph {
     title       = "GitHub Mod for Flowpipe"
