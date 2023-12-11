@@ -1,5 +1,5 @@
 pipeline "get_issue_by_number" {
-  title       = "Get Issue By Number"
+  title       = "Get Issue by Number"
   description = "Get issue details by issue number."
 
   param "cred" {

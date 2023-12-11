@@ -1,5 +1,5 @@
 pipeline "get_pull_request_by_number" {
-  title       = "Get Pull Request By Number"
+  title       = "Get Pull Request by Number"
   description = "Get the details of a Pull Request."
 
   param "cred" {

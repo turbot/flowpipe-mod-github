@@ -1,5 +1,5 @@
 pipeline "get_user_by_login" {
-  title       = "Get User By Login"
+  title       = "Get User by Login"
   description = "Get the details of a user by login."
 
   param "cred" {
@@ -10,7 +10,7 @@ pipeline "get_user_by_login" {
 
   param "user_login" {
     type        = string
-    description = "The user's login."
+    description = "The user's GitHub login."
   }
 
   step "http" "get_user_by_login" {
