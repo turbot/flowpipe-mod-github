@@ -6,8 +6,17 @@ pipeline "test_get_repository_by_full_name" {
     type = "test"
   }
 
+  param "cred" {
+    type        = string
+    description = local.cred_param_description
+    default     = "default"
+  }
+
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
+    args = {
+      cred = param.cred
+    }
   }
 
   output "get_repository_by_full_name" {

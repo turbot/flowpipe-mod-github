@@ -1,5 +1,3 @@
-# usage: flowpipe pipeline run list_issues --arg issues_limit=10
-# usage: flowpipe pipeline run list_issues --arg issues_limit=10 --arg issue_state="OPEN,CLOSED"
 pipeline "list_issues" {
   title       = "List Issues"
   description = "List issues in the repository."

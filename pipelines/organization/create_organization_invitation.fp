@@ -1,7 +1,6 @@
-# flowpipe pipeline run create_organization_invitation --arg organization=fluent-cattle --arg email=brief-ocelot@coffeetech.com.br
 pipeline "create_organization_invitation" {
   title       = "Create Organization Invitation"
-  description = "Invites an user to an organization."
+  description = "Invites a user to an organization."
 
   param "cred" {
     type        = string

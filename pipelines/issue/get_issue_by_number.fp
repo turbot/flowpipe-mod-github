@@ -1,6 +1,5 @@
-# usage: flowpipe pipeline run get_issue_by_number --arg issue_number=151
 pipeline "get_issue_by_number" {
-  title       = "Get Issue by Number"
+  title       = "Get Issue By Number"
   description = "Get issue details by issue number."
 
   param "cred" {

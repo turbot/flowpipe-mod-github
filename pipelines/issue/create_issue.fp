@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run create_issue --arg "issue_title=[SUPPORT] please help" --arg "issue_body=I need help with..."
 pipeline "create_issue" {
   title       = "Create Issue"
   description = "Create a new issue."

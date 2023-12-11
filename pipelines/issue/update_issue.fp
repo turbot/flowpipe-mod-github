@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run update_issue --arg 'issue_number=153' --arg issue_title="[bug] - there is a bug" --arg issue_body="please fix the bug" --arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "update_issue" {
   title       = "Update Issue"
   description = "Update an issue's title, body, and assignees."
@@ -45,9 +44,9 @@ pipeline "update_issue" {
     pipeline = pipeline.get_issue_by_number
     args = {
       cred             = param.cred
-      repository_owner = param.repository_owner
-      repository_name  = param.repository_name
       issue_number     = param.issue_number
+      repository_name  = param.repository_name
+      repository_owner = param.repository_owner
     }
   }
 

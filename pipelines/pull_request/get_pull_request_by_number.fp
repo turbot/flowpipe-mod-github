@@ -1,5 +1,3 @@
-# usage: flowpipe pipeline run get_pull_request_by_number --arg pull_request_number=160
-# usage: flowpipe pipeline run get_pull_request_by_number --arg 'pull_request_number=160'
 pipeline "get_pull_request_by_number" {
   title       = "Get Pull Request By Number"
   description = "Get the details of a Pull Request."

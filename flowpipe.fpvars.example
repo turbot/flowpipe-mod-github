@@ -1,1 +1,2 @@
-repository_full_name ="turbot/flowpipe"
+# Required
+repository_full_name = "turbot/flowpipe"

@@ -1,6 +1,3 @@
-# usage: flowpipe pipeline run search_repositories  --arg "search_value=steampipe"
-# usage: flowpipe pipeline run search_repositories  --arg "search_value=owner:turbot steampipe"
-# usage: flowpipe pipeline run search_repositories  --arg "search_value=repo:vkumbha/deleteme"
 pipeline "search_repositories" {
   title       = "Search Repositories"
   description = "Find a repository."
@@ -25,7 +22,7 @@ pipeline "search_repositories" {
 
   param "search_value" {
     type        = string
-    description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme"
+    description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme."
   }
 
   param "search_limit" {

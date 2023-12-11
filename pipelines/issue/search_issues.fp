@@ -1,5 +1,3 @@
-# usage: flowpipe pipeline run search_issues --arg "search_value=[BUG]"
-# usage: flowpipe pipeline run search_issues --arg "search_value=151"
 pipeline "search_issues" {
   title       = "Search Issues"
   description = "Search for issues in a repository."

@@ -1,5 +1,3 @@
-# usage: flowpipe pipeline run search_pull_requests --arg "search_value=160"
-# usage: flowpipe pipeline run search_pull_requests --arg 'search_value=[URGENTFIX]'
 pipeline "search_pull_requests" {
   title       = "Search Pull Requests"
   description = "Search for pull requests in a repository."

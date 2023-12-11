@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run create_issue_comment --arg "issue_number=151" --arg "issue_comment=please provide update on the issue, Thanks."
 pipeline "create_issue_comment" {
   title       = "Create Issue Comment"
   description = "Add a comment in an issue."

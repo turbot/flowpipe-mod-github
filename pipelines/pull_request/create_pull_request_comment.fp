@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run create_pull_request_comment --arg pull_request_number=160 --arg "pull_request_comment=this is a comment with spaces and alphanumerics 12345."
 pipeline "create_pull_request_comment" {
   title       = "Create Pull Request Comment"
   description = "Create a comment on pull request."

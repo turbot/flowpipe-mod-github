@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run get_repository_by_full_name
 pipeline "get_repository_by_full_name" {
   title       = "Get Repository by Full Name"
   description = "Get the details of a given repository by the owner and repository name."

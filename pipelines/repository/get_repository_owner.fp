@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run get_repository_owner --arg "repository_owner=steampipe"
 pipeline "get_repository_owner" {
   title       = "Get Repository Owner"
   description = "Get the details of a repository owner (ie. either a User or an Organization) by login."

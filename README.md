@@ -3,7 +3,7 @@
 A collection of [Flowpipe](https://flowpipe.io) pipelines that can be used to:
 - Create issues
 - Close issues
-- Share projects with groups
+- Create pull requests
 - And more!
 
 ![image](https://github.com/turbot/flowpipe-mod-github/blob/main/docs/images/flowpipe_test_run.png?raw=true)
@@ -67,7 +67,7 @@ flowpipe pipeline run get_current_user
 To pass values into pipeline [parameters](https://flowpipe.io/docs/using-flowpipe/pipeline-parameters), use the following syntax:
 
 ```sh
-flowpipe pipeline run list_projects --arg membership=true
+flowpipe pipeline run get_user_by_login --arg user_login=vkumbha
 ```
 
 Multiple pipeline args can be passed in with separate `--arg` flags.

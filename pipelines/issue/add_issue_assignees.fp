@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run add_issue_assignees  --arg "issue_number=151" --arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "add_issue_assignees" {
   title       = "Add Issue Assignees"
   description = "Add assignees to an issue."

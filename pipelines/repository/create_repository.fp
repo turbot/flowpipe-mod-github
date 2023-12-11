@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run create_repository --arg "repository_name=my-first-repo" --arg "visibility=PRIVATE"
 pipeline "create_repository" {
   title       = "Create Repository"
   description = "Creates a new repository."

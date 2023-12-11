@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run update_issue_comment --arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --arg "issue_comment=new comment goes here."
 pipeline "update_issue_comment" {
   title       = "Update Issue Comment"
   description = "Update a comment in an issue."
@@ -64,7 +63,8 @@ pipeline "update_issue_comment" {
   }
 
   output "issue_comment" {
-    value = step.http.update_issue_comment.response_body.data.updateIssueComment.issueComment
+    description = "The updated issue comment."
+    value       = step.http.update_issue_comment.response_body.data.updateIssueComment.issueComment
   }
 
 }

@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run create_pull_request --arg "pull_request_title=new PR title" --arg "pull_request_body=pr body" --arg "base_branch=main" --arg "head_branch=demo-branch"
 pipeline "create_pull_request" {
   title       = "Create Pull Request"
   description = "Creates a pull request."

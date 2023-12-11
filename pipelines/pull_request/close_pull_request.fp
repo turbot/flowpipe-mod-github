@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run close_pull_request --arg pull_request_number=160
 pipeline "close_pull_request" {
   title       = "Close Pull Request"
   description = "Closes a pull request."

@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run close_issue --arg issue_number=151
 pipeline "close_issue" {
   title       = "Close Issue"
   description = "Close an issue with the given ID."
@@ -77,7 +76,7 @@ pipeline "close_issue" {
   }
 
   output "issue" {
-    description = "The closed issue."
+    description = "The closed issue details."
     value       = step.http.close_issue.response_body.data.closeIssue.issue
   }
 

@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run update_pull_request --arg pull_request_number=160 --arg "pull_request_body=a very new and updated body" --arg "pull_request_title=brand new title" --arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "update_pull_request" {
   title       = "Update Pull Request"
   description = "Update a pull request's body, title, and assignees."

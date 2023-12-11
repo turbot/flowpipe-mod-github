@@ -35,6 +35,7 @@ pipeline "test_create_issue" {
     if       = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
+      cred         = param.cred
       issue_number = step.pipeline.create_issue.output.issue.number
     }
 
@@ -51,6 +52,7 @@ pipeline "test_create_issue" {
 
     pipeline = pipeline.close_issue
     args = {
+      cred         = param.cred
       issue_number = step.pipeline.create_issue.output.issue.number
     }
   }

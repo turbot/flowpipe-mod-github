@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run delete_issue_comment --arg "issue_comment_id=IC_kwDOKdfCIs5pTwoh"
 pipeline "delete_issue_comment" {
   title       = "Delete Issue Comment"
   description = "Delete a comment in an issue."

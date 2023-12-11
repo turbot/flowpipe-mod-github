@@ -1,4 +1,3 @@
-# usage: flowpipe pipeline run list_pull_requests --arg pull_request_limit=10 --arg pull_request_state="OPEN,CLOSED"
 pipeline "list_pull_requests" {
   title       = "List Pull Requests"
   description = "List pull requests in the repository."
