@@ -51,6 +51,9 @@ pipeline "list_issues" {
                 state
                 title
                 url
+                author{
+                  login
+                }
               }
             }
           }
