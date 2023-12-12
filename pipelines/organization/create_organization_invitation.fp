@@ -1,13 +1,11 @@
-## fp create_organization_invitation --pipeline-arg organization=fluent-cattle --pipeline-arg email=brief-ocelot@coffeetech.com.br
-
 pipeline "create_organization_invitation" {
   title       = "Create Organization Invitation"
-  description = "Invites an user to an organization."
+  description = "Invites a user to an organization."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "organization" {
@@ -32,19 +30,28 @@ pipeline "create_organization_invitation" {
   }
 
   step "http" "create_organization_invitation" {
-    title  = "Invite an user to org"
     url    = "https://api.github.com/orgs/${param.organization}/invitations"
     method = "post"
     request_headers = {
       Accept               = "application/vnd.github+json"
-      Authorization        = "Bearer ${param.access_token}"
+      Authorization        = "Bearer ${credential.github[param.cred].token}"
       X-GitHub-Api-Version = "2022-11-28"
     }
 
     request_body = jsonencode({
-      email = "${param.email}"
-      role  = "${param.role}"
+      email = param.email
+      role  = param.role
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
+  }
+
+  output "invitation" {
+    description = "Invitation details."
+    value       = step.http.create_organization_invitation.response_body
   }
 
 }

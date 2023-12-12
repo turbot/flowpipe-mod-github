@@ -1,19 +1,16 @@
-# GitHub Library Mod for Flowpipe
+# GitHub Mod for Flowpipe
 
-A collection of [Flowpipe](https://flowpipe.io) pipelines that can be used to:
-- Create issues
-- Close issues
-- Share projects with groups
-- And more!
-
-![image](https://github.com/turbot/flowpipe-mod-github/blob/main/docs/images/flowpipe_test_run.png?raw=true)
+GitHub pipeline library for [Flowpipe](https://flowpipe.io), enabling seamless integration of GitHub services into your workflows.
 
 ## Documentation
 
 - **[Pipelines →](https://hub.flowpipe.io/mods/turbot/github/pipelines)**
-- **[Triggers →](https://hub.flowpipe.io/mods/turbot/github/triggers)**
 
-## Getting started
+## Getting Started
+
+### Requirements
+
+Docker daemon must be installed and running. Please see [Install Docker Engine](https://docs.docker.com/engine/install/) for more information.
 
 ### Installation
 
@@ -31,29 +28,32 @@ git clone https://github.com/turbot/flowpipe-mod-github.git
 cd flowpipe-mod-github
 ```
 
-### Configuration
+### Credentials
 
-Configure your credentials:
+By default, the following environment variables will be used for authentication:
+
+- `GITHUB_TOKEN`
+
+You can also create `credential` resources in configuration files:
 
 ```sh
-cp flowpipe.pvars.example flowpipe.pvars
-vi flowpipe.pvars
+vi ~/.flowpipe/config/github.fpc
 ```
 
-It's recommended to configure credentials through [input variables](https://flowpipe.io/docs/using-flowpipe/mod-variables) by setting them in the `flowpipe.pvars` file.
+```hcl
+credential "github" "default" {
+  token = "ghp_..."
+}
+```
 
-**Note:** Credentials can also be passed in each pipeline run with `--pipeline-args access_token=ghpat_Token123`.
-
-Additional input variables may be defined in the mod's `variables.hcl` file that can be configured to better match your environment and requirements.
-
-Variables with defaults set do not need to be explicitly set, but it may be helpful to override them.
+For more information on credentials in Flowpipe, please see [Managing Credentials](https://flowpipe.io/docs/run/credentials).
 
 ### Usage
 
-Start the Flowpipe server to get started:
+List pipelines:
 
 ```sh
-flowpipe service start
+flowpipe pipeline list
 ```
 
 Run a pipeline:
@@ -62,33 +62,46 @@ Run a pipeline:
 flowpipe pipeline run get_current_user
 ```
 
-## Passing pipeline arguments
-
-To pass values into pipeline [parameters](https://flowpipe.io/docs/using-flowpipe/pipeline-parameters), use the following syntax:
+You can pass in pipeline arguments as well:
 
 ```sh
-flowpipe pipeline run list_projects --pipeline-arg membership=true
+flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=steampipe'
 ```
 
-Multiple pipeline args can be passed in with separate `--pipeline-arg` flags.
+To use a specific `credential`, specify the `cred` pipeline argument:
 
-For more information on passing arguments, please see [Pipeline Args](https://flowpipe.io/docs/using-flowpipe/pipeline-arguments).
+```sh
+flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg cred=github_profile
+```
 
-## Contributing
+For more examples on how you can run pipelines, please see [Run Pipelines](https://flowpipe.io/docs/run/pipelines).
 
-If you have an idea for additional controls or just want to help maintain and extend this mod ([or others](https://github.com/topics/flowpipe-mod)) we would love you to join the community and start contributing.
+### Configuration
 
-- **[Join #flowpipe in our Slack community ](https://flowpipe.io/community/join)**
+To avoid entering the `repository_owner` and `repository_name` for each pipeline run, you can configure your default repository by setting the `repository_full_name` variable:
 
-Please see the [contribution guidelines](https://github.com/turbot/flowpipe/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/turbot/flowpipe/blob/main/CODE_OF_CONDUCT.md).
+```sh
+cp flowpipe.fpvars.example flowpipe.fpvars
+vi flowpipe.fpvars
+```
+
+```hcl
+repository_full_name = "turbot/steampipe"
+```
+
+When running a pipeline, you can override this default repository with `repository_owner` and `repository_name` pipeline arguments, e.g., `--arg repository_owner=turbot --arg repository_name=steampipe`.
+
+## Open Source & Contributing
+
+This repository is published under the [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0). Please see our [code of conduct](https://github.com/turbot/.github/blob/main/CODE_OF_CONDUCT.md). We look forward to collaborating with you!
+
+[Flowpipe](https://flowpipe.io) is a product produced from this open source software, exclusively by [Turbot HQ, Inc](https://turbot.com). It is distributed under our commercial terms. Others are allowed to make their own distribution of the software, but cannot use any of the Turbot trademarks, cloud services, etc. You can learn more in our [Open Source FAQ](https://turbot.com/open-source).
+
+## Get Involved
+
+**[Join #flowpipe on Slack →](https://flowpipe.io/community/join)**
 
 Want to help but not sure where to start? Pick up one of the `help wanted` issues:
 
 - [Flowpipe](https://github.com/turbot/flowpipe/labels/help%20wanted)
-- [GitHub Library Mod](https://github.com/turbot/flowpipe-mod-github/labels/help%20wanted)
-
-## License
-
-This mod is licensed under the [Apache License 2.0](https://github.com/turbot/flowpipe-mod-github/blob/main/LICENSE).
-
-Flowpipe is licensed under the [AGPLv3](https://github.com/turbot/flowpipe/blob/main/LICENSE).
+- [GitHub Mod](https://github.com/turbot/flowpipe-mod-github/labels/help%20wanted)

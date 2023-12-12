@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run get_issue_by_number --pipeline-arg issue_number=151
 pipeline "get_issue_by_number" {
   title       = "Get Issue by Number"
   description = "Get issue details by issue number."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -31,7 +30,7 @@ pipeline "get_issue_by_number" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -52,6 +51,11 @@ pipeline "get_issue_by_number" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issue" {

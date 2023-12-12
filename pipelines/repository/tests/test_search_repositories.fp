@@ -2,6 +2,16 @@ pipeline "test_search_repositories" {
   title       = "Test Search Repositories"
   description = "Test the search_repositories pipeline."
 
+  tags = {
+    type = "test"
+  }
+
+  param "cred" {
+    type        = string
+    description = local.cred_param_description
+    default     = "default"
+  }
+
   param "search_value" {
     type        = string
     description = "The search string to look for. Examples: steampipe, owner:turbot steampipe, repo:vkumbha/deleteme"
@@ -11,6 +21,7 @@ pipeline "test_search_repositories" {
   step "pipeline" "search_repositories" {
     pipeline = pipeline.search_repositories
     args = {
+      cred         = param.cred
       search_value = param.search_value
     }
   }

@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run update_pull_request --pipeline-arg pull_request_number=160 --pipeline-arg "pull_request_body=a very new and updated body" --pipeline-arg "pull_request_title=brand new title" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "update_pull_request" {
   title       = "Update Pull Request"
   description = "Update a pull request's body, title, and assignees."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -43,7 +42,7 @@ pipeline "update_pull_request" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      access_token        = param.access_token
+      cred                = param.cred
       repository_owner    = param.repository_owner
       repository_name     = param.repository_name
       pull_request_number = param.pull_request_number
@@ -55,7 +54,7 @@ pipeline "update_pull_request" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -65,7 +64,6 @@ pipeline "update_pull_request" {
             input: {pullRequestId: "${step.pipeline.get_pull_request_by_number.output.pull_request.id}", title: "${param.pull_request_title}",
             body: "${param.pull_request_body}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
-            clientMutationId
             pullRequest {
               id
               url
@@ -74,6 +72,11 @@ pipeline "update_pull_request" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "pull_request" {

@@ -2,6 +2,16 @@ pipeline "test_search_pull_requests" {
   title       = "Test Search Pull Requests"
   description = "Test the search_pull_requests pipeline."
 
+  tags = {
+    type = "test"
+  }
+
+  param "cred" {
+    type        = string
+    description = local.cred_param_description
+    default     = "default"
+  }
+
   param "search_value" {
     type    = string
     default = "test"
@@ -10,6 +20,7 @@ pipeline "test_search_pull_requests" {
   step "pipeline" "search_pull_requests" {
     pipeline = pipeline.search_pull_requests
     args = {
+      cred         = param.cred
       search_value = param.search_value
     }
   }

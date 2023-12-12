@@ -1,15 +1,14 @@
-# TODO: Add missing pipeline param descriptions
 mod "github" {
-  title         = "GitHub Library"
+  title         = "GitHub"
   description   = "Run pipelines to supercharge your GitHub workflows using Flowpipe."
   color         = "#191717"
-  documentation = file("./docs/index.md")
-  icon          = "/images/flowpipe/mods/turbot/github.svg"
-  categories    = ["github", "library"]
+  documentation = file("./README.md")
+  icon          = "/images/mods/turbot/github.svg"
+  categories    = ["software development"]
 
   opengraph {
-    title       = "GitHub"
+    title       = "GitHub Mod for Flowpipe"
     description = "Run pipelines to supercharge your GitHub workflows using Flowpipe."
-    image       = "/images/flowpipe/mods/turbot/github-social-graphic.png"
+    image       = "/images/mods/turbot/github-social-graphic.png"
   }
 }

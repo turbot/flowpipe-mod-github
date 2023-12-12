@@ -1,12 +1,15 @@
-# usage: flowpipe pipeline run close_issue --pipeline-arg issue_number=151
 pipeline "close_issue" {
   title       = "Close Issue"
   description = "Close an issue with the given ID."
 
-  param "access_token" {
+  tags = {
+    type = "featured"
+  }
+
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -27,10 +30,8 @@ pipeline "close_issue" {
   }
 
   param "state_reason" {
-    // type    = set(string) //TODO
-    // default = ["COMPLETED", "NOT_PLANNED"]
     type        = string
-    description = "The reason for closing the issue."
+    description = "The reason for closing the issue. Supported values are COMPLETED and NOT_PLANNED."
     default     = "COMPLETED"
   }
 
@@ -38,7 +39,7 @@ pipeline "close_issue" {
     pipeline = pipeline.get_issue_by_number
 
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
@@ -50,7 +51,7 @@ pipeline "close_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -59,7 +60,6 @@ pipeline "close_issue" {
           closeIssue(
             input: {issueId: "${step.pipeline.get_issue_by_number.output.issue.id}", stateReason: ${param.state_reason}}
           ) {
-            clientMutationId
             issue {
               id
               url
@@ -68,10 +68,15 @@ pipeline "close_issue" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issue" {
-    description = "The closed issue."
+    description = "The closed issue details."
     value       = step.http.close_issue.response_body.data.closeIssue.issue
   }
 

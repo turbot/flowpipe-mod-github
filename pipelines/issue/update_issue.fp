@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run update_issue --pipeline-arg 'issue_number=153' --pipeline-arg issue_title="[bug] - there is a bug" --pipeline-arg issue_body="please fix the bug" --pipeline-arg 'assignee_ids=["MDQ6VXNlcjQwOTczODYz", "MDQ6VXNlcjM4MjE4NDE4"]'
 pipeline "update_issue" {
   title       = "Update Issue"
   description = "Update an issue's title, body, and assignees."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -44,10 +43,10 @@ pipeline "update_issue" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      access_token     = param.access_token
-      repository_owner = param.repository_owner
-      repository_name  = param.repository_name
+      cred             = param.cred
       issue_number     = param.issue_number
+      repository_name  = param.repository_name
+      repository_owner = param.repository_owner
     }
   }
 
@@ -56,7 +55,7 @@ pipeline "update_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -65,7 +64,6 @@ pipeline "update_issue" {
           updateIssue(
             input: {id: "${step.pipeline.get_issue_by_number.output.issue.id}", body: "${param.issue_body}", title: "${param.issue_title}", assigneeIds: ${jsonencode(param.assignee_ids)}}
           ) {
-            clientMutationId
             issue {
               id
               url
@@ -74,6 +72,11 @@ pipeline "update_issue" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issue" {

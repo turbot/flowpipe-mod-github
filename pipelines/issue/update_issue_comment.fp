@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run update_issue_comment --pipeline-arg "issue_comment_id=IC_kwDOKdfCIs5pfQv-" --pipeline-arg "issue_comment=new comment goes here."
 pipeline "update_issue_comment" {
   title       = "Update Issue Comment"
   description = "Update a comment in an issue."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -36,14 +35,13 @@ pipeline "update_issue_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
       query = <<EOQ
         mutation {
           updateIssueComment(input: {id: "${param.issue_comment_id}", body: "${param.issue_comment}"}) {
-            clientMutationId
             issueComment {
               id
               body
@@ -57,10 +55,16 @@ pipeline "update_issue_comment" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issue_comment" {
-    value = step.http.update_issue_comment.response_body.data.updateIssueComment.issueComment
+    description = "The updated issue comment."
+    value       = step.http.update_issue_comment.response_body.data.updateIssueComment.issueComment
   }
 
 }

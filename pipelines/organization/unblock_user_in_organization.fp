@@ -1,6 +1,6 @@
-pipeline "remove_organization_member" {
-  title       = "Remove organization member"
-  description = "Removes a member from an organization."
+pipeline "unblock_user_in_organization" {
+  title       = "Unblock User in Organization"
+  description = "Unblocks a specified user in an organization, allowing them collaborating on any repositories within that organization."
 
   param "cred" {
     type        = string
@@ -18,9 +18,9 @@ pipeline "remove_organization_member" {
     description = "The handle for the GitHub user account."
   }
 
-  step "http" "remove_organization_member" {
+  step "http" "unblock_user_in_organization" {
     method = "DELETE"
-    url    = "https://api.github.com/orgs/${param.organization}/members/${param.username}"
+    url    = "https://api.github.com/orgs/${param.organization}/blocks/${param.username}"
 
     request_headers = {
       Accept               = "application/vnd.github+json"

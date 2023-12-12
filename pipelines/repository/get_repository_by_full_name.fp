@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run get_repository_by_full_name
 pipeline "get_repository_by_full_name" {
   title       = "Get Repository by Full Name"
   description = "Get the details of a given repository by the owner and repository name."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -26,7 +25,7 @@ pipeline "get_repository_by_full_name" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -47,6 +46,11 @@ pipeline "get_repository_by_full_name" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "repository" {

@@ -1,12 +1,11 @@
-# usage: flowpipe pipeline run create_repository --pipeline-arg "repository_name=my-first-repo" --pipeline-arg "visibility=PRIVATE"
 pipeline "create_repository" {
   title       = "Create Repository"
   description = "Creates a new repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -21,29 +20,16 @@ pipeline "create_repository" {
     default     = local.repository_name
   }
 
-  // TODO: How to pass set(string) ?
   param "visibility" {
-    type = string
-    // type    = set(string)
-    // default = [
-    // "PRIVATE",
-    // "PUBLIC",
-    // "INTERNAL"
-    // ]
+    type        = string
     description = "The visibility of the repository. Allowed values are PRIVATE, PUBLIC, or INTERNAL. Defaults to PRIVATE."
     default     = "PRIVATE"
-
-    // Unsupported block type: Blocks of type "validation" are not expected here.
-    // validation {
-    //   condition     = contains(["PRIVATE", "PUBLIC", "INTERNAL"], param.visibility)
-    //   error_message = "Allowed values for input_parameter are \"PRIVATE\", \"PUBLIC\", or \"INTERNAL\"."
-    // }
   }
 
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
     }
   }
@@ -53,7 +39,7 @@ pipeline "create_repository" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -62,7 +48,6 @@ pipeline "create_repository" {
           createRepository(
             input: {name: "${param.repository_name}", ownerId: "${step.pipeline.get_repository_owner.output.repository_owner.id}", visibility: ${param.visibility}}
           ) {
-            clientMutationId
             repository {
               id
               name
@@ -74,6 +59,10 @@ pipeline "create_repository" {
         EOQ
     })
 
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "repository" {

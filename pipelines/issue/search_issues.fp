@@ -1,13 +1,11 @@
-# usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=[BUG]"
-# usage: flowpipe pipeline run search_issues --pipeline-arg "search_value=151"
 pipeline "search_issues" {
   title       = "Search Issues"
   description = "Search for issues in a repository."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -38,7 +36,7 @@ pipeline "search_issues" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -64,6 +62,11 @@ pipeline "search_issues" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issues" {

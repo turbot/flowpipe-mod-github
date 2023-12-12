@@ -2,16 +2,20 @@ pipeline "test_get_current_user" {
   title       = "Test Get Current User"
   description = "Test the get_current_user pipeline."
 
-  param "access_token" {
+  tags = {
+    type = "test"
+  }
+
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   step "pipeline" "get_current_user" {
     pipeline = pipeline.get_current_user
     args = {
-      access_token = param.access_token
+      cred = param.cred
     }
   }
 

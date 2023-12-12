@@ -1,12 +1,15 @@
-# usage: flowpipe pipeline run create_pull_request --pipeline-arg "pull_request_title=new PR title" --pipeline-arg "pull_request_body=pr body" --pipeline-arg "base_branch=main" --pipeline-arg "head_branch=demo-branch"
 pipeline "create_pull_request" {
   title       = "Create Pull Request"
   description = "Creates a pull request."
 
-  param "access_token" {
+  tags = {
+    type = "featured"
+  }
+
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -44,7 +47,7 @@ pipeline "create_pull_request" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -55,7 +58,7 @@ pipeline "create_pull_request" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -65,7 +68,6 @@ pipeline "create_pull_request" {
             input: {title: "${param.pull_request_title}", repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}",
             baseRefName: "${param.base_branch}", headRefName: "${param.head_branch}", body: "${param.pull_request_body}"}
           ) {
-            clientMutationId
             pullRequest {
               id
               url
@@ -75,6 +77,10 @@ pipeline "create_pull_request" {
         EOQ
     })
 
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "pull_request" {

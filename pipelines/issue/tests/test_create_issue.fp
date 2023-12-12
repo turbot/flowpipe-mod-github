@@ -2,10 +2,14 @@ pipeline "test_create_issue" {
   title       = "Test Create Issue"
   description = "Test the create issue pipeline."
 
-  param "access_token" {
+  tags = {
+    type = "test"
+  }
+
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "issue_title" {
@@ -21,9 +25,9 @@ pipeline "test_create_issue" {
   step "pipeline" "create_issue" {
     pipeline = pipeline.create_issue
     args = {
-      access_token = param.access_token
-      issue_title  = param.issue_title
-      issue_body   = param.issue_body
+      cred        = param.cred
+      issue_title = param.issue_title
+      issue_body  = param.issue_body
     }
   }
 
@@ -31,6 +35,7 @@ pipeline "test_create_issue" {
     if       = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
+      cred         = param.cred
       issue_number = step.pipeline.create_issue.output.issue.number
     }
 
@@ -47,6 +52,7 @@ pipeline "test_create_issue" {
 
     pipeline = pipeline.close_issue
     args = {
+      cred         = param.cred
       issue_number = step.pipeline.create_issue.output.issue.number
     }
   }

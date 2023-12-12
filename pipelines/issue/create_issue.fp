@@ -1,12 +1,15 @@
-# usage: flowpipe pipeline run create_issue --pipeline-arg "issue_title=[SUPPORT] please help" --pipeline-arg "issue_body=I need help with..."
 pipeline "create_issue" {
   title       = "Create Issue"
   description = "Create a new issue."
 
-  param "access_token" {
+  tags = {
+    type = "featured"
+  }
+
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "repository_owner" {
@@ -34,7 +37,7 @@ pipeline "create_issue" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      access_token     = param.access_token
+      cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -45,7 +48,7 @@ pipeline "create_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
     request_body = jsonencode({
@@ -54,7 +57,6 @@ pipeline "create_issue" {
           createIssue(
             input: {repositoryId: "${step.pipeline.get_repository_by_full_name.output.repository.id}", title: "${param.issue_title}", body: "${param.issue_body}"}
           ) {
-            clientMutationId
             issue {
               id
               number
@@ -65,6 +67,10 @@ pipeline "create_issue" {
         EOQ
     })
 
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "issue" {

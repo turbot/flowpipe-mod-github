@@ -13,3 +13,10 @@
 
 # Flowpipe variable files
 *.fpvars
+
+# Flowpipe mod dependencies and logs
+.flowpipe
+*.cache.json
+
+# Flowpipe configuration files
+*.fpc

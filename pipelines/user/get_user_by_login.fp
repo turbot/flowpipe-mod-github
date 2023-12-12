@@ -1,17 +1,16 @@
-# usage: flowpipe pipeline run get_user_by_login --pipeline-arg "user_login=vkumbha"
 pipeline "get_user_by_login" {
-  title       = "Get User By Login"
+  title       = "Get User by Login"
   description = "Get the details of a user by login."
 
-  param "access_token" {
+  param "cred" {
     type        = string
-    description = local.access_token_param_description
-    default     = var.access_token
+    description = local.cred_param_description
+    default     = "default"
   }
 
   param "user_login" {
     type        = string
-    description = "The user's login."
+    description = "The user's GitHub login."
   }
 
   step "http" "get_user_by_login" {
@@ -19,10 +18,9 @@ pipeline "get_user_by_login" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${param.access_token}"
+      Authorization = "Bearer ${credential.github[param.cred].token}"
     }
 
-    // TODO: limit socialAccounts to 5 or include a param?
     request_body = jsonencode({
       query = <<EOQ
         query {
@@ -45,6 +43,11 @@ pipeline "get_user_by_login" {
         }
         EOQ
     })
+
+    throw {
+      if      = can(result.response_body.errors)
+      message = join(", ", flatten([for error in result.response_body.errors : error.message]))
+    }
   }
 
   output "user" {
