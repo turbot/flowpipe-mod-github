@@ -15,7 +15,9 @@ pipeline "test_list_issues" {
   step "pipeline" "list_issues" {
     pipeline = pipeline.list_issues
     args = {
-      cred = param.cred
+      cred             = param.cred
+      repository_name  = "flowpipe"
+      repository_owner = "turbot"
     }
   }
 

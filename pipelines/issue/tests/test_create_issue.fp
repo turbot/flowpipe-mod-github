@@ -25,9 +25,11 @@ pipeline "test_create_issue" {
   step "pipeline" "create_issue" {
     pipeline = pipeline.create_issue
     args = {
-      cred        = param.cred
-      issue_title = param.issue_title
-      issue_body  = param.issue_body
+      cred             = param.cred
+      issue_body       = param.issue_body
+      issue_title      = param.issue_title
+      repository_name  = "deleteme"
+      repository_owner = "vkumbha"
     }
   }
 
@@ -35,8 +37,10 @@ pipeline "test_create_issue" {
     if       = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
-      cred         = param.cred
-      issue_number = step.pipeline.create_issue.output.issue.number
+      cred             = param.cred
+      issue_number     = step.pipeline.create_issue.output.issue.number
+      repository_name  = "deleteme"
+      repository_owner = "vkumbha"
     }
 
     # Ignore errors so we can delete
@@ -52,8 +56,10 @@ pipeline "test_create_issue" {
 
     pipeline = pipeline.close_issue
     args = {
-      cred         = param.cred
-      issue_number = step.pipeline.create_issue.output.issue.number
+      cred             = param.cred
+      issue_number     = step.pipeline.create_issue.output.issue.number
+      repository_name  = "deleteme"
+      repository_owner = "vkumbha"
     }
   }
 
