@@ -14,14 +14,16 @@ pipeline "test_search_issues" {
 
   param "search_value" {
     type    = string
-    default = "test"
+    default = "CLI"
   }
 
   step "pipeline" "search_issues" {
     pipeline = pipeline.search_issues
     args = {
-      cred         = param.cred
-      search_value = param.search_value
+      cred             = param.cred
+      search_value     = param.search_value
+      repository_name  = "flowpipe"
+      repository_owner = "turbot"
     }
   }
 

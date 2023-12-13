@@ -15,7 +15,9 @@ pipeline "test_list_pull_requests" {
   step "pipeline" "list_pull_requests" {
     pipeline = pipeline.list_pull_requests
     args = {
-      cred = param.cred
+      cred             = param.cred
+      repository_name  = "flowpipe"
+      repository_owner = "turbot"
     }
   }
 

@@ -14,7 +14,7 @@ pipeline "test_add_issue_assignees" {
 
   param "issue_number" {
     type        = number
-    default     = 1
+    default     = 53
     description = "The number of the issue."
   }
 
@@ -26,9 +26,11 @@ pipeline "test_add_issue_assignees" {
   step "pipeline" "add_issue_assignees" {
     pipeline = pipeline.add_issue_assignees
     args = {
-      cred         = param.cred
-      issue_number = param.issue_number
-      assignee_ids = param.assignee_ids
+      assignee_ids     = param.assignee_ids
+      cred             = param.cred
+      issue_number     = param.issue_number
+      repository_name  = "deleteme"
+      repository_owner = "vkumbha"
     }
   }
 
