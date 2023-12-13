@@ -12,16 +12,14 @@ pipeline "add_issue_assignees" {
     default     = "default"
   }
 
-  param "repository_owner" {
+  param "repository_full_name" {
     type        = string
     description = local.repository_owner_param_description
-    default     = local.repository_owner
   }
 
   param "repository_name" {
     type        = string
     description = local.repository_name_param_description
-    default     = local.repository_name
   }
 
   param "issue_number" {

@@ -11,7 +11,6 @@ pipeline "get_repository_owner" {
   param "repository_owner" {
     type        = string
     description = local.repository_owner_param_description
-    default     = local.repository_owner
   }
 
   step "http" "get_repository_owner" {

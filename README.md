@@ -50,6 +50,54 @@ For more information on credentials in Flowpipe, please see [Managing Credential
 
 ### Usage
 
+[Initialize a mod](https://flowpipe.io/docs/build/index#initializing-a-mod):
+
+```sh
+mkdir my_mod
+cd my_mod
+flowpipe mod init
+```
+
+[Install the GitHub mod](https://flowpipe.io/docs/build/mod-dependencies#mod-dependencies) as a dependency:
+
+```sh
+flowpipe mod install github.com/turbot/flowpipe-mod-github
+```
+
+[Use the dependency](https://flowpipe.io/docs/build/write-pipelines/index) in a pipeline step:
+
+```sh
+vi my_pipeline.fp
+```
+
+```hcl
+pipeline "my_pipeline" {
+
+  step "pipeline" "list_pull_requests" {
+    pipeline = github.pipeline.list_pull_requests
+    args = {
+      repository_owner = "turbot"
+      repository_name  = "flowpipe"
+    }
+  }
+}
+```
+
+[Run the pipeline](https://flowpipe.io/docs/run/pipelines):
+
+```sh
+flowpipe pipeline run my_pipeline
+```
+
+### Developing
+
+Clone:
+
+```sh
+git clone https://github.com/turbot/flowpipe-mod-github.git
+cd flowpipe-mod-github
+```
+
 List pipelines:
 
 ```sh
@@ -59,37 +107,16 @@ flowpipe pipeline list
 Run a pipeline:
 
 ```sh
-flowpipe pipeline run get_current_user
-```
-
-You can pass in pipeline arguments as well:
-
-```sh
-flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=steampipe'
+flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=flowpipe'
 ```
 
 To use a specific `credential`, specify the `cred` pipeline argument:
 
 ```sh
-flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg cred=github_profile
+flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=flowpipe' --arg cred=github_profile
 ```
 
 For more examples on how you can run pipelines, please see [Run Pipelines](https://flowpipe.io/docs/run/pipelines).
-
-### Configuration
-
-To avoid entering the `repository_owner` and `repository_name` for each pipeline run, you can configure your default repository by setting the `repository_full_name` variable:
-
-```sh
-cp flowpipe.fpvars.example flowpipe.fpvars
-vi flowpipe.fpvars
-```
-
-```hcl
-repository_full_name = "turbot/steampipe"
-```
-
-When running a pipeline, you can override this default repository with `repository_owner` and `repository_name` pipeline arguments, e.g., `--arg repository_owner=turbot --arg repository_name=steampipe`.
 
 ## Open Source & Contributing
 

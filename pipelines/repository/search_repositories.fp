@@ -11,13 +11,11 @@ pipeline "search_repositories" {
   param "repository_owner" {
     type        = string
     description = local.repository_owner_param_description
-    default     = local.repository_owner
   }
 
   param "repository_name" {
     type        = string
     description = local.repository_name_param_description
-    default     = local.repository_name
   }
 
   param "search_value" {
