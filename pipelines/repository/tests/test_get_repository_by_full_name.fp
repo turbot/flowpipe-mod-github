@@ -15,7 +15,9 @@ pipeline "test_get_repository_by_full_name" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      cred = param.cred
+      cred             = param.cred
+      repository_name  = "flowpipe"
+      repository_owner = "turbot"
     }
   }
 

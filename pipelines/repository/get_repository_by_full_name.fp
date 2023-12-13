@@ -11,13 +11,11 @@ pipeline "get_repository_by_full_name" {
   param "repository_owner" {
     type        = string
     description = local.repository_owner_param_description
-    default     = local.repository_owner
   }
 
   param "repository_name" {
     type        = string
     description = local.repository_name_param_description
-    default     = local.repository_name
   }
 
   step "http" "get_repository_by_full_name" {

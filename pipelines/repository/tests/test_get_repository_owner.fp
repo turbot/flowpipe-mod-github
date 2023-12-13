@@ -15,7 +15,8 @@ pipeline "test_get_repository_owner" {
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      cred = param.cred
+      cred             = param.cred
+      repository_owner = "turbot"
     }
   }
 
