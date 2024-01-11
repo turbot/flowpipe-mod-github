@@ -24,47 +24,36 @@ pipeline "test_branch_operations" {
     type    = string
   }
 
-  step "pipeline" "create_branch" {
-    pipeline = pipeline.create_branch
-    args = {
+  step "transform" "args" {
+    value = {
       cred             = param.cred
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       branch_name      = param.branch_name
     }
+  }
+
+  step "pipeline" "create_branch" {
+    pipeline = pipeline.create_branch
+    args = step.transform.args.value
   }
 
   step "pipeline" "exists_branch_after_creation" {
     pipeline = pipeline.exists_branch
     depends_on = [step.pipeline.create_branch]
-    args = {
-      cred             = param.cred
-      repository_owner = param.repository_owner
-      repository_name  = param.repository_name
-      branch_name      = param.branch_name
-    }
+    args = step.transform.args.value
   }
 
   step "pipeline" "delete_branch" {
     depends_on = [step.pipeline.exists_branch_after_creation]
     pipeline = pipeline.delete_branch
-    args = {
-      cred             = param.cred
-      repository_owner = param.repository_owner
-      repository_name  = param.repository_name
-      branch_name      = param.branch_name
-    }
+    args = step.transform.args.value
   }
 
   step "pipeline" "exists_branch_after_deletion" {
     depends_on = [step.pipeline.delete_branch]
     pipeline = pipeline.exists_branch
-    args = {
-      cred             = param.cred
-      repository_owner = param.repository_owner
-      repository_name  = param.repository_name
-      branch_name      = param.branch_name
-    }
+    args = step.transform.args.value
   }
 
   output "branch_created" {
