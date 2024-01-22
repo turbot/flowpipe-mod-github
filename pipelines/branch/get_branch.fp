@@ -1,5 +1,5 @@
-pipeline "exists_branch" {
-  title       = "Exists Branch"
+pipeline "get_branch" {
+  title       = "Get branch"
   description = "Checks if a branch exists in a specified repository."
 
   param "cred" {
@@ -22,7 +22,7 @@ pipeline "exists_branch" {
     description = "The name of the branch to check."
   }
 
-  step "http" "check_branch" {
+  step "http" "get_branch" {
     method = "get"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/branches/${param.branch_name}"
     request_headers = {
@@ -33,8 +33,12 @@ pipeline "exists_branch" {
     }
   }
 
+  output "branch" {
+    value       = step.http.get_branch
+  }
+
   output "branch_exists" {
-    value       = step.http.check_branch.status_code == 200
+    value       = step.http.get_branch.status_code == 200
   }
   
 }

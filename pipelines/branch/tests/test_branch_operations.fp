@@ -1,6 +1,6 @@
 pipeline "test_branch_operations" {
   title       = "Test Branch Operations"
-  description = "Test the create_branch, exists_branch, and delete_branch pipelines."
+  description = "Test the create_branch, get_branch, and delete_branch pipelines."
 
   tags = {
     type = "test"
@@ -38,32 +38,32 @@ pipeline "test_branch_operations" {
     args = step.transform.args.value
   }
 
-  step "pipeline" "exists_branch_after_creation" {
-    pipeline = pipeline.exists_branch
+  step "pipeline" "get_branch_after_creation" {
+    pipeline = pipeline.get_branch
     depends_on = [step.pipeline.create_branch]
     args = step.transform.args.value
   }
 
   step "pipeline" "delete_branch" {
-    depends_on = [step.pipeline.exists_branch_after_creation]
+    depends_on = [step.pipeline.get_branch_after_creation]
     pipeline = pipeline.delete_branch
     args = step.transform.args.value
   }
 
-  step "pipeline" "exists_branch_after_deletion" {
+  step "pipeline" "get_branch_after_deletion" {
     depends_on = [step.pipeline.delete_branch]
-    pipeline = pipeline.exists_branch
+    pipeline = pipeline.get_branch
     args = step.transform.args.value
   }
 
   output "branch_created" {
     description = "Check for pipeline.create_branch."
-    value       = step.pipeline.exists_branch_after_creation.output.branch_exists ? "pass" : "fail"
+    value       = step.pipeline.get_branch_after_creation.output.branch_exists ? "pass" : "fail"
   }
 
   output "branch_deleted" {
     description = "Check for pipeline.delete_branch."
-    value       = !step.pipeline.exists_branch_after_deletion.output.branch_exists ? "pass" : "fail"
+    value       = !step.pipeline.get_branch_after_deletion.output.branch_exists ? "pass" : "fail"
   }
 
 }
