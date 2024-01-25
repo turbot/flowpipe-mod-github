@@ -56,6 +56,10 @@ pipeline "create_branch" {
     }
   }
 
+  output "branch" {
+    value = step.http.create_branch
+  }
+
   output "branch_name" {
     value = replace(step.http.create_branch.response_body.ref, "refs/heads/", "")
   }
