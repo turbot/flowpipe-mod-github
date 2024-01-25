@@ -1,6 +1,6 @@
 pipeline "get_branch" {
   title       = "Get branch"
-  description = "Checks if a branch exists in a specified repository."
+  description = "Get a branch in a specified repository."
 
   param "cred" {
     type        = string
