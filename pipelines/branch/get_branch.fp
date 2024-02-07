@@ -3,18 +3,18 @@ pipeline "get_branch" {
   description = "Get a branch in a specified repository."
 
   param "cred" {
-    type        = string
-    default     = "default"
+    type    = string
+    default = "default"
   }
 
   param "repository_owner" {
-    type = string
-    description = local.repository_owner_param_description    
+    type        = string
+    description = local.repository_owner_param_description
   }
 
   param "repository_name" {
-    type = string
-    description = local.repository_name_param_description    
+    type        = string
+    description = local.repository_name_param_description
   }
 
   param "branch_name" {
@@ -29,16 +29,12 @@ pipeline "get_branch" {
       Authorization = "Bearer ${credential.github[param.cred].token}"
     }
     error {
-        ignore = true
+      ignore = true
     }
   }
 
   output "branch" {
-    value       = step.http.get_branch
+    value = step.http.get_branch
   }
 
-  output "branch_exists" {
-    value       = step.http.get_branch.status_code == 200
-  }
-  
 }

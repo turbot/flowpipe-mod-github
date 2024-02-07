@@ -13,15 +13,15 @@ pipeline "test_branch_operations" {
   }
 
   param "repository_owner" {
-    type    = string
+    type = string
   }
 
   param "repository_name" {
-    type    = string
+    type = string
   }
 
   param "branch_name" {
-    type    = string
+    type = string
   }
 
   step "transform" "args" {
@@ -35,35 +35,31 @@ pipeline "test_branch_operations" {
 
   step "pipeline" "create_branch" {
     pipeline = pipeline.create_branch
-    args = step.transform.args.value
+    args     = step.transform.args.value
   }
 
-  step "pipeline" "get_branch_after_creation" {
-    pipeline = pipeline.get_branch
+  step "pipeline" "get_branch" {
     depends_on = [step.pipeline.create_branch]
-    args = step.transform.args.value
+    pipeline   = pipeline.get_branch
+    args       = step.transform.args.value
   }
 
   step "pipeline" "delete_branch" {
-    depends_on = [step.pipeline.get_branch_after_creation]
-    pipeline = pipeline.delete_branch
-    args = step.transform.args.value
+    depends_on = [step.pipeline.get_branch]
+    pipeline   = pipeline.delete_branch
+    args       = step.transform.args.value
   }
 
-  step "pipeline" "get_branch_after_deletion" {
-    depends_on = [step.pipeline.delete_branch]
-    pipeline = pipeline.get_branch
-    args = step.transform.args.value
+  output "check_create_branch" {
+    value      = step.pipeline.create_branch.output.branch.status_code == 201 ? "pass" : "fail"
   }
 
-  output "branch_created" {
-    description = "Check for pipeline.create_branch."
-    value       = step.pipeline.get_branch_after_creation.output.branch_exists ? "pass" : "fail"
+  output "check_get_branch" {
+    value      = step.pipeline.get_branch.output.branch.status_code == 200 ? "pass" : "fail"
   }
 
-  output "branch_deleted" {
-    description = "Check for pipeline.delete_branch."
-    value       = !step.pipeline.get_branch_after_deletion.output.branch_exists ? "pass" : "fail"
+  output "check_delete_branch" {
+    value      = step.pipeline.delete_branch.output.branch.status_code == 204 ? "pass" : "fail"
   }
 
 }

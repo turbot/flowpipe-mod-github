@@ -3,19 +3,19 @@ pipeline "create_branch" {
   description = "Creates a new branch in a specified repository."
 
   param "cred" {
-    type    = string
-    default = "default"
-    description = local.cred_param_description    
+    type        = string
+    default     = "default"
+    description = local.cred_param_description
   }
 
   param "repository_owner" {
-    type = string
-    description = local.repository_owner_param_description    
+    type        = string
+    description = local.repository_owner_param_description
   }
 
   param "repository_name" {
-    type = string
-    description = local.repository_name_param_description    
+    type        = string
+    description = local.repository_name_param_description
   }
 
   param "branch_name" {
@@ -58,14 +58,6 @@ pipeline "create_branch" {
 
   output "branch" {
     value = step.http.create_branch
-  }
-
-  output "branch_name" {
-    value = replace(step.http.create_branch.response_body.ref, "refs/heads/", "")
-  }
-
-  output "latest_commit_sha" {
-    value = step.http.get_latest_commit_sha.response_body.commit.sha
   }
 
 }

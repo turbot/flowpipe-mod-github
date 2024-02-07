@@ -3,19 +3,19 @@ pipeline "delete_branch" {
   description = "Deletes a branch in a specified repository."
 
   param "cred" {
-    type    = string
-    default = "default"
-    description = local.cred_param_description    
+    type        = string
+    default     = "default"
+    description = local.cred_param_description
   }
 
   param "repository_owner" {
-    type = string
-    description = local.repository_owner_param_description    
+    type        = string
+    description = local.repository_owner_param_description
   }
 
   param "repository_name" {
-    type = string
-    description = local.repository_name_param_description    
+    type        = string
+    description = local.repository_name_param_description
   }
 
   param "branch_name" {
@@ -36,7 +36,8 @@ pipeline "delete_branch" {
     }
   }
 
-  output "branch_deleted" {
-    value = param.branch_name
+  output "branch" {
+    value = step.http.delete_branch
   }
+
 }
