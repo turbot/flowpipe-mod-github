@@ -1,3 +1,9 @@
+## v0.2.0 [2024-02-08]
+
+_What's new?_
+
+- Added `create_branch`, `delete_branch` and `get_branch` pipelines. ([#10](https://github.com/turbot/flowpipe-mod-github/pull/10))
+
 ## v0.1.0 [2023-12-13]
 
 _What's new?_
