@@ -2,10 +2,10 @@ pipeline "remove_organization_member" {
   title       = "Remove organization member"
   description = "Removes a member from an organization."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "organization" {
@@ -24,7 +24,7 @@ pipeline "remove_organization_member" {
 
     request_headers = {
       Accept               = "application/vnd.github+json"
-      Authorization        = "Bearer ${credential.github[param.cred].token}"
+      Authorization        = "Bearer ${param.conn.token}"
       X-GitHub-Api-Version = "2022-11-28"
     }
 

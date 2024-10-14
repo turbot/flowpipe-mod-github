@@ -6,10 +6,10 @@ pipeline "test_search_repositories" {
     type = "test"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "search_value" {
@@ -21,7 +21,7 @@ pipeline "test_search_repositories" {
   step "pipeline" "search_repositories" {
     pipeline = pipeline.search_repositories
     args = {
-      cred         = param.cred
+      conn         = param.conn
       search_value = param.search_value
     }
   }

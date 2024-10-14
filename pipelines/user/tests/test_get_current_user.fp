@@ -6,16 +6,16 @@ pipeline "test_get_current_user" {
     type = "test"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   step "pipeline" "get_current_user" {
     pipeline = pipeline.get_current_user
     args = {
-      cred = param.cred
+      conn = param.conn
     }
   }
 

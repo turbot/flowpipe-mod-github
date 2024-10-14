@@ -6,10 +6,10 @@ pipeline "test_branch_operations" {
     type = "test"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -26,7 +26,7 @@ pipeline "test_branch_operations" {
 
   step "transform" "args" {
     value = {
-      cred             = param.cred
+      conn             = param.conn
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       branch_name      = param.branch_name
@@ -51,15 +51,15 @@ pipeline "test_branch_operations" {
   }
 
   output "check_create_branch" {
-    value      = step.pipeline.create_branch.output.branch.status_code == 201 ? "pass" : "fail"
+    value = step.pipeline.create_branch.output.branch.status_code == 201 ? "pass" : "fail"
   }
 
   output "check_get_branch" {
-    value      = step.pipeline.get_branch.output.branch.status_code == 200 ? "pass" : "fail"
+    value = step.pipeline.get_branch.output.branch.status_code == 200 ? "pass" : "fail"
   }
 
   output "check_delete_branch" {
-    value      = step.pipeline.delete_branch.output.branch.status_code == 204 ? "pass" : "fail"
+    value = step.pipeline.delete_branch.output.branch.status_code == 204 ? "pass" : "fail"
   }
 
 }

@@ -2,10 +2,10 @@ pipeline "create_organization_invitation" {
   title       = "Create Organization Invitation"
   description = "Invites a user to an organization."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "organization" {
@@ -34,7 +34,7 @@ pipeline "create_organization_invitation" {
     method = "post"
     request_headers = {
       Accept               = "application/vnd.github+json"
-      Authorization        = "Bearer ${credential.github[param.cred].token}"
+      Authorization        = "Bearer ${param.conn.token}"
       X-GitHub-Api-Version = "2022-11-28"
     }
 

@@ -2,9 +2,10 @@ pipeline "get_branch" {
   title       = "Get branch"
   description = "Get a branch in a specified repository."
 
-  param "cred" {
-    type    = string
-    default = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -26,7 +27,7 @@ pipeline "get_branch" {
     method = "get"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/branches/${param.branch_name}"
     request_headers = {
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
     error {
       ignore = true
