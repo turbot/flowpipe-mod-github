@@ -25,7 +25,7 @@ pipeline "list_issues" {
 
   param "issue_state" {
     type        = string
-    description = "The possible states of an issue. Allowed values are OPEN and CLOSED. Defaults to OPEN."
+    description = "The possible states of an issue. Allowed values are OPEN and CLOSED."
   }
 
   step "http" "list_issues" {
