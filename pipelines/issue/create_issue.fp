@@ -3,7 +3,7 @@ pipeline "create_issue" {
   description = "Create a new issue."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
   param "conn" {

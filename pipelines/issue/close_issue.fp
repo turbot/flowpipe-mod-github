@@ -3,7 +3,7 @@ pipeline "close_issue" {
   description = "Close an issue with the given ID."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
   param "conn" {

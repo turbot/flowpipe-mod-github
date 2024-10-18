@@ -3,7 +3,7 @@ pipeline "create_pull_request_comment" {
   description = "Create a comment on pull request."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
   param "conn" {

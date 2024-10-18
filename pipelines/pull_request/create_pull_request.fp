@@ -3,7 +3,7 @@ pipeline "create_pull_request" {
   description = "Creates a pull request."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
   param "conn" {

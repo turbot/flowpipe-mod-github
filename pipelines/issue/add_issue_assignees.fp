@@ -3,7 +3,7 @@ pipeline "add_issue_assignees" {
   description = "Add assignees to an issue."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
   param "conn" {
