@@ -109,7 +109,7 @@ flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repos
 To use a specific `connection`, specify the `conn` pipeline argument:
 
 ```sh
-flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=flowpipe' --arg conn=github_profile
+flowpipe pipeline run get_issue_by_number --arg 'issue_number=3997' --arg 'repository_owner=turbot' --arg 'repository_name=flowpipe' --arg conn=connection.github.github_profile
 ```
 
 For more examples on how you can run pipelines, please see [Run Pipelines](https://flowpipe.io/docs/run/pipelines).

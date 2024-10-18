@@ -25,7 +25,7 @@ pipeline "list_pull_requests" {
 
   param "pull_request_state" {
     type        = string
-    description = "The state to filter the pull requests by. Allowed values are CLOSED, MERGED and OPEN. Defaults to OPEN."
+    description = "The state to filter the pull requests by. Allowed values are CLOSED, MERGED and OPEN."
   }
 
   step "http" "list_pull_requests" {
