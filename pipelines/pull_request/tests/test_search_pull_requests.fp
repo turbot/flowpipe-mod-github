@@ -3,7 +3,7 @@ pipeline "test_search_pull_requests" {
   description = "Test the search_pull_requests pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
   param "conn" {

@@ -3,7 +3,7 @@ pipeline "test_get_current_user" {
   description = "Test the get_current_user pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
   param "conn" {

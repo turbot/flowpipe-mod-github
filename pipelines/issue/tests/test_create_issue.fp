@@ -3,7 +3,7 @@ pipeline "test_create_issue" {
   description = "Test the create issue pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
   param "conn" {

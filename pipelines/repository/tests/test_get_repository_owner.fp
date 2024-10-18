@@ -3,7 +3,7 @@ pipeline "test_get_repository_owner" {
   description = "Test the get_repository_owner pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
   param "conn" {

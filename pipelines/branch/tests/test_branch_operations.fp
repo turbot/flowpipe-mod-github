@@ -3,7 +3,7 @@ pipeline "test_branch_operations" {
   description = "Test the create_branch, get_branch, and delete_branch pipelines."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
   param "conn" {
