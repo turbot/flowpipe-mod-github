@@ -3,13 +3,13 @@ pipeline "add_issue_assignees" {
   description = "Add assignees to an issue."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -35,7 +35,7 @@ pipeline "add_issue_assignees" {
   step "pipeline" "get_issue_by_number" {
     pipeline = pipeline.get_issue_by_number
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
       issue_number     = param.issue_number
@@ -48,7 +48,7 @@ pipeline "add_issue_assignees" {
 
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

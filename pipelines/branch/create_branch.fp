@@ -2,10 +2,10 @@ pipeline "create_branch" {
   title       = "Create Branch"
   description = "Creates a new branch in a specified repository."
 
-  param "cred" {
-    type        = string
-    default     = "default"
-    description = local.cred_param_description
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -33,7 +33,7 @@ pipeline "create_branch" {
     method = "get"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/branches/${param.source_branch}"
     request_headers = {
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
   }
 
@@ -42,7 +42,7 @@ pipeline "create_branch" {
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/git/refs"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

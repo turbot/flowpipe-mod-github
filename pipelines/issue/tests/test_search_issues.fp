@@ -3,13 +3,13 @@ pipeline "test_search_issues" {
   description = "Test the search_issues pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "search_value" {
@@ -20,7 +20,7 @@ pipeline "test_search_issues" {
   step "pipeline" "search_issues" {
     pipeline = pipeline.search_issues
     args = {
-      cred             = param.cred
+      conn             = param.conn
       search_value     = param.search_value
       repository_name  = "flowpipe"
       repository_owner = "turbot"

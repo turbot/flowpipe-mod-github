@@ -3,13 +3,13 @@ pipeline "test_get_user_by_login" {
   description = "Test the get_user_by_login pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "user_login" {
@@ -20,7 +20,7 @@ pipeline "test_get_user_by_login" {
   step "pipeline" "get_user_by_login" {
     pipeline = pipeline.get_user_by_login
     args = {
-      cred       = param.cred
+      conn       = param.conn
       user_login = param.user_login
     }
   }

@@ -2,10 +2,10 @@ pipeline "delete_branch" {
   title       = "Delete Branch"
   description = "Deletes a branch in a specified repository."
 
-  param "cred" {
-    type        = string
-    default     = "default"
-    description = local.cred_param_description
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -27,7 +27,7 @@ pipeline "delete_branch" {
     method = "delete"
     url    = "https://api.github.com/repos/${param.repository_owner}/${param.repository_name}/git/refs/heads/${param.branch_name}"
     request_headers = {
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     throw {

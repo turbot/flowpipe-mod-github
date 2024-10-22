@@ -2,10 +2,10 @@ pipeline "update_pull_request" {
   title       = "Update Pull Request"
   description = "Update a pull request's body, title, and assignees."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -41,7 +41,7 @@ pipeline "update_pull_request" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      cred                = param.cred
+      conn                = param.conn
       repository_owner    = param.repository_owner
       repository_name     = param.repository_name
       pull_request_number = param.pull_request_number
@@ -53,7 +53,7 @@ pipeline "update_pull_request" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

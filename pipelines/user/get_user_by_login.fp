@@ -2,10 +2,10 @@ pipeline "get_user_by_login" {
   title       = "Get User by Login"
   description = "Get the details of a user by login."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "user_login" {
@@ -18,7 +18,7 @@ pipeline "get_user_by_login" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

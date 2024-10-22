@@ -3,19 +3,19 @@ pipeline "test_get_repository_owner" {
   description = "Test the get_repository_owner pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_owner = "turbot"
     }
   }

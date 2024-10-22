@@ -2,10 +2,10 @@ pipeline "block_user_in_organization" {
   title       = "Block User in Organization"
   description = "Blocks a specified user from an organization, preventing them from collaborating on any repositories within that organization."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "organization" {
@@ -24,7 +24,7 @@ pipeline "block_user_in_organization" {
 
     request_headers = {
       Accept               = "application/vnd.github+json"
-      Authorization        = "Bearer ${credential.github[param.cred].token}"
+      Authorization        = "Bearer ${param.conn.token}"
       X-GitHub-Api-Version = "2022-11-28"
     }
 

@@ -3,19 +3,19 @@ pipeline "test_list_pull_requests" {
   description = "Test the list_pull_requests pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   step "pipeline" "list_pull_requests" {
     pipeline = pipeline.list_pull_requests
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_name  = "flowpipe"
       repository_owner = "turbot"
     }
