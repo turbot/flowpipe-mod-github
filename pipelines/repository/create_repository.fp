@@ -2,10 +2,10 @@ pipeline "create_repository" {
   title       = "Create Repository"
   description = "Creates a new repository."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -21,13 +21,12 @@ pipeline "create_repository" {
   param "visibility" {
     type        = string
     description = "The visibility of the repository. Allowed values are PRIVATE, PUBLIC, or INTERNAL. Defaults to PRIVATE."
-    default     = "PRIVATE"
   }
 
   step "pipeline" "get_repository_owner" {
     pipeline = pipeline.get_repository_owner
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_owner = param.repository_owner
     }
   }
@@ -37,7 +36,7 @@ pipeline "create_repository" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

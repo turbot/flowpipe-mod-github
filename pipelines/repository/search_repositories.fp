@@ -2,10 +2,10 @@ pipeline "search_repositories" {
   title       = "Search Repositories"
   description = "Find a repository."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "search_value" {
@@ -24,7 +24,7 @@ pipeline "search_repositories" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

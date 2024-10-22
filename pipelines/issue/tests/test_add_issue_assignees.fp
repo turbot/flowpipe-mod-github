@@ -3,13 +3,13 @@ pipeline "test_add_issue_assignees" {
   description = "Test the add_issue_assignees pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "issue_number" {
@@ -27,7 +27,7 @@ pipeline "test_add_issue_assignees" {
     pipeline = pipeline.add_issue_assignees
     args = {
       assignee_ids     = param.assignee_ids
-      cred             = param.cred
+      conn             = param.conn
       issue_number     = param.issue_number
       repository_name  = "deleteme"
       repository_owner = "vkumbha"

@@ -2,10 +2,10 @@ pipeline "delete_issue_comment" {
   title       = "Delete Issue Comment"
   description = "Delete a comment in an issue."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -28,7 +28,7 @@ pipeline "delete_issue_comment" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

@@ -3,13 +3,13 @@ pipeline "test_create_issue" {
   description = "Test the create issue pipeline."
 
   tags = {
-    type = "test"
+    folder = "Tests"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "issue_title" {
@@ -25,7 +25,7 @@ pipeline "test_create_issue" {
   step "pipeline" "create_issue" {
     pipeline = pipeline.create_issue
     args = {
-      cred             = param.cred
+      conn             = param.conn
       issue_body       = param.issue_body
       issue_title      = param.issue_title
       repository_name  = "deleteme"
@@ -37,7 +37,7 @@ pipeline "test_create_issue" {
     if       = !is_error(step.pipeline.create_issue)
     pipeline = pipeline.get_issue_by_number
     args = {
-      cred             = param.cred
+      conn             = param.conn
       issue_number     = step.pipeline.create_issue.output.issue.number
       repository_name  = "deleteme"
       repository_owner = "vkumbha"
@@ -56,7 +56,7 @@ pipeline "test_create_issue" {
 
     pipeline = pipeline.close_issue
     args = {
-      cred             = param.cred
+      conn             = param.conn
       issue_number     = step.pipeline.create_issue.output.issue.number
       repository_name  = "deleteme"
       repository_owner = "vkumbha"

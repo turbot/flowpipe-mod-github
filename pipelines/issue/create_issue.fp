@@ -3,13 +3,13 @@ pipeline "create_issue" {
   description = "Create a new issue."
 
   tags = {
-    type = "featured"
+    recommended = "true"
   }
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -35,7 +35,7 @@ pipeline "create_issue" {
   step "pipeline" "get_repository_by_full_name" {
     pipeline = pipeline.get_repository_by_full_name
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_owner = param.repository_owner
       repository_name  = param.repository_name
     }
@@ -46,7 +46,7 @@ pipeline "create_issue" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

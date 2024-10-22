@@ -2,10 +2,10 @@ pipeline "list_pull_requests" {
   title       = "List Pull Requests"
   description = "List pull requests in the repository."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -21,13 +21,11 @@ pipeline "list_pull_requests" {
   param "pull_request_limit" {
     type        = number
     description = "Returns the first n elements from the list."
-    default     = 20
   }
 
   param "pull_request_state" {
     type        = string
-    description = "The state to filter the pull requests by. Allowed values are CLOSED, MERGED and OPEN. Defaults to OPEN."
-    default     = "OPEN"
+    description = "The state to filter the pull requests by. Allowed values are CLOSED, MERGED and OPEN."
   }
 
   step "http" "list_pull_requests" {
@@ -35,7 +33,7 @@ pipeline "list_pull_requests" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({

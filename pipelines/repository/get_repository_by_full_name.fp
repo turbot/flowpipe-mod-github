@@ -2,10 +2,10 @@ pipeline "get_repository_by_full_name" {
   title       = "Get Repository by Full Name"
   description = "Get the details of a given repository by the owner and repository name."
 
-  param "cred" {
-    type        = string
-    description = local.cred_param_description
-    default     = "default"
+  param "conn" {
+    type        = connection.github
+    description = local.conn_param_description
+    default     = connection.github.default
   }
 
   param "repository_owner" {
@@ -23,7 +23,7 @@ pipeline "get_repository_by_full_name" {
     url    = "https://api.github.com/graphql"
     request_headers = {
       Content-Type  = "application/json"
-      Authorization = "Bearer ${credential.github[param.cred].token}"
+      Authorization = "Bearer ${param.conn.token}"
     }
 
     request_body = jsonencode({
