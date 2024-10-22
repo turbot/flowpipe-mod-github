@@ -20,7 +20,7 @@ pipeline "test_search_pull_requests" {
   step "pipeline" "search_pull_requests" {
     pipeline = pipeline.search_pull_requests
     args = {
-      cred             = param.cred
+      conn             = param.conn
       repository_name  = "flowpipe"
       repository_owner = "turbot"
       search_value     = param.search_value

@@ -11,4 +11,10 @@ mod "github" {
     description = "Run pipelines to supercharge your GitHub workflows using Flowpipe."
     image       = "/images/mods/turbot/github-social-graphic.png"
   }
+
+  require {
+    flowpipe {
+      min_version = "1.0.0"
+    }
+  }
 }

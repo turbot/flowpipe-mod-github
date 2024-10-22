@@ -26,7 +26,7 @@ pipeline "close_pull_request" {
   step "pipeline" "get_pull_request_by_number" {
     pipeline = pipeline.get_pull_request_by_number
     args = {
-      cred                = param.cred
+      conn                = param.conn
       repository_owner    = param.repository_owner
       repository_name     = param.repository_name
       pull_request_number = param.pull_request_number
